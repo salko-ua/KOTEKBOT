@@ -2,8 +2,6 @@ from aiogram.utils.executor import start_webhook
 from data_base.controller_db import bd_Start
 import os
 from create_bot import bot,dp
-from aiogram.dispatcher import Dispatcher
-from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from handlers import admin, client, super_admin, other
 
 #FSM - Машина стану
