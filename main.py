@@ -30,7 +30,7 @@ async def on_shutdown(dp):
 
 
 def start_bot():
-    executor.start_polling(dp, skip_updates = False)
+    executor.start_polling(dp, skip_updates=True, on_startup=on_startup)
     #start_webhook(
     #    dispatcher=dp,
     #    webhook_path='',
