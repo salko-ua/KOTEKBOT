@@ -38,6 +38,7 @@ async def user_kb(msg: types.Message):
 #@dp.message_handler(commands = ['showuser'])
 async def super_admin_showuser(msg: types.Message):
     if msg.from_user.id == super_admin:
+        print(1/0)
         booled = await user_all_sql()
         if booled:
             await msg.answer("Немає користувачів в бд")
