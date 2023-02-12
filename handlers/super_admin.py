@@ -38,13 +38,12 @@ async def user_kb(msg: types.Message):
 #@dp.message_handler(commands = ['showuser'])
 async def super_admin_showuser(msg: types.Message):
     if msg.from_user.id == super_admin:
-        print(1/0)
         booled = await user_all_sql()
         if booled:
             await msg.answer("Немає користувачів в бд")
         elif not booled:
             spisok = list_all_user.get()
-            await msg.answer(spisok)
+            await msg.answer(spisok+1)
     else:
         dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
         await asyncio.sleep(4)
