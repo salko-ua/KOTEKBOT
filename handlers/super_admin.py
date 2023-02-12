@@ -43,7 +43,7 @@ async def super_admin_showuser(msg: types.Message):
             await msg.answer("Немає користувачів в бд")
         elif not booled:
             spisok = list_all_user.get()
-            await msg.answer(spisok+1)
+            await msg.answer(spisok)
     else:
         dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
         await asyncio.sleep(4)
