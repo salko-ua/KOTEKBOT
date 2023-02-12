@@ -36,4 +36,5 @@ jobs:
         cache-to: type=gha,mode=max
 
     - name: Activate update script
+      if: github.event_name != 'pull_request'
       run: curl -L ${{ secrets.DEPLOY_URL }}
