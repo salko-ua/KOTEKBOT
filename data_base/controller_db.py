@@ -30,23 +30,32 @@ def bd_Start():
             Name       TEXT,
             Nickname   TEXT,
             group_user TEXT
-        );
-
+        )
+        """
+    )
+    base.execute(
+        """
         CREATE TABLE IF NOT EXISTS groupa(
             id        INTEGER PRIMARY KEY,
             user_id   INTEGER NOT NULL,
             groupname TEXT NOT NULL,
             photos    TEXT,
             date      TEXT
-        );
-
+        )
+        """
+    )
+    base.execute(
+        """
         CREATE TABLE IF NOT EXISTS all_photo(
             id         INTEGER PRIMARY KEY,
             id_photo   TEXT,
             type       TEXT,
             date_photo TEXT
-        );
-
+        )
+        """
+    )
+    base.execute(
+        """
         CREATE TABLE IF NOT EXISTS admin(
             id       INTEGER PRIMARY KEY NOT NULL,
             user_id  INTEGER UNIQUE NOT NULL,
