@@ -31,7 +31,7 @@ async def start(message: types.Message):
             await message.answer("Регестрація\nВиберіть тип акаунту : ", reply_markup=kb_choice)
             await FSMReg.reply_reg.set()
         else:
-            msg = await message.answer("Перейдіть в особисті повідомлення до бота і зареєструйтесь за командою /start")
+            msg = await message.answer("Перейдіть в особисті повідомлення до бота @pedbot_bot\nі зареєструйтесь за командою /start")
             await asyncio.sleep(5)
             await message.delete()
             await msg.delete()
@@ -178,7 +178,7 @@ async def view_coupes_comm(message: types.Message):
         await msg.delete()
        
     else:
-        msg = await message.answer("Перейдіть в особисті повідомлення до бота\nі зареєструйтесь за командою /start", reply_markup=ReplyKeyboardRemove())
+        msg = await message.answer("Перейдіть в особисті повідомлення до бота @pedbot_bot\nі зареєструйтесь за командою /start", reply_markup=ReplyKeyboardRemove())
         await asyncio.sleep(4)
         await message.delete()
         await msg.delete()

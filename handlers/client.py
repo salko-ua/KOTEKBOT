@@ -42,7 +42,7 @@ async def view_calls(message: types.Message):
 async def delete_user(message: types.Message):
     if await user_exists_sql(message.from_user.id):
         await delete_users_sql(message.from_user.id)
-        await message.answer("Акаунт видалено\nНажміть /start щоб створити новий і вибрати іншу групу :D", reply_markup=ReplyKeyboardRemove())
+        await message.answer("Нажміть /start щоб вибрати іншу групу :D", reply_markup=ReplyKeyboardRemove())
     else:
         await message.answer("Нажміть /start для регестрації", reply_markup=ReplyKeyboardRemove())
 

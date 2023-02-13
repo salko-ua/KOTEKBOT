@@ -41,7 +41,6 @@ async def add_group(message: types.Message):
     else:
         await message.answer("Ви не адмін :D /start")
 
-
 #@dp.message_handler(state=FSMAdmin.curse_group)
 async def add_group1(message: types.Message, state: FSMContext):
     if await admin_exists_sql(message.from_user.id) or message.from_user.id == super_admin:
@@ -77,7 +76,6 @@ async def add_schedule_to_group(message: types.Message):
     else:
         await message.answer("Ви не адмін :D /start")
 
-        
 #@dp.message_handler(content_types=['photo'],state = FSMAdmin.curse_group_rad_photo)
 async def add_schedule_to_group1(message: types.Message, state: FSMContext):
     if await admin_exists_sql(message.from_user.id) or message.from_user.id == super_admin:
@@ -126,7 +124,6 @@ async def list_group(message: types.Message):
         await message.answer("Ви не адмін :D /start")
 
         
-
 #===========================Видалити акаунт============================
 #@dp.message_handler(text ='Видалити акаунт')
 async def delete_admin(message: types.Message):
@@ -136,7 +133,6 @@ async def delete_admin(message: types.Message):
 
     else:
         await message.answer("Ви не адмін :D /start", reply_markup = ReplyKeyboardRemove())
-
 
 
 #===========================Видалити групу============================
@@ -150,8 +146,7 @@ async def delete_group(message: types.Message):
 
     else:
         await message.answer("Ви не адмін :D /start", reply_markup = ReplyKeyboardRemove())
-
-        
+      
 #@dp.message_handler(state=FSMAdmin.curse_group_delete)
 async def load_group(message: types.Message, state: FSMContext):
     if await admin_exists_sql(message.from_user.id) or message.from_user.id == super_admin:
@@ -199,7 +194,6 @@ async def send_news(message: types.Message):
     else:
         await message.answer("Ви не адмін :D /start", reply_markup = ReplyKeyboardRemove())
 
-        
 #@dp.message_handler(state = FSMAdmin.all_or_one)
 async def send_news1(message: types.Message, state: FSMContext):
     if message.text == "Назад":
@@ -358,7 +352,6 @@ async def add_calls(message: types.Message):
     else:
         await message.answer("Ви не адмін :D /start", reply_markup = ReplyKeyboardRemove())
 
-
 #@dp.message_handler(content_types=['photo'],state = FSMAdmin.id_photo)
 async def add_calls1(message: types.Message, state: FSMContext):
     if await admin_exists_sql(message.from_user.id) or message.from_user.id == super_admin:
@@ -379,7 +372,6 @@ async def add_calls1(message: types.Message, state: FSMContext):
         await message.answer("Ви не адмін :D /start", reply_markup = ReplyKeyboardRemove())
 
 
-
 #===========================Видалити розклад дзвінків============================
 #@dp.message_handler(text ="Видалити розклад дзвінків")
 async def delete_calls(message: types.Message):
@@ -396,7 +388,6 @@ async def delete_calls(message: types.Message):
 
     else:
         await message.answer("Ви не адмін :D /start", reply_markup = ReplyKeyboardRemove())
-
 
 
 #===========================реєстратор============================
