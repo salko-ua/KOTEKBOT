@@ -18,7 +18,7 @@ date_calls= ContextVar('date_calls', default='')
 def bd_Start():
     global base
     global cur
-    base = sqlite3.connect('database.db')
+    base = sqlite3.connect('data/database.db')
     cur = base.cursor()
     if base:
         print('DATA BASE CONNECTED')
