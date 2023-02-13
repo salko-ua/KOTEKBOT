@@ -35,7 +35,6 @@ async def on_startup(dp):
 
 async def on_shutdown(dp):
     await bot.delete_webhook()
-    pass
 
 
 def start_bot():
@@ -46,7 +45,7 @@ def start_bot():
         on_shutdown=on_shutdown,
         skip_updates=False,
         host = '0.0.0.0',
-        port = int(os.environ.get("WEBHOOK_PORT", 8000)))
+        port = int(os.environ.get("WEBHOOK_PORT", 8080)))
 
 
 
