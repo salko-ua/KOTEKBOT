@@ -3,7 +3,7 @@ from data_base.controller_db import bd_Start
 import os
 from create_bot import bot,dp
 from handlers import admin, client, super_admin, other
-import sentry_sdk
+#import sentry_sdk
 
 #FSM - Машина стану
 #MemoryStorage - клас який допомагає зберігати тимчасові дані в ОЗУ
@@ -11,14 +11,14 @@ import sentry_sdk
 
 APP_URL = os.getenv('APP_URL')
 
-sentry_sdk.init(
-    dsn="https://622c27cfc84b46119192ff14073e2df9@o4504669478780928.ingest.sentry.io/4504669483827200",
-
-    # Set traces_sample_rate to 1.0 to capture 100%
-    # of transactions for performance monitoring.
-    # We recommend adjusting this value in production.
-    traces_sample_rate=1.0
-)
+#sentry_sdk.init(
+#    dsn="https://622c27cfc84b46119192ff14073e2df9@o4504669478780928.ingest.sentry.io/4504669483827200",
+#
+#    # Set traces_sample_rate to 1.0 to capture 100%
+#    # of transactions for performance monitoring.
+#    # We recommend adjusting this value in production.
+#    traces_sample_rate=1.0
+#)
 
 async def regiseter_handlers():
     other.register_handler_other(dp)
@@ -45,7 +45,7 @@ def start_bot():
         on_shutdown=on_shutdown,
         skip_updates=False,
         host = '0.0.0.0',
-        port = int(os.environ.get("WEBHOOK_PORT", 8080)))
+        port = int(os.environ.get("WEBHOOK_PORT", 8000)))
 
 
 
