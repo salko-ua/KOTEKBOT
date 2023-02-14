@@ -40,7 +40,7 @@ async def super_admin_showuser(msg: types.Message):
     if msg.from_user.id == super_admin:
         booled = await user_all_sql()
         if booled:
-            await msg.answer("Немає користувачів в бд")
+            await msg.answer("Немає користувачів")
         elif not booled:
             spisok = list_all_user.get()
             await msg.answer(spisok)
