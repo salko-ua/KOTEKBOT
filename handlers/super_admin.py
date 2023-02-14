@@ -56,7 +56,7 @@ async def super_admin_groupa(msg: types.Message):
     if msg.from_user.id == super_admin:
         booled = await groupa_all_sql()
         if booled:
-            await msg.answer("Немає груп в бд")
+            await msg.answer("Немає груп")
         elif not booled:
             spisok = list_all_groupa.get()
             await msg.answer(spisok)
@@ -72,7 +72,7 @@ async def super_admin_admin(msg: types.Message):
     if msg.from_user.id == super_admin:
         booled = await admin_all_sql()
         if booled:
-            await msg.answer("Немає адмінів в бд")
+            await msg.answer("Немає адмінів")
         elif not booled:
             spisok = list_all_admin.get()
             await msg.answer(spisok)
