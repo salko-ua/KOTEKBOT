@@ -287,20 +287,17 @@ async def send_news4(message: types.Message, state: FSMContext):
 async def send_news5(message: types.Message, state: FSMContext):
     if message.text == "Назад":
         await message.answer("Ваша клавіатура : ", reply_markup = kb_admin)
-
         await state.finish()
     elif await admin_exists_sql(message.from_user.id) or message.from_user.id == super_admin:
         async with state.proxy() as data:
             data['namegroups'] = message.text
-        #print(data)
-        h = await id_from_group_exists_sql(data["namegroups"])
         if data['all_or_one'] == 'Одна':
             try:
-                result = h
+                h = await id_from_group_exists_sql(data["namegroups"])
+                error = h[0][0]
                 new = []
                 for i in range(0,len(h)):
                     new.append(h[i][0])
-                
                 if len(data['photo_news']) > 3:
                     texts = data["text_news"]
                     photo = data["photo_news"]
@@ -309,16 +306,16 @@ async def send_news5(message: types.Message, state: FSMContext):
                             await bot.send_photo(new[all_id],photo,texts)
                         except BotBlocked:
                             await asyncio.sleep(0.5)
-
+                    await message.answer("Готово!",reply_markup=kb_admin)
+                    await state.finish()   
                 elif len(data["photo_news"]) == 1:
                     for all_ids in range(0,len(new)):
                         try:
                             await bot.send_message(new[all_ids], data['text_news'])
                         except BotBlocked:
                             await asyncio.sleep(0.5)
-
-                await message.answer("Готово!",reply_markup=kb_admin)
-                 
+                    await message.answer("Готово!",reply_markup=kb_admin)   
+                    await state.finish()     
             except IndexError:
                 await message.answer("немає жодної людини підключенної до цієї групи",reply_markup=kb_admin)
                  
@@ -338,17 +335,16 @@ async def send_news5(message: types.Message, state: FSMContext):
                             await bot.send_photo(rest[all_id],photo,texts)
                         except BotBlocked:
                             await asyncio.sleep(0.5)
-
+                    await message.answer("Готово!",reply_markup=kb_admin)
+                    await state.finish()
                 elif len(data["photo_news"]) == 1:
                     for all_ids in range(0,len(rest)):
                         try:
                             await bot.send_message(rest[all_ids], data['text_news'])
                         except BotBlocked:
                             await asyncio.sleep(0.5)
-
-            await message.answer("Готово!",reply_markup=kb_admin)
-
-        await state.finish()
+                    await message.answer("Готово!",reply_markup=kb_admin)
+                    await state.finish()
     elif message.text == "Назад":
         await message.answer("Ваша клавіатура : ", reply_markup = kb_admin)
 
