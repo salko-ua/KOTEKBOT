@@ -4,9 +4,9 @@ from aiogram.types import ReplyKeyboardRemove
 
 from keyboards import *
 from data_base.controller_db import *
-from config import super_admin
 
 
+super_admin = 5963046063
 #===========================Переглянути розклад============================
 #@dp.message_handler(text = "Переглянути розклад пар")
 async def view_coupes(message: types.Message):
