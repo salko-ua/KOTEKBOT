@@ -64,7 +64,6 @@ async def start(message: types.Message):
             await asyncio.sleep(2)
             await message.delete()
             await msg.delete()
-    
 
 #@dp.message_handler(state=FSMReg.reply_reg)
 async def reg(message: types.Message, state: FSMContext):
@@ -109,7 +108,7 @@ async def regUser(message: types.Message, state: FSMContext):
         await state.finish()
         await message.answer("Регестрація завершена", reply_markup=kb_client)
     else:
-        await message.answer("Немає такої групи, звяжіться з адміністратором\nдля того щоб її добавили \nІ повторіть спробу /start", reply_markup=ReplyKeyboardRemove())
+        await message.answer("Немає такої групи, звяжіться з адміністратором\nдля того щоб її додали \nІ повторіть спробу /start", reply_markup=ReplyKeyboardRemove())
         await state.finish()
 
 #===========================Регестрація============================
@@ -119,12 +118,12 @@ async def count_user(message: types.Message):
     if check:
         await count_user_sql()
         msg = await message.answer(f"Кількість зареєстрованих людей : {count_us.get()}")
-        await asyncio.sleep(4)
+        await asyncio.sleep(2)
         await message.delete()
         await msg.delete()
     elif not check:
         msg = await message.answer(f"В боті незареєстровано нікого")
-        await asyncio.sleep(4)
+        await asyncio.sleep(2)
         await message.delete()
         await msg.delete()
 
@@ -134,12 +133,12 @@ async def count_group(message: types.Message):
     if check:
         await count_group_sql()
         msg = await message.answer(f"Кількість груп : {count_gr.get()}")
-        await asyncio.sleep(4)
+        await asyncio.sleep(2)
         await message.delete()
         await msg.delete()
     elif not check:
         msg = await message.answer(f"Адміністратор ще не додав жодної групи")
-        await asyncio.sleep(4)
+        await asyncio.sleep(2)
         await message.delete()
         await msg.delete()
 
@@ -154,7 +153,7 @@ async def list_group_all(message: types.Message):
         await msg.delete()
     elif not await get_list_sql():
         msg = await message.answer(f"Немає жодної групи")
-        await asyncio.sleep(4)
+        await asyncio.sleep(2)
         await message.delete()
         await msg.delete()
 
@@ -173,28 +172,12 @@ async def view_coupes_comm(message: types.Message):
                 await asyncio.sleep(4)
                 await message.delete()
                 await msg.delete()
-        else:
-            if await see_rod_sql(str(ids)):
-                msg = await message.answer_photo(photka.get(),date_coupes.get())
-                await asyncio.sleep(15)
-                await message.delete()
-                await msg.delete()
-            elif await see_rod_sql(str(ids)) == False:
-                msg = await message.answer('Розкладу для вашої групи ще немає...')
-                await asyncio.sleep(4)
-                await message.delete()
-                await msg.delete()
-    elif await user_exists_sql(message.from_user.id):
-        msg = await message.answer("Ви зареєстрованні адміном", reply_markup=ReplyKeyboardRemove())
-        await asyncio.sleep(4)
-        await message.delete()
-        await msg.delete()
-       
     else:
-        msg = await message.answer("Перейдіть в особисті повідомлення до бота @pedbot_bot\nі зареєструйтесь за командою /start", reply_markup=ReplyKeyboardRemove())
+        msg = await message.answer("Перейдіть в особисті повідомлення до бота @pedbot_bot\nі зареєструйтесь за командою start", reply_markup=ReplyKeyboardRemove())
         await asyncio.sleep(4)
         await message.delete()
         await msg.delete()
+
 
 #@dp.message_handler(commands=["delete_keyboards"])
 async def delete_keyboard(message: types.Message):
@@ -203,22 +186,61 @@ async def delete_keyboard(message: types.Message):
     await message.delete()
     await msg.delete()
 
-##@dp.message_handler(commands=["add_keyboards"])
-#async def add_keyboard(message: types.Message):
-#    if await admin_exists_sql(message.from_user.id):
-#        await message.answer("Ваша клавіатура :",reply_markup=kb_admin)
-#    elif await user_exists_sql(message.from_user.id):
-#        await message.answer("Ваша клавіатура :",reply_markup=kb_client)
-#    else:
-#        msg = await message.answer("Нажміть /start для регестрації", reply_markup=ReplyKeyboardRemove())
-#        await asyncio.sleep(4)
-#        await message.delete()
-#        await msg.delete()
+#@dp.message_handler(commands=["version"])
+async def versions(message: types.Message):
+    version = "Версія бота : beta 1.0\nВерсія Python : 3.11.1\nВерсія aiogram : 2.24"
+    await message.answer(version)
+
+#@dp.message_handler(commands=["help"])
+async def help(message: types.Message):
+    help = '''❗️Команди з префіксом '/'\n
+               зручно використовувати в групах.\n\n
+
+               ❓Щоб використовувати бота в групах:\n
+               1.Додайте його в свою групу.\n
+               2.Дайте права адміністратора.\n
+               3.Напишіть / і бот покаже всі доступні команди.\n\n
+               
+               ⚠️Порада:\n
+               всі команди з префіксом '/'  видаляються через певний час, для того щоб не забруднювати чат, крім команд\n
+               /stat і /add_keyboards опис цих команд буде нижче.\n
+               Тому щоб від бота не залишилось ні одного повідомлення в групі,\n
+               реєстрацію проведіть у переписці з ботом\n\n
+               
+               📺Команди:\n
+               /start -  команда для реєстрації в боті студента,\n
+               повідомлення не видаляється\n\n
+
+               /help - показує деяку інформацію\n
+               повідомлення не видаляється\n\n
+               
+               /version - показує версії ПЕДКОТА\n
+               повідомлення не видаляється\n\n
+
+               /coupes - Надсилає розклад групи в якій ви зареєстровані,\n
+               повідомлення авто видаляється через 15 секунди\n\n
+               
+               /count - кількість зареєстрованих людей,\n
+               повідомлення авто видаляється через 4 секунди\n\n
+               
+               /countg - кількість груп,\n
+               повідомлення авто видаляється через 4 секунди\n\n
+               
+               /list - список всіх груп,\n
+               повідомлення авто видаляється через 10 секунди\n\n
+               
+               /delete_keyboards - видалення клавіатури ,\n
+               якщо раптом вона є у вас в чаті групи,\n
+               повідомлення авто видаляється через 4 секунди'''
+    await message.answer(help)
+
+    
 
 
 #===========================реєстратор============================
 def register_handler_other(dp : Dispatcher):
     dp.register_message_handler(start,commands=["start"])
+    dp.register_message_handler(help,commands=["help"])
     dp.register_message_handler(reg,state = FSMReg.reply_reg)
     dp.register_message_handler(regAdmin,state = FSMReg.password_reg)
     dp.register_message_handler(regUser,state = FSMReg.course_groupe_reg)
@@ -227,5 +249,6 @@ def register_handler_other(dp : Dispatcher):
     dp.register_message_handler(list_group_all,commands=["list"])
     dp.register_message_handler(view_coupes_comm,commands=["coupes"])
     dp.register_message_handler(delete_keyboard,commands=["delete_keyboards"])
-    #dp.register_message_handler(add_keyboard,commands=["add_keyboards"])
+    dp.register_message_handler(versions,commands=["version"])
+
     
