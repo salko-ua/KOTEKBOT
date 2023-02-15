@@ -1,9 +1,11 @@
 from aiogram import types
 from aiogram.dispatcher import Dispatcher
 from aiogram.dispatcher import FSMContext
+from aiogram.utils.exceptions import BotBlocked
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from data_base.controller_db import *
 from keyboards import kb_admin, kb_all_or_one ,get_kb , kb_dont, kb_ys
+import asyncio
 from aiogram.types import ReplyKeyboardRemove
 import datetime
 from create_bot import bot
@@ -294,14 +296,22 @@ async def send_news5(message: types.Message, state: FSMContext):
         h = await id_from_group_exists_sql(data["namegroups"])
         if data['all_or_one'] == 'Одна':
             try:
-                result = h[0][0]
+                result = h
                 if len(data['photo_news']) > 3:
                     texts = data["text_news"]
                     photo = data["photo_news"]
-                    await bot.send_photo(result,photo,texts)
+                    for all_id in range(0,len(result)):
+                        try:
+                            await bot.send_photo(result[all_id],photo,texts)
+                        except BotBlocked:
+                            await asyncio.sleep(0.5)
 
                 elif len(data["photo_news"]) == 1:
-                    await bot.send_message(result, data['text_news'])
+                    for all_ids in range(0,len(result)):
+                        try:
+                            await bot.send_message(result[all_ids], data['text_news'])
+                        except BotBlocked:
+                            await asyncio.sleep(0.5)
 
                 await message.answer("Готово!",reply_markup=kb_admin)
                  
@@ -320,11 +330,17 @@ async def send_news5(message: types.Message, state: FSMContext):
                     texts = data["text_news"]
                     photo = data["photo_news"]
                     for all_id in range(0,len(rest)):
-                        await bot.send_photo(rest[all_id],photo,texts)
+                        try:
+                            await bot.send_photo(rest[all_id],photo,texts)
+                        except BotBlocked:
+                            await asyncio.sleep(0.5)
 
                 elif len(data["photo_news"]) == 1:
                     for all_ids in range(0,len(rest)):
-                        await bot.send_message(rest[all_ids], data['text_news'])
+                        try:
+                            await bot.send_message(rest[all_ids], data['text_news'])
+                        except BotBlocked:
+                            await asyncio.sleep(0.5)
 
             await message.answer("Готово!",reply_markup=kb_admin)
 
