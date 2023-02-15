@@ -10,9 +10,10 @@ from aiogram.types import ReplyKeyboardRemove
 import datetime
 from create_bot import bot
 from translate import Translator
+from config import super_admin
 
 translator = Translator(to_lang="uk")
-super_admin = 5963046063
+
 
 #=========Класс машини стану=========
 class FSMAdmin(StatesGroup):

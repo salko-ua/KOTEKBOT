@@ -1,5 +1,4 @@
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
-from aiogram import types
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 
 #KeyboardButton - створює одну кнопку
@@ -25,7 +24,8 @@ last = KeyboardButton("Видалити акаунт")
 kb_admin = ReplyKeyboardMarkup(resize_keyboard=True) 
 
 kb_admin.add(but_add_group).insert(but_delete_group)\
-.add(but_couples).add(but_add_calls).add(but_delete_calls).add(but_post_news).insert(but_list_group).add(last)
+        .add(but_couples).add(but_add_calls).add(but_delete_calls)\
+        .add(but_post_news).insert(but_list_group).add(last)
 #======================================================================
 
 

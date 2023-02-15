@@ -1,5 +1,4 @@
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
-from aiogram import types
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 from data_base.controller_db import *
 
 

@@ -1,3 +1,8 @@
+#import
+import asyncio
+
+
+#from import
 from aiogram import types
 from aiogram.dispatcher import Dispatcher
 from aiogram.types import ReplyKeyboardRemove
@@ -5,14 +10,14 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from keyboards import *
 from data_base.controller_db import *
-import asyncio
+from config import super_admin
 
 
 #answer - повідомлення
 #reply - повідомлення відповідь
 #send_massage - повідомлення в лс
 password = "KOTEKPED24&"
-super_admin = 5963046063
+
 
 #=========Класс машини стану=========
 class FSMReg(StatesGroup):
