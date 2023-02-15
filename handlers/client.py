@@ -14,9 +14,9 @@ async def view_coupes(message: types.Message):
         if await see_rod_sql(str(ids)):
             await message.answer_photo(photka.get(),date_coupes.get())
         elif await see_rod_sql(str(ids)) == False:
-            await message.answer('Розкладу для вашої групи ще немає...')  
+            await message.answer('☹️Розкладу для вашої групи ще немає...☹️')  
     elif not await user_exists_sql(message.from_user.id):
-        await message.answer("Нажміть /start для регестрації", reply_markup=ReplyKeyboardRemove())
+        await message.answer("❗️Нажміть /start для регестрації❗️", reply_markup=ReplyKeyboardRemove())
 
 
 #===========================Змінити групу============================
@@ -25,12 +25,12 @@ async def view_calls(message: types.Message):
     if await user_exists_sql(message.from_user.id) or super_admin == message.from_user.id:
         check = await see_calls_sql()
         if not check:
-            await message.answer("Розклад дзвінків ще не додано")
+            await message.answer("☹️Розклад дзвінків ще не додано☹️")
         elif check:
             await see_calls_sql()
             await message.answer_photo(id_photka.get(),date_calls.get())
     elif not await user_exists_sql(message.from_user.id):
-        await message.answer("Нажміть /start для регестрації", reply_markup=ReplyKeyboardRemove())
+        await message.answer("❗️Нажміть /start для регестрації❗️", reply_markup=ReplyKeyboardRemove())
 
 
 #===========================Змінити групу============================
@@ -40,17 +40,17 @@ async def delete_user(message: types.Message):
         await delete_users_sql(message.from_user.id)
         await message.answer("Нажміть /start щоб вибрати іншу групу :D", reply_markup=ReplyKeyboardRemove())
     elif not await user_exists_sql(message.from_user.id):
-        await message.answer("Ви і так не зареєстрованні\nНажміть /start для регестрації", reply_markup=ReplyKeyboardRemove())
+        await message.answer("🌚Ви і так не зареєстрованні\nНажміть /start для регестрації", reply_markup=ReplyKeyboardRemove())
 
 #===========================Пустий хендлер============================
 #@dp.message_handler()
 async def all(message: types.Message):
     if message.text == "Назад" and await admin_exists_sql(message.from_user.id):
-        await message.answer("Ваша клавіатура :",reply_markup=kb_admin)
+        await message.answer("Ваша клавіатура ⌨️",reply_markup=kb_admin)
     elif message.text == "Назад" and await user_exists_sql(message.from_user.id):
-        await message.answer("Ваша клавіатура :",reply_markup=kb_client)
+        await message.answer("Ваша клавіатура ⌨️",reply_markup=kb_client)
     elif message.text == "Назад" and message.from_user.id == super_admin:
-        await message.answer("Ваша клавіатура :", reply_markup=sadmin)
+        await message.answer("Ваша клавіатура ⌨️", reply_markup=sadmin)
 
 
 
