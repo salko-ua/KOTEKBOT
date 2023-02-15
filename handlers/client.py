@@ -17,7 +17,7 @@ async def view_coupes(message: types.Message):
             await message.answer_photo(photka.get(),date_coupes.get())
         elif await see_rod_sql(str(ids)) == False:
             await message.answer('Розкладу для вашої групи ще немає...')  
-    
+    elif not await user_exists_sql(message.from_user.id):
         await message.answer("Нажміть /start для регестрації", reply_markup=ReplyKeyboardRemove())
 
 
@@ -31,7 +31,7 @@ async def view_calls(message: types.Message):
         elif check:
             await see_calls_sql()
             await message.answer_photo(id_photka.get(),date_calls.get())
-    elif not user_exists_sql(message.from_user.id):
+    elif not await user_exists_sql(message.from_user.id):
         await message.answer("Нажміть /start для регестрації", reply_markup=ReplyKeyboardRemove())
 
 
@@ -41,7 +41,7 @@ async def delete_user(message: types.Message):
     if await user_exists_sql(message.from_user.id):
         await delete_users_sql(message.from_user.id)
         await message.answer("Нажміть /start щоб вибрати іншу групу :D", reply_markup=ReplyKeyboardRemove())
-    elif not user_exists_sql(message.from_user.id):
+    elif not await user_exists_sql(message.from_user.id):
         await message.answer("Нажміть /start для регестрації", reply_markup=ReplyKeyboardRemove())
 
 #===========================Пустий хендлер============================
