@@ -33,7 +33,7 @@ async def start(message: types.Message):
     await group_list_sql()
     if(not await user_exists_sql(message.from_user.id)) and (not await admin_exists_sql(message.from_user.id)):
         if message.chat.type == "private":
-            await message.answer("😀 Реєстрація :\nВиберіть тип акаунту\n", reply_markup=kb_choice)
+            await message.answer("🤔 Реєстрація 🤔\nВиберіть тип акаунту ⬇️", reply_markup=kb_choice)
             await FSMReg.reply_reg.set()
         else:
             msg = await message.answer("🤨 Перейдіть в особисті повідомлення до @pedbot_bot\nі зареєструйтесь за командою /start")
@@ -44,7 +44,7 @@ async def start(message: types.Message):
         if message.chat.type == "private":
             await message.answer("Ваша клавіатура ⌨️",reply_markup=kb_client)
         else:
-            msg = await message.answer("Ви зареєстрованні")
+            msg = await message.answer("⚠️ Ви зареєстрованні")
             await asyncio.sleep(2)
             await message.delete()
             await msg.delete()
@@ -52,7 +52,7 @@ async def start(message: types.Message):
         if message.chat.type == "private":
             await message.answer("Ваша клавіатура ⌨️", reply_markup=kb_admin)
         else:
-            msg = await message.answer("Ви зареєстрованні")
+            msg = await message.answer("⚠️ Ви зареєстрованні")
             await asyncio.sleep(2)
             await message.delete()
             await msg.delete()
@@ -60,7 +60,7 @@ async def start(message: types.Message):
         if message.chat.type == "private":
             await message.answer("Ваша клавіатура ⌨️", reply_markup=sadmin)
         else:
-            msg = await message.answer("Ви зареєстрованні")
+            msg = await message.answer("⚠️ Ви зареєстрованні")
             await asyncio.sleep(2)
             await message.delete()
             await msg.delete()
@@ -69,7 +69,7 @@ async def start(message: types.Message):
 async def reg(message: types.Message, state: FSMContext):
     if message.text == "Назад":
         await state.finish()
-        await message.answer("Нажміть /start і увійдіть", reply_markup= ReplyKeyboardRemove())
+        await message.answer("❗️Нажміть /start і увійдіть❗️", reply_markup= ReplyKeyboardRemove())
     elif message.text == 'give admins':
         await FSMReg.password_reg.set()
         await message.answer("Введіть пароль", reply_markup=ReplyKeyboardRemove())
@@ -78,7 +78,7 @@ async def reg(message: types.Message, state: FSMContext):
         await message.answer("⬇️ Введіть курс і групу з наведених нижче", reply_markup=get_kb())
     else:
         await state.finish()
-        await message.answer("☹️ Немає такої відповіді\nНажміть /start і спробуйте ще раз", reply_markup= ReplyKeyboardRemove())
+        await message.answer("☹️ Немає такої відповіді ☹️\nНажміть /start і спробуйте ще раз", reply_markup= ReplyKeyboardRemove())
     
 #@dp.message_handler(state=FSMReg.password_reg)
 async def regAdmin(message: types.Message, state: FSMContext):
@@ -89,10 +89,10 @@ async def regAdmin(message: types.Message, state: FSMContext):
         first_name = message.from_user.first_name
         username = message.from_user.username
         await add_admin_sql(message.from_user.id, first_name, username)
-        await message.answer("Реєстрація завершена", reply_markup=kb_admin)
+        await message.answer("✅ Реєстрація завершена ✅", reply_markup=kb_admin)
         await state.finish()
     else:
-        await message.answer("☹️ пароль неправильний, повторіть спробу написавши /start")
+        await message.answer("☹️ пароль неправильний, повторіть спробу написавши /start ☹️")
         await state.finish()
 
 #@dp.message_handler(state=FSMReg.course_groupe_reg)
@@ -106,7 +106,7 @@ async def regUser(message: types.Message, state: FSMContext):
     elif await group_exists_sql(message.text): 
         await add_user_sql(message.from_user.id, first_name, username, groupe)
         await state.finish()
-        await message.answer("Реєстрація завершена", reply_markup=kb_client)
+        await message.answer("✅ Реєстрація завершена ✅", reply_markup=kb_client)
     else:
         await message.answer("☹️ Немає такої групи, звяжіться з адміністратором\nдля того щоб її додали \nІ повторіть спробу /start", reply_markup=ReplyKeyboardRemove())
         await state.finish()
@@ -117,12 +117,12 @@ async def count_user(message: types.Message):
     check = await count_user_sql()
     if check:
         await count_user_sql()
-        msg = await message.answer(f"Кількість зареєстрованих людей : {count_us.get()}")
+        msg = await message.answer(f"📈 Кількість зареєстрованих людей : {count_us.get()}")
         await asyncio.sleep(2)
         await message.delete()
         await msg.delete()
     elif not check:
-        msg = await message.answer(f"🤪 В боті незареєстровано нікого")
+        msg = await message.answer(f"🤪 В боті незареєстровано нікого 🤪")
         await asyncio.sleep(2)
         await message.delete()
         await msg.delete()
@@ -132,12 +132,12 @@ async def count_group(message: types.Message):
     check = await count_group_sql()
     if check:
         await count_group_sql()
-        msg = await message.answer(f"Кількість груп : {count_gr.get()}")
+        msg = await message.answer(f"📈 Кількість груп : {count_gr.get()}")
         await asyncio.sleep(2)
         await message.delete()
         await msg.delete()
     elif not check:
-        msg = await message.answer(f"🤪 Адміністратор ще не додав жодної групи")
+        msg = await message.answer(f"🤪 Адміністратор ще не додав жодної групи 🤪")
         await asyncio.sleep(2)
         await message.delete()
         await msg.delete()
@@ -152,7 +152,7 @@ async def list_group_all(message: types.Message):
         await message.delete()
         await msg.delete()
     elif not await get_list_sql():
-        msg = await message.answer(f"🤪 Немає жодної групи")
+        msg = await message.answer(f"🤪 Немає жодної групи 🤪")
         await asyncio.sleep(2)
         await message.delete()
         await msg.delete()
@@ -168,7 +168,7 @@ async def view_coupes_comm(message: types.Message):
                 await message.delete()
                 await msg.delete()
             elif await see_rod_sql(str(ids)) == False:
-                msg = await message.answer('☹️ Розкладу для вашої групи ще немає...')
+                msg = await message.answer('☹️ Розкладу для вашої групи ще немає... ☹️')
                 await asyncio.sleep(4)
                 await message.delete()
                 await msg.delete()
@@ -181,7 +181,7 @@ async def view_coupes_comm(message: types.Message):
 
 #@dp.message_handler(commands=["delete_keyboards"])
 async def delete_keyboard(message: types.Message):
-    msg = await message.answer("Клавіатуру видалено\n", reply_markup=ReplyKeyboardRemove())
+    msg = await message.answer("♻️Клавіатуру видалено♻️", reply_markup=ReplyKeyboardRemove())
     await asyncio.sleep(4)
     await message.delete()
     await msg.delete()
