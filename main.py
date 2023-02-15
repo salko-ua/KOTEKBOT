@@ -43,7 +43,7 @@ def start_bot():
         webhook_path='',
         on_startup=on_startup,
         on_shutdown=on_shutdown,
-        skip_updates=False,
+        skip_updates=True,
         host = '0.0.0.0',
         port = int(os.environ.get("WEBHOOK_PORT", 8000)))
 
