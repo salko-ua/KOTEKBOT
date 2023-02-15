@@ -318,6 +318,7 @@ async def send_news5(message: types.Message, state: FSMContext):
                     await state.finish()     
             except IndexError:
                 await message.answer("немає жодної людини підключенної до цієї групи",reply_markup=kb_admin)
+                await state.finish()    
                  
         if data['all_or_one'] == 'Всі':
             await all_user_id_sql()
