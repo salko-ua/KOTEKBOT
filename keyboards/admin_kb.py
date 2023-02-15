@@ -19,13 +19,13 @@ but_add_calls = KeyboardButton("Додати розклад дзвінків")
 but_delete_calls = KeyboardButton("Видалити розклад дзвінків")
 but_post_news = KeyboardButton("Викласти новину")
 but_list_group = KeyboardButton("Список груп") 
-last = KeyboardButton("Видалити акаунт")
+
 
 kb_admin = ReplyKeyboardMarkup(resize_keyboard=True) 
 
 kb_admin.add(but_add_group).insert(but_delete_group)\
         .add(but_couples).add(but_add_calls).add(but_delete_calls)\
-        .add(but_post_news).insert(but_list_group).add(last)
+        .add(but_post_news).insert(but_list_group)
 #======================================================================
 
 
