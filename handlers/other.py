@@ -6,7 +6,7 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from keyboards import *
 from data_base.controller_db import *
 import asyncio
-
+from config import super_admin
 
 #answer - повідомлення
 #reply - повідомлення відповідь
@@ -32,7 +32,7 @@ async def start(message: types.Message):
             await FSMReg.reply_reg.set()
         else:
             msg = await message.answer("Перейдіть в особисті повідомлення до бота @pedbot_bot\nі зареєструйтесь за командою /start")
-            await asyncio.sleep(5)
+            await asyncio.sleep(2)
             await message.delete()
             await msg.delete()
     elif await user_exists_sql(message.from_user.id):
@@ -40,7 +40,7 @@ async def start(message: types.Message):
             await message.answer("Ваша клавіатура : ",reply_markup=kb_client)
         else:
             msg = await message.answer("Ви зареєстрованні")
-            await asyncio.sleep(5)
+            await asyncio.sleep(2)
             await message.delete()
             await msg.delete()
     elif await admin_exists_sql(message.from_user.id):
@@ -48,7 +48,15 @@ async def start(message: types.Message):
             await message.answer("Ваша клавіатура : ", reply_markup=kb_admin)
         else:
             msg = await message.answer("Ви зареєстрованні")
-            await asyncio.sleep(5)
+            await asyncio.sleep(2)
+            await message.delete()
+            await msg.delete()
+    elif await message.from_user.id == super_admin:
+        if message.chat.type == "private":
+            await message.answer("Ваша клавіатура : ", reply_markup=sadmin)
+        else:
+            msg = await message.answer("Ви зареєстрованні")
+            await asyncio.sleep(2)
             await message.delete()
             await msg.delete()
     

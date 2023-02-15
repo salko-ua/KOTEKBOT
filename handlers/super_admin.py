@@ -3,36 +3,27 @@ from aiogram.dispatcher import Dispatcher
 from keyboards import *
 from data_base.controller_db import *
 import asyncio
-
-super_admin = 5963046063
+from config import super_admin
 
 
 
 #===========================Список груп============================
 #Клавіаура адміна
 async def admin_kb(msg: types.Message):
-    if await admin_exists_sql(msg.from_user.id) and msg.from_user.id == super_admin:
+    if await admin_exists_sql(msg.from_user.id) or msg.from_user.id == super_admin:
         await msg.answer("Клавіатура адміна", reply_markup=kb_admin)
-    elif await admin_exists_sql(msg.from_user.id):
-        await msg.answer("Клавіатура адміна", reply_markup=kb_admin)
-    elif msg.from_user.id == super_admin:
-        await msg.answer("Клавіатура адміна", reply_markup=sadmin_ad)
-    
-    
+
 #Клавіаура власника
 async def super_admin_kb(msg: types.Message):
     if msg.from_user.id == super_admin:
         await msg.answer("Клавіатура власника", reply_markup=sadmin)
 
-
 #Клавіаура користувача
 async def user_kb(msg: types.Message):
-    if await user_exists_sql(msg.from_user.id) and msg.from_user.id == super_admin:
+    if await user_exists_sql(msg.from_user.id) or msg.from_user.id == super_admin:
         await msg.answer("Клавіатура юзера", reply_markup=kb_client)
-    elif await user_exists_sql(msg.from_user.id):
-        await msg.answer("Клавіатура юзера", reply_markup=kb_client)
-    elif msg.from_user.id == super_admin:
-        await msg.answer("Клавіатура юзера", reply_markup=sadmin_cl)
+
+
     
 
 

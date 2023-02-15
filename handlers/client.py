@@ -1,11 +1,11 @@
 from aiogram import types
 from aiogram.dispatcher import Dispatcher
 from aiogram.types import ReplyKeyboardRemove
-from aiogram import Bot
+
 from keyboards import *
 from data_base.controller_db import *
+from config import super_admin
 
-super_admin = 5963046063
 
 #===========================Переглянути розклад============================
 #@dp.message_handler(text = "Переглянути розклад пар")
@@ -42,19 +42,17 @@ async def delete_user(message: types.Message):
         await delete_users_sql(message.from_user.id)
         await message.answer("Нажміть /start щоб вибрати іншу групу :D", reply_markup=ReplyKeyboardRemove())
     elif not await user_exists_sql(message.from_user.id):
-        await message.answer("Нажміть /start для регестрації", reply_markup=ReplyKeyboardRemove())
+        await message.answer("Ви і так не зареєстрованні\nНажміть /start для регестрації", reply_markup=ReplyKeyboardRemove())
 
 #===========================Пустий хендлер============================
-super_admin = 5963046063
 #@dp.message_handler()
 async def all(message: types.Message):
     if message.text == "Назад" and await admin_exists_sql(message.from_user.id):
         await message.answer("Ваша клавіатура :",reply_markup=kb_admin)
     elif message.text == "Назад" and await user_exists_sql(message.from_user.id):
         await message.answer("Ваша клавіатура :",reply_markup=kb_client)
-    #elif message.text == message.text and not await admin_exists_sql(message.from_user.id)\
-    #    and not await user_exists_sql(message.from_user.id):
-    #    await message.answer("Нажміть /start для регестрації", reply_markup=ReplyKeyboardRemove())
+    elif message.text == "Назад" and message.from_user.id == super_admin:
+        await message.answer("Ваша клавіатура :", reply_markup=sadmin)
 
 
 
