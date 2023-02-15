@@ -297,19 +297,23 @@ async def send_news5(message: types.Message, state: FSMContext):
         if data['all_or_one'] == 'Одна':
             try:
                 result = h
+                new = []
+                for i in range(0,len(h)):
+                    new.append(h[i][0])
+                
                 if len(data['photo_news']) > 3:
                     texts = data["text_news"]
                     photo = data["photo_news"]
-                    for all_id in range(0,len(result)):
+                    for all_id in range(0,len(new)):
                         try:
-                            await bot.send_photo(result[all_id],photo,texts)
+                            await bot.send_photo(new[all_id],photo,texts)
                         except BotBlocked:
                             await asyncio.sleep(0.5)
 
                 elif len(data["photo_news"]) == 1:
-                    for all_ids in range(0,len(result)):
+                    for all_ids in range(0,len(new)):
                         try:
-                            await bot.send_message(result[all_ids], data['text_news'])
+                            await bot.send_message(new[all_ids], data['text_news'])
                         except BotBlocked:
                             await asyncio.sleep(0.5)
 
