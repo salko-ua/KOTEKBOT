@@ -46,7 +46,7 @@ async def super_admin_user(msg: types.Message):
                 spisok = list_all_user.get()
                 await msg.answer(spisok)
         except MessageIsTooLong:
-            msg.answer("користувачв багато")
+            await msg.answer("користувачв багато")
     else:
         dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
         await asyncio.sleep(4)
