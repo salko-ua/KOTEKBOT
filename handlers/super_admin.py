@@ -46,7 +46,8 @@ async def super_admin_user(msg: types.Message):
                 spisok = list_all_user.get()
                 await msg.answer(spisok)
         except MessageIsTooLong:
-            await msg.answer("користувачв багато")
+            for x in range(0, len(spisok), 4096):
+                await bot.send_message(msg.chat.id, spisok[x:x+4096])
     else:
         dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
         await asyncio.sleep(4)
