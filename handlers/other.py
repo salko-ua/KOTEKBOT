@@ -7,7 +7,7 @@ from aiogram import types
 from aiogram.dispatcher import Dispatcher
 from aiogram.types import ReplyKeyboardRemove
 from aiogram.dispatcher import FSMContext
-from aiogram.utils.exceptions import MessageToDeleteNotFound, MessageCantBeDeleted
+from aiogram.utils.exceptions import MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from keyboards import *
 from data_base.controller_db import *
@@ -42,7 +42,7 @@ async def start(message: types.Message):
                 await asyncio.sleep(2)
                 await message.delete()
                 await msg.delete()
-            except (MessageToDeleteNotFound, MessageCantBeDeleted):
+            except (MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest):
                 pass
     elif await user_exists_sql(message.from_user.id):
         if message.chat.type == "private":
@@ -53,7 +53,7 @@ async def start(message: types.Message):
                 await asyncio.sleep(2)
                 await message.delete()
                 await msg.delete()
-            except (MessageToDeleteNotFound, MessageCantBeDeleted):
+            except (MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest):
                 pass
     elif await admin_exists_sql(message.from_user.id):
         if message.chat.type == "private":
@@ -64,7 +64,7 @@ async def start(message: types.Message):
                 await asyncio.sleep(2)
                 await message.delete()
                 await msg.delete()
-            except (MessageToDeleteNotFound, MessageCantBeDeleted):
+            except (MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest):
                 pass
     elif await message.from_user.id == super_admin:
         if message.chat.type == "private":
@@ -75,7 +75,7 @@ async def start(message: types.Message):
                 await asyncio.sleep(2)
                 await message.delete()
                 await msg.delete()
-            except (MessageToDeleteNotFound, MessageCantBeDeleted):
+            except (MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest):
                 pass
 
 #@dp.message_handler(state=FSMReg.reply_reg)
@@ -135,7 +135,7 @@ async def count_user(message: types.Message):
             await asyncio.sleep(2)
             await message.delete()
             await msg.delete()
-        except (MessageToDeleteNotFound, MessageCantBeDeleted):
+        except (MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest):
                 pass
     elif not check:
         try:
@@ -143,7 +143,7 @@ async def count_user(message: types.Message):
             await asyncio.sleep(2)
             await message.delete()
             await msg.delete()
-        except (MessageToDeleteNotFound, MessageCantBeDeleted):
+        except (MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest):
                 pass
 
 #@dp.message_handler(commands=["countg"])
@@ -156,7 +156,7 @@ async def count_group(message: types.Message):
             await asyncio.sleep(2)
             await message.delete()
             await msg.delete()
-        except (MessageToDeleteNotFound, MessageCantBeDeleted):
+        except (MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest):
                 pass
     elif not check:
         try:
@@ -164,7 +164,7 @@ async def count_group(message: types.Message):
             await asyncio.sleep(2)
             await message.delete()
             await msg.delete()
-        except (MessageToDeleteNotFound, MessageCantBeDeleted):
+        except (MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest):
                 pass
 
 #===========================Список груп============================
@@ -177,7 +177,7 @@ async def list_group_all(message: types.Message):
             await asyncio.sleep(10)
             await message.delete()
             await msg.delete()
-        except (MessageToDeleteNotFound, MessageCantBeDeleted):
+        except (MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest):
                 pass
     elif not await get_list_sql():
         try:
@@ -185,7 +185,7 @@ async def list_group_all(message: types.Message):
             await asyncio.sleep(2)
             await message.delete()
             await msg.delete()
-        except (MessageToDeleteNotFound, MessageCantBeDeleted):
+        except (MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest):
                 pass
 
 #@dp.message_handler(commands=["coupes"])
@@ -198,7 +198,7 @@ async def view_coupes_comm(message: types.Message):
                 await asyncio.sleep(15)
                 await message.delete()
                 await msg.delete()
-            except (MessageToDeleteNotFound, MessageCantBeDeleted):
+            except (MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest):
                 pass
         elif await see_rod_sql(str(ids)) == False:
             try:
@@ -206,7 +206,7 @@ async def view_coupes_comm(message: types.Message):
                 await asyncio.sleep(4)
                 await message.delete()
                 await msg.delete()
-            except (MessageToDeleteNotFound, MessageCantBeDeleted):
+            except (MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest):
                 pass
     else:
         if message.chat.type == "private":
@@ -215,7 +215,7 @@ async def view_coupes_comm(message: types.Message):
                 await asyncio.sleep(4)
                 await message.delete()
                 await msg.delete()
-            except (MessageToDeleteNotFound, MessageCantBeDeleted):
+            except (MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest):
                 pass
         else:
             try:
@@ -223,7 +223,7 @@ async def view_coupes_comm(message: types.Message):
                 await asyncio.sleep(4)
                 await message.delete()
                 await msg.delete()
-            except (MessageToDeleteNotFound, MessageCantBeDeleted):
+            except (MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest):
                 pass
 
 #@dp.message_handler(commands=["delete_keyboards"])
@@ -233,14 +233,14 @@ async def delete_keyboard(message: types.Message):
         await asyncio.sleep(4)
         await message.delete()
         await msg.delete()
-    except (MessageToDeleteNotFound, MessageCantBeDeleted):
+    except (MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest):
                 pass
 #@dp.message_handler(commands=["version"])
 async def versions(message: types.Message):
     try:
         version = "Версія бота : beta 1.0\nВерсія Python : 3.11.1\nВерсія aiogram : 2.24"
         await message.answer(version)
-    except (MessageToDeleteNotFound, MessageCantBeDeleted):
+    except (MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest):
                 pass
 
 #@dp.message_handler(commands=["help"])
@@ -278,7 +278,7 @@ async def help(message: types.Message):
     якщо раптом вона є у вас в чаті групи,
     повідомлення авто видаляється через 4 секунди'''
         await message.answer(help)
-    except (MessageToDeleteNotFound, MessageCantBeDeleted):
+    except (MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest):
         pass
 
     
