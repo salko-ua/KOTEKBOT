@@ -7,6 +7,7 @@ from aiogram import types
 from aiogram.dispatcher import Dispatcher
 from aiogram.types import ReplyKeyboardRemove
 from aiogram.dispatcher import FSMContext
+from aiogram.utils.exceptions import MessageToDeleteNotFound, MessageCantBeDeleted
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from keyboards import *
 from data_base.controller_db import *
@@ -36,34 +37,46 @@ async def start(message: types.Message):
             await message.answer("🤔 Реєстрація 🤔\nВиберіть тип акаунту ⬇️", reply_markup=kb_choice)
             await FSMReg.reply_reg.set()
         else:
-            msg = await message.answer("🤨 Перейдіть в особисті повідомлення до @pedbot_bot\nі зареєструйтесь за командою /start")
-            await asyncio.sleep(2)
-            await message.delete()
-            await msg.delete()
+            try:
+                msg = await message.answer("🤨 Перейдіть в особисті повідомлення до @pedbot_bot\nі зареєструйтесь за командою /start")
+                await asyncio.sleep(2)
+                await message.delete()
+                await msg.delete()
+            except (MessageToDeleteNotFound, MessageCantBeDeleted):
+                pass
     elif await user_exists_sql(message.from_user.id):
         if message.chat.type == "private":
             await message.answer("Ваша клавіатура ⌨️",reply_markup=kb_client)
         else:
-            msg = await message.answer("⚠️ Ви зареєстрованні")
-            await asyncio.sleep(2)
-            await message.delete()
-            await msg.delete()
+            try:
+                msg = await message.answer("⚠️ Ви зареєстрованні")
+                await asyncio.sleep(2)
+                await message.delete()
+                await msg.delete()
+            except (MessageToDeleteNotFound, MessageCantBeDeleted):
+                pass
     elif await admin_exists_sql(message.from_user.id):
         if message.chat.type == "private":
             await message.answer("Ваша клавіатура ⌨️", reply_markup=kb_admin)
         else:
-            msg = await message.answer("⚠️ Ви зареєстрованні")
-            await asyncio.sleep(2)
-            await message.delete()
-            await msg.delete()
+            try:
+                msg = await message.answer("⚠️ Ви зареєстрованні")
+                await asyncio.sleep(2)
+                await message.delete()
+                await msg.delete()
+            except (MessageToDeleteNotFound, MessageCantBeDeleted):
+                pass
     elif await message.from_user.id == super_admin:
         if message.chat.type == "private":
             await message.answer("Ваша клавіатура ⌨️", reply_markup=sadmin)
         else:
-            msg = await message.answer("⚠️ Ви зареєстрованні")
-            await asyncio.sleep(2)
-            await message.delete()
-            await msg.delete()
+            try:
+                msg = await message.answer("⚠️ Ви зареєстрованні")
+                await asyncio.sleep(2)
+                await message.delete()
+                await msg.delete()
+            except (MessageToDeleteNotFound, MessageCantBeDeleted):
+                pass
 
 #@dp.message_handler(state=FSMReg.reply_reg)
 async def reg(message: types.Message, state: FSMContext):
@@ -116,115 +129,157 @@ async def regUser(message: types.Message, state: FSMContext):
 async def count_user(message: types.Message):
     check = await count_user_sql()
     if check:
-        await count_user_sql()
-        msg = await message.answer(f"📈 Кількість зареєстрованих людей : {count_us.get()}")
-        await asyncio.sleep(2)
-        await message.delete()
-        await msg.delete()
+        try:
+            await count_user_sql()
+            msg = await message.answer(f"📈 Кількість зареєстрованих людей : {count_us.get()}")
+            await asyncio.sleep(2)
+            await message.delete()
+            await msg.delete()
+        except (MessageToDeleteNotFound, MessageCantBeDeleted):
+                pass
     elif not check:
-        msg = await message.answer(f"🤪 В боті незареєстровано нікого 🤪")
-        await asyncio.sleep(2)
-        await message.delete()
-        await msg.delete()
+        try:
+            msg = await message.answer(f"🤪 В боті незареєстровано нікого 🤪")
+            await asyncio.sleep(2)
+            await message.delete()
+            await msg.delete()
+        except (MessageToDeleteNotFound, MessageCantBeDeleted):
+                pass
 
 #@dp.message_handler(commands=["countg"])
 async def count_group(message: types.Message):
     check = await count_group_sql()
     if check:
-        await count_group_sql()
-        msg = await message.answer(f"📈 Кількість груп : {count_gr.get()}")
-        await asyncio.sleep(2)
-        await message.delete()
-        await msg.delete()
+        try:
+            await count_group_sql()
+            msg = await message.answer(f"📈 Кількість груп : {count_gr.get()}")
+            await asyncio.sleep(2)
+            await message.delete()
+            await msg.delete()
+        except (MessageToDeleteNotFound, MessageCantBeDeleted):
+                pass
     elif not check:
-        msg = await message.answer(f"🤪 Адміністратор ще не додав жодної групи 🤪")
-        await asyncio.sleep(2)
-        await message.delete()
-        await msg.delete()
+        try:
+            msg = await message.answer(f"🤪 Адміністратор ще не додав жодної групи 🤪")
+            await asyncio.sleep(2)
+            await message.delete()
+            await msg.delete()
+        except (MessageToDeleteNotFound, MessageCantBeDeleted):
+                pass
 
 #===========================Список груп============================
 #@dp.message_handler(commands=['list])
 async def list_group_all(message: types.Message):
     await clear_sql()
     if await get_list_sql():
-        msg = await message.answer(f"Список груп наявних в базі даних : \n{get_list.get()}")
-        await asyncio.sleep(10)
-        await message.delete()
-        await msg.delete()
+        try:
+            msg = await message.answer(f"Список груп наявних в базі даних : \n{get_list.get()}")
+            await asyncio.sleep(10)
+            await message.delete()
+            await msg.delete()
+        except (MessageToDeleteNotFound, MessageCantBeDeleted):
+                pass
     elif not await get_list_sql():
-        msg = await message.answer(f"🤪 Немає жодної групи 🤪")
-        await asyncio.sleep(2)
-        await message.delete()
-        await msg.delete()
+        try:
+            msg = await message.answer(f"🤪 Немає жодної групи 🤪")
+            await asyncio.sleep(2)
+            await message.delete()
+            await msg.delete()
+        except (MessageToDeleteNotFound, MessageCantBeDeleted):
+                pass
 
 #@dp.message_handler(commands=["coupes"])
 async def view_coupes_comm(message: types.Message):
     if await user_exists_sql(message.from_user.id):
         ids = message.from_user.id
-        if message.chat.type == "private":
-            if await see_rod_sql(str(ids)):
+        if await see_rod_sql(str(ids)):
+            try:
                 msg = await message.answer_photo(photka.get(),date_coupes.get())
                 await asyncio.sleep(15)
                 await message.delete()
                 await msg.delete()
-            elif await see_rod_sql(str(ids)) == False:
+            except (MessageToDeleteNotFound, MessageCantBeDeleted):
+                pass
+        elif await see_rod_sql(str(ids)) == False:
+            try:
                 msg = await message.answer('☹️ Розкладу для вашої групи ще немає... ☹️')
                 await asyncio.sleep(4)
                 await message.delete()
                 await msg.delete()
+            except (MessageToDeleteNotFound, MessageCantBeDeleted):
+                pass
     else:
-        msg = await message.answer("❗️Перейдіть в особисті повідомлення до бота @pedbot_bot ❗️\nі зареєструйтесь за командою start", reply_markup=ReplyKeyboardRemove())
-        await asyncio.sleep(4)
-        await message.delete()
-        await msg.delete()
-
+        if message.chat.type == "private":
+            try:
+                msg = await message.answer("❗️Нажміть /start і увійдіть❗️", reply_markup=ReplyKeyboardRemove())
+                await asyncio.sleep(4)
+                await message.delete()
+                await msg.delete()
+            except (MessageToDeleteNotFound, MessageCantBeDeleted):
+                pass
+        else:
+            try:
+                msg = await message.answer("❗️Перейдіть в особисті повідомлення до бота @pedbot_bot і зареєструйтесь за командою start", reply_markup=ReplyKeyboardRemove())
+                await asyncio.sleep(4)
+                await message.delete()
+                await msg.delete()
+            except (MessageToDeleteNotFound, MessageCantBeDeleted):
+                pass
 
 #@dp.message_handler(commands=["delete_keyboards"])
 async def delete_keyboard(message: types.Message):
-    msg = await message.answer("♻️Клавіатуру видалено♻️", reply_markup=ReplyKeyboardRemove())
-    await asyncio.sleep(4)
-    await message.delete()
-    await msg.delete()
-
+    try:
+        msg = await message.answer("♻️Клавіатуру видалено♻️", reply_markup=ReplyKeyboardRemove())
+        await asyncio.sleep(4)
+        await message.delete()
+        await msg.delete()
+    except (MessageToDeleteNotFound, MessageCantBeDeleted):
+                pass
 #@dp.message_handler(commands=["version"])
 async def versions(message: types.Message):
-    version = "Версія бота : beta 1.0\nВерсія Python : 3.11.1\nВерсія aiogram : 2.24"
-    await message.answer(version)
+    try:
+        version = "Версія бота : beta 1.0\nВерсія Python : 3.11.1\nВерсія aiogram : 2.24"
+        await message.answer(version)
+    except (MessageToDeleteNotFound, MessageCantBeDeleted):
+                pass
 
 #@dp.message_handler(commands=["help"])
 async def help(message: types.Message):
-    help = '''❗️Команди з префіксом '/'\nзручно використовувати в групах.\n
-❓Щоб використовувати бота в групах:
-1.Додайте його в свою групу.
-2.Дайте права адміністратора.
-3.Напишіть / і бот покаже всі доступні команди.
+    try:
+        help = '''❗️Команди з префіксом '/'\nзручно використовувати в групах.\n
+    ❓Щоб використовувати бота в групах:
+    1.Додайте його в свою групу.
+    2.Дайте права адміністратора.
+    3.Напишіть / і бот покаже всі доступні команди.
 
-📺Команди:
-/start -  команда для реєстрації в боті студента,
-повідомлення не видаляється
+    📺Команди:
+    /start -  команда для реєстрації в боті студента,
+    повідомлення не видаляється
 
-/help - показує деяку інформацію
-повідомлення не видаляється
+    /help - показує деяку інформацію
+    повідомлення не видаляється
 
-/version - показує версії ПЕДКОТА
-повідомлення не видаляється
+    /version - показує версії ПЕДКОТА
+    повідомлення не видаляється
 
-/coupes - Надсилає розклад групи в якій ви зареєстровані,
-повідомлення авто видаляється через 15 секунди
+    /coupes - Надсилає розклад групи в якій ви зареєстровані,
+    повідомлення авто видаляється через 15 секунди
 
-/count - кількість зареєстрованих людей,
-повідомлення авто видаляється через 4 секунди
+    /count - кількість зареєстрованих людей,
+    повідомлення авто видаляється через 4 секунди
 
-/countg - кількість груп,
-повідомлення авто видаляється через 4 секунди
+    /countg - кількість груп,
+    повідомлення авто видаляється через 4 секунди
 
-/list - список всіх груп,
-повідомлення авто видаляється через 10 секунди
+    /list - список всіх груп,
+    повідомлення авто видаляється через 10 секунди
 
-/delete_keyboards - видалення клавіатури ,
-якщо раптом вона є у вас в чаті групи,
-повідомлення авто видаляється через 4 секунди'''
-    await message.answer(help)
+    /delete_keyboards - видалення клавіатури ,
+    якщо раптом вона є у вас в чаті групи,
+    повідомлення авто видаляється через 4 секунди'''
+        await message.answer(help)
+    except (MessageToDeleteNotFound, MessageCantBeDeleted):
+        pass
 
     
 

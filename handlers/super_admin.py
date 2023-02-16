@@ -4,10 +4,11 @@ import asyncio
 #from import
 from aiogram import types
 from aiogram.dispatcher import Dispatcher
+from aiogram.utils.exceptions import MessageIsTooLong
 from keyboards import *
 from data_base.controller_db import *
 from config import super_admin
-
+from create_bot import bot
 
 
 
@@ -37,12 +38,19 @@ async def user_kb(msg: types.Message):
 #Показати таблицю користувачів
 async def super_admin_user(msg: types.Message):
     if msg.from_user.id == super_admin:
-        booled = await user_all_sql()
-        if booled:
-            await msg.answer("Немає користувачів")
-        elif not booled:
-            spisok = list_all_user.get()
-            await msg.answer(spisok)
+        try:
+            booled = await user_all_sql()
+            if booled:
+                await msg.answer("Немає користувачів")
+            elif not booled:
+                spisok = list_all_user.get()
+                await msg.answer(spisok)
+        except MessageIsTooLong:
+            if len(spisok) > 4096:
+                for x in range(0, len(spisok), 4096):
+                    bot.send_message(msg.chat.id, spisok[x:x+4096])
+            else:
+                bot.send_message(msg.chat.id, spisok)
     else:
         dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
         await asyncio.sleep(4)
