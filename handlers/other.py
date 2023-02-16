@@ -238,7 +238,15 @@ async def delete_keyboard(message: types.Message):
 #@dp.message_handler(commands=["version"])
 async def versions(message: types.Message):
     try:
-        version = "Версія бота : beta 1.0\nВерсія Python : 3.11.1\nВерсія aiogram : 2.24"
+        version = "Версія бота : beta 2.1\nВерсія Python : 3.11.1\nВерсія aiogram : 2.24"
+        await message.answer(version)
+    except (MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest):
+                pass
+
+#@dp.message_handler(commands=["info"])
+async def info(message: types.Message):
+    try:
+        version = "Це бот для Володимирсього Педагогічного Фахового Коледжу ім. А.Ю.Кримського\nНаразі у бота є функції перегляду розкладу дзвінків і пар, але ви можете надати будь-яку ідею, яка здасться вам доцільною для цього бота і з часом вона буде додана)\n\nПідтримати проєкт можна\nза номером карти : 5375411202975004\nабо за посиланням : https://send.monobank.ua/jar/5uzN1NcwYA"
         await message.answer(version)
     except (MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest):
                 pass
@@ -288,6 +296,7 @@ async def help(message: types.Message):
 def register_handler_other(dp : Dispatcher):
     dp.register_message_handler(start,commands=["start"])
     dp.register_message_handler(help,commands=["help"])
+    dp.register_message_handler(info,commands=["info"])
     dp.register_message_handler(reg,state = FSMReg.reply_reg)
     dp.register_message_handler(regAdmin,state = FSMReg.password_reg)
     dp.register_message_handler(regUser,state = FSMReg.course_groupe_reg)
