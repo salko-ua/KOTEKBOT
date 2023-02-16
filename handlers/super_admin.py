@@ -58,12 +58,16 @@ async def super_admin_user(msg: types.Message):
 #Показати таблицю груп
 async def super_admin_groupa(msg: types.Message):
     if msg.from_user.id == super_admin:
-        booled = await groupa_all_sql()
-        if booled:
-            await msg.answer("Немає груп")
-        elif not booled:
-            spisok = list_all_groupa.get()
-            await msg.answer(spisok)
+        try:
+            booled = await groupa_all_sql()
+            if booled:
+                await msg.answer("Немає груп")
+            elif not booled:
+                spisok = list_all_groupa.get()
+                await msg.answer(spisok)
+        except MessageIsTooLong:
+            for x in range(0, len(spisok), 4096):
+                await bot.send_message(msg.chat.id, spisok[x:x+4096])
     else:
         dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
         await asyncio.sleep(4)
