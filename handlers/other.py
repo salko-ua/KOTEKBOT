@@ -7,7 +7,7 @@ from aiogram import types
 from aiogram.dispatcher import Dispatcher
 from aiogram.types import ReplyKeyboardRemove
 from aiogram.dispatcher import FSMContext
-from aiogram.utils.exceptions import MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest
+from aiogram.utils.exceptions import MessageToDeleteNotFound, MessageCantBeDeleted, BadRequest
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from keyboards import *
 from data_base.controller_db import *
@@ -194,11 +194,8 @@ async def view_coupes_comm(message: types.Message):
         ids = message.from_user.id
         if await see_rod_sql(str(ids)):
             try:
-                msg = await message.answer_photo(photka.get(),date_coupes.get())
-                await asyncio.sleep(15)
-                await message.delete()
-                await msg.delete()
-            except (MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest):
+                await message.answer_photo(photka.get(),date_coupes.get())
+            except (BadRequest):
                 pass
         elif await see_rod_sql(str(ids)) == False:
             try:
@@ -211,10 +208,7 @@ async def view_coupes_comm(message: types.Message):
     else:
         if message.chat.type == "private":
             try:
-                msg = await message.answer("❗️Нажміть /start і увійдіть❗️", reply_markup=ReplyKeyboardRemove())
-                await asyncio.sleep(4)
-                await message.delete()
-                await msg.delete()
+                await message.answer("❗️Нажміть /start і увійдіть❗️", reply_markup=ReplyKeyboardRemove())
             except (MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest):
                 pass
         else:

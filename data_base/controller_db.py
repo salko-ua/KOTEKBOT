@@ -257,6 +257,7 @@ async def delete_user_groups_sql(text):
 
 #ONLYSUPERADMIN
 list_all_user = ContextVar("list_all_user", default=[])
+list_all_user_for_group = ContextVar("list_all_user_for_group", default=[])
 list_all_groupa = ContextVar("list_all_groupa", default=[])
 list_all_admin = ContextVar("list_all_admin", default=[])
 
@@ -275,6 +276,23 @@ async def user_all_sql():
         for i in range(0,len(keys)):
             reslt += str(i+1)+'. '+ str(keys[i]) +'\n'
         list_all_user.set(reslt)
+        return False
+
+async def user_for_group_sql(groupe):
+    keys = list_all_user_for_group.get()
+    keys.clear()
+    list_all_user_for_group.set(keys)
+    result = cur.execute("SELECT * FROM `user` WHERE group_user = ?",(groupe,))
+    list_r = result.fetchall()
+    if len(list_r) == 0:
+        return True
+    elif len(list_r) > 0:
+        for i in cur.execute('SELECT * FROM `user` WHERE group_user = ?',(groupe,)):
+            keys.append(i)
+        reslt = ''
+        for i in range(0,len(keys)):
+            reslt += str(i+1)+'. '+ str(keys[i]) +'\n'
+        list_all_user_for_group.set(reslt)
         return False
 
 async def groupa_all_sql():

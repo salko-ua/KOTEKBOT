@@ -5,13 +5,16 @@ import asyncio
 from aiogram import types
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils.exceptions import MessageIsTooLong
+from aiogram.dispatcher import FSMContext
+from aiogram.dispatcher.filters.state import State, StatesGroup
 from keyboards import *
 from data_base.controller_db import *
 from config import super_admin
 from create_bot import bot
 
 
-
+class FSMSuperA(StatesGroup):
+    group = State()
 
 
 
@@ -32,7 +35,6 @@ async def user_kb(msg: types.Message):
         await msg.answer("Клавіатура юзера", reply_markup=kb_client)
 
 
-    
 
 
 #Показати таблицю користувачів
@@ -53,7 +55,45 @@ async def super_admin_user(msg: types.Message):
         await asyncio.sleep(4)
         await msg.delete()
         await dels.delete()
-             
+
+#Показати користувачів за групою
+async def super_admin_user_for_group(msg: types.Message, state: FSMContext):
+    if msg.from_user.id == super_admin:
+        await clear_sql()
+        await group_list_sql()
+        await msg.answer("Введіть групу для перегляду таблиці за цією групою",reply_markup = get_kb())
+        await FSMSuperA.group.set()
+    else:
+        dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
+        await asyncio.sleep(4)
+        await msg.delete()
+        await dels.delete()
+
+async def super_admin_user_for_group1(msg: types.Message, state: FSMContext):
+    if msg.from_user.id == super_admin:
+        if await group_exists_sql(msg.text): 
+            try:
+                booled = await user_for_group_sql(msg.text)
+                if booled:
+                    await msg.answer("Немає користувачів", reply_markup = sadmin)
+                elif not booled:
+                    spisok = list_all_user_for_group.get()
+                    await msg.answer(spisok)
+            except MessageIsTooLong:
+                for x in range(0, len(spisok), 4096):
+                    await bot.send_message(msg.chat.id, spisok[x:x+4096])
+            msg.answer("Done!", reply_markup = sadmin)
+        else:
+            dels = await msg.answer("☹️ Немає такої групи, звяжіться з адміністратором", reply_markup = sadmin)
+            await asyncio.sleep(4)
+            await msg.delete()
+            await dels.delete()
+    else:
+        dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
+        await asyncio.sleep(4)
+        await msg.delete()
+        await dels.delete()
+#====================================
 
 #Показати таблицю груп
 async def super_admin_groupa(msg: types.Message):
@@ -74,7 +114,6 @@ async def super_admin_groupa(msg: types.Message):
         await msg.delete()
         await dels.delete()
              
-
 #Показати таблицю адмінів
 async def super_admin_admin(msg: types.Message):
     if msg.from_user.id == super_admin:
@@ -92,11 +131,14 @@ async def super_admin_admin(msg: types.Message):
              
 
 
+
 #===========================реєстратор============================
 def register_handler_sadmin(dp : Dispatcher):
     dp.register_message_handler(admin_kb, text = 'адмін')
     dp.register_message_handler(super_admin_kb, text = 'власник')
     dp.register_message_handler(user_kb, text = 'студент')
     dp.register_message_handler(super_admin_user, text = 'Показати таблицю студентів')
+    dp.register_message_handler(super_admin_user_for_group, text = 'Показати користувачів за групою',state=None)
+    dp.register_message_handler(super_admin_user_for_group1, state = FSMSuperA.group)
     dp.register_message_handler(super_admin_groupa, text = 'Показати таблицю групи')
     dp.register_message_handler(super_admin_admin, text = 'Показати таблицю адмінів')
