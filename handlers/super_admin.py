@@ -76,14 +76,19 @@ async def super_admin_user_for_group1(msg: types.Message, state: FSMContext):
                 booled = await user_for_group_sql(msg.text)
                 if booled:
                     await msg.answer("Немає користувачів", reply_markup = sadmin)
+                    await state.finish()
                 elif not booled:
                     spisok = list_all_user_for_group.get()
                     await msg.answer(spisok)
+                    msg.answer("Done!", reply_markup = sadmin)
+                    await state.finish()
             except MessageIsTooLong:
                 for x in range(0, len(spisok), 4096):
                     await bot.send_message(msg.chat.id, spisok[x:x+4096])
-            msg.answer("Done!", reply_markup = sadmin)
+                    msg.answer("Done!", reply_markup = sadmin)
+                    await state.finish()
         else:
+            await state.finish()
             dels = await msg.answer("☹️ Немає такої групи, звяжіться з адміністратором", reply_markup = sadmin)
             await asyncio.sleep(4)
             await msg.delete()
