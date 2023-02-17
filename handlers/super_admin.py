@@ -80,12 +80,12 @@ async def super_admin_user_for_group1(msg: types.Message, state: FSMContext):
                 elif not booled:
                     spisok = list_all_user_for_group.get()
                     await msg.answer(spisok)
-                    msg.answer("Done!", reply_markup = sadmin)
+                    await msg.answer("Done!", reply_markup = sadmin)
                     await state.finish()
             except MessageIsTooLong:
                 for x in range(0, len(spisok), 4096):
                     await bot.send_message(msg.chat.id, spisok[x:x+4096])
-                    msg.answer("Done!", reply_markup = sadmin)
+                    await msg.answer("Done!", reply_markup = sadmin)
                     await state.finish()
         else:
             await state.finish()
