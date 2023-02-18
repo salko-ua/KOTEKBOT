@@ -68,6 +68,7 @@ def bd_Start():
         CREATE TABLE IF NOT EXISTS numbers(
             id       INTEGER PRIMARY KEY NOT NULL,
             number_s  INTEGER  
+        )
         """
     )
     base.commit()
