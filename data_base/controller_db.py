@@ -261,6 +261,7 @@ list_all_user_for_group = ContextVar("list_all_user_for_group", default=[])
 list_all_groupa = ContextVar("list_all_groupa", default=[])
 list_all_admin = ContextVar("list_all_admin", default=[])
 
+#Переглянути таблицю користувачів
 async def user_all_sql():
     keys = list_all_user.get()
     keys.clear()
@@ -278,6 +279,7 @@ async def user_all_sql():
         list_all_user.set(reslt)
         return False
 
+#Переглянути таблицю користувачів за групою
 async def user_for_group_sql(groupe):
     keys = list_all_user_for_group.get()
     keys.clear()
@@ -295,6 +297,7 @@ async def user_for_group_sql(groupe):
         list_all_user_for_group.set(reslt)
         return False
 
+#Переглянути таблицю гурп
 async def groupa_all_sql():
     keys = list_all_groupa.get()
     keys.clear()
@@ -312,6 +315,7 @@ async def groupa_all_sql():
         list_all_groupa.set(reslt)
         return False
 
+#Переглянути таблицю адмінів
 async def admin_all_sql():
     keys = list_all_admin.get()
     keys.clear()

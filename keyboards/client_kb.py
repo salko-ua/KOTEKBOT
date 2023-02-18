@@ -21,11 +21,11 @@ def get_kb():
 
 
 #===========================2 Keyboards================================
-kb1 = KeyboardButton("Переглянути розклад пар")
-kb2 = KeyboardButton("Переглянути розклад дзвінків")
+kb1 = KeyboardButton("Розклад пар")
+kb2 = KeyboardButton("Розклад дзвінків")
 last = KeyboardButton("Змінити групу")
 
-kb_client = ReplyKeyboardMarkup(resize_keyboard=True).add(kb1).add(kb2).add(last)
+kb_client = ReplyKeyboardMarkup(resize_keyboard=True).row(kb1, kb2).add(last)
 #======================================================================
 
 

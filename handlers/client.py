@@ -56,7 +56,7 @@ async def all(message: types.Message):
 
 #===========================реєстратор============================
 def register_handler_client(dp : Dispatcher):
-        dp.register_message_handler(view_coupes,text = "Переглянути розклад пар")
-        dp.register_message_handler(view_calls,text = "Переглянути розклад дзвінків")
+        dp.register_message_handler(view_coupes,text = "Розклад пар")
+        dp.register_message_handler(view_calls,text = "Розклад дзвінків")
         dp.register_message_handler(delete_user,text = "Змінити групу")
         dp.register_message_handler(all)
