@@ -106,8 +106,8 @@ async def add_numbers_update_sql(num):
         base.commit()
     elif len(exits) > 0:
         num_sql = cur.execute("SELECT `number_s` FROM numbers WHERE id =?",(1,)).fetchall()
-        num_real = num_sql[0][0]
-        cur.execute("UPDATE `numbers` SET `number_s` = ? WHERE `id` = ?"(1,num_real + num))
+        num_real = int(num_sql[0][0]) + num
+        cur.execute("UPDATE `numbers` SET `number_s` = ? WHERE `id` = ?"(1,num_real))
         base.commit()
 
 
