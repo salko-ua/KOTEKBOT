@@ -45,16 +45,17 @@ async def delete_user(message: types.Message):
 
 #===========================Пустий хендлер============================
 #@dp.message_handler()
-async def all(message: types.Message):
-    if message.text == "Назад" and await admin_exists_sql(message.from_user.id):
+async def all_text(message: types.Message):
+    if message.text == "Переглянути розклад пар" or message.text == "Переглянути розклад дзвінків":
+        await message.answer("Бот оновився, ця клавіатура\nзастаріла натисніть /start\nдля оновлення")
+        await add_numbers_update_sql(1)
+    elif message.text == "Назад" and await admin_exists_sql(message.from_user.id):
         await message.answer("Ваша клавіатура ⌨️",reply_markup=kb_admin)
     elif message.text == "Назад" and await user_exists_sql(message.from_user.id):
         await message.answer("Ваша клавіатура ⌨️",reply_markup=kb_client)
     elif message.text == "Назад" and message.from_user.id == super_admin:
         await message.answer("Ваша клавіатура ⌨️", reply_markup=sadmin)
-    elif message.text == "Переглянути розклад пар" or message.text == "Переглянути розклад дзвінків":
-        await message.answer("Бот оновився, ця клавіатура\nзастаріла натисніть /start\nдля оновлення")
-        await add_numbers_update_sql(1)
+    
 
 
 #===========================реєстратор============================
@@ -62,4 +63,4 @@ def register_handler_client(dp : Dispatcher):
         dp.register_message_handler(view_coupes,text = "Розклад пар")
         dp.register_message_handler(view_calls,text = "Розклад дзвінків")
         dp.register_message_handler(delete_user,text = "Змінити групу")
-        dp.register_message_handler(all)
+        dp.register_message_handler(all_text)
