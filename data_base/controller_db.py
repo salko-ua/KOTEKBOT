@@ -1,7 +1,7 @@
 import sqlite3
 from contextvars import ContextVar
 
-
+num = ContextVar("num",default= [])
 kb_user_reg = ContextVar("keyskb", default= [])
 all_user = ContextVar('all_user_id',default=[])
 user_id_group = ContextVar("ids", default=0)
@@ -63,6 +63,13 @@ def bd_Start():
         )
         """
     )
+    base.execute(
+        """
+        CREATE TABLE IF NOT EXISTS numbers(
+            id       INTEGER PRIMARY KEY NOT NULL,
+            number_s  INTEGER  
+        """
+    )
     base.commit()
 
 
@@ -90,6 +97,18 @@ async def delete_calls_sql():
         base.commit()
         return True
 
+async def add_numbers_update_sql(num):
+    exits = cur.execute("SELECT `id` FROM numbers WHERE id =?",(1,))
+    if len(exits) == 0:
+        cur.execute("INSERT INTO `admin` (`id`, `number_s`) VALUES (?,?)",(1,0))
+        cur.execute("UPDATE `numbers` SET `number_s` = ? WHERE `id` = ?"(1,num))
+        base.commit()
+    elif len(exits) > 0:
+        num_sql = cur.execute("SELECT `number_s` FROM numbers WHERE id =?",(1,)).fetchall()
+        num_real = num_sql[0][0]
+        cur.execute("UPDATE `numbers` SET `number_s` = ? WHERE `id` = ?"(1,num_real + num))
+        base.commit()
+
 
 #================= ПЕРЕГЛЯД В ТАБЛИЦІ =================
 
@@ -115,6 +134,12 @@ async def group_exists_sql(groupname):
     return bool(len(result.fetchall()))
 
 #other
+
+async def see_num_sql():
+    result = num.get()
+    result = cur.execute("SELECT `number_s` FROM `numbers` WHERE `id` = ?",(1,))
+    num.set(result)
+
 async def id_from_group_exists_sql(groupname):
     result = user_id_group.get()
     result = cur.execute("SELECT `user_id` FROM `user` WHERE `group_user` = ?", (groupname,)).fetchall()

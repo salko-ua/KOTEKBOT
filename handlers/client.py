@@ -5,6 +5,7 @@ from config import super_admin
 from keyboards import *
 from data_base.controller_db import *
 
+
 #===========================Переглянути розклад============================
 #@dp.message_handler(text = "Переглянути розклад пар")
 async def view_coupes(message: types.Message):
@@ -51,7 +52,9 @@ async def all(message: types.Message):
         await message.answer("Ваша клавіатура ⌨️",reply_markup=kb_client)
     elif message.text == "Назад" and message.from_user.id == super_admin:
         await message.answer("Ваша клавіатура ⌨️", reply_markup=sadmin)
-
+    elif message.text == "Переглянути розклад пар" or message.text == "Переглянути розклад дзвінків":
+        await message.answer("Бот оновився, ця клавіатура\nзастаріла натисніть /start\nдля оновлення")
+        await add_numbers_update_sql(1)
 
 
 #===========================реєстратор============================

@@ -134,7 +134,17 @@ async def super_admin_admin(msg: types.Message):
         await msg.delete()
         await dels.delete()
              
-
+#Показати таблицю адмінів
+async def super_admin_num(msg: types.Message):
+    if msg.from_user.id == super_admin:
+        await see_num_sql()
+        await msg.answer(num.get())
+    else:
+        dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
+        await asyncio.sleep(4)
+        await msg.delete()
+        await dels.delete()
+             
 
 
 #===========================реєстратор============================
@@ -147,3 +157,4 @@ def register_handler_sadmin(dp : Dispatcher):
     dp.register_message_handler(super_admin_user_for_group1, state = FSMSuperA.group)
     dp.register_message_handler(super_admin_groupa, text = 'Показати таблицю групи')
     dp.register_message_handler(super_admin_admin, text = 'Показати таблицю адмінів')
+    dp.register_message_handler(super_admin_num, text = 'Показати кількість використань')
