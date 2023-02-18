@@ -48,7 +48,6 @@ async def delete_user(message: types.Message):
 async def all_text(message: types.Message):
     if message.text == "Переглянути розклад пар" or message.text == "Переглянути розклад дзвінків":
         await message.answer("Бот оновився, ця клавіатура\nзастаріла натисніть /start\nдля оновлення")
-        await add_numbers_update_sql(1)
     elif message.text == "Назад" and await admin_exists_sql(message.from_user.id):
         await message.answer("Ваша клавіатура ⌨️",reply_markup=kb_admin)
     elif message.text == "Назад" and await user_exists_sql(message.from_user.id):
