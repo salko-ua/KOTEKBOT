@@ -3,11 +3,13 @@ from contextvars import ContextVar
 
 num = ContextVar("num",default= [])
 kb_user_reg = ContextVar("keyskb", default= [])
+kb_teachers_reg = ContextVar("kb_teachers_reg", default= [])
 all_user = ContextVar('all_user_id',default=[])
 user_id_group = ContextVar("ids", default=0)
 count_us = ContextVar('count',default=0)
 count_gr = ContextVar('count_gr',default=0)
 photka  = ContextVar("photo", default='')
+photka_teachers  = ContextVar("photo_t", default='')
 id_photka = ContextVar("id_photka", default='')
 get_list = ContextVar("get_list", default='')
 date_coupes = ContextVar('date_cop', default='')
@@ -63,6 +65,28 @@ def bd_Start():
         )
         """
     )
+    base.execute(
+        """
+        CREATE TABLE IF NOT EXISTS teachers(
+            id       INTEGER PRIMARY KEY NOT NULL,
+            user_id  INTEGER UNIQUE NOT NULL,
+            Name     TEXT,
+            Nickname TEXT,
+            teacher_name TEXT
+        )
+        """
+    )
+    base.execute(
+        """
+        CREATE TABLE IF NOT EXISTS teachers_name(
+            id        INTEGER PRIMARY KEY,
+            user_id   INTEGER NOT NULL,
+            name_teacher TEXT NOT NULL,
+            photos    TEXT,
+            date      TEXT
+        )
+        """
+    )
     base.commit()
 
 
@@ -101,12 +125,24 @@ async def admin_exists_sql(user_id):
     result = cur.execute("SELECT `id` FROM `admin` WHERE `user_id` = ?", (user_id,))
     return bool(len(result.fetchall()))
 
+async def teachers_exists_sql(user_id):
+    result = cur.execute("SELECT `id` FROM `teachers` WHERE `user_id` = ?", (user_id,))
+    return bool(len(result.fetchall()))
+
+async def teachers_name_exists_sql(name_teacher):
+    result = cur.execute("SELECT `id` FROM `teachers_name` WHERE `name_teacher` = ?", (name_teacher,))
+    return bool(len(result.fetchall()))
+
 async def group_exists_sql(groupname):
     result = cur.execute("SELECT `groupname` FROM `groupa` WHERE `groupname` = ?", (groupname,))
     return bool(len(result.fetchall()))
 
 async def user_group_exists_sql(text):
     result = cur.execute("SELECT `id` FROM `user` WHERE `group_user` = ?", (text,))
+    return bool(len(result.fetchall()))
+
+async def teacher_name_exists_sql(text):
+    result = cur.execute("SELECT `id` FROM `teachers` WHERE `teacher_name` = ?", (text,))
     return bool(len(result.fetchall()))
 
 async def group_exists_sql(groupname):
@@ -150,6 +186,20 @@ async def group_list_sql():
     kb_user_reg.set(keys)
     return kb_user_reg.get()
 
+async def clear_teachers_name_sql():
+    clears = kb_teachers_reg.get()
+    clears.clear()
+    kb_teachers_reg.set(clears)
+
+async def teachers_name_list_sql():
+    keys = kb_teachers_reg.get()
+    for i in cur.execute('SELECT `name_teacher` FROM `teachers_name`'):
+        keys.append(i[0])
+    keys.sort()
+    kb_teachers_reg.set(keys)
+    return kb_teachers_reg.get()
+
+
 async def get_list_sql():
     await clear_sql()
     await group_list_sql()
@@ -186,6 +236,29 @@ async def see_rod_sql(user_id):
         photka.set(reslt)
         return True
 
+async def see_rod_t_sql(user_id):
+    #ініціали вчителя
+    name = cur.execute("SELECT `teacher_name` FROM `teachers` WHERE `user_id` = ?", (user_id,)).fetchall()
+    
+    h = name[0][0]
+    
+    photo = cur.execute("SELECT photos FROM teachers_name WHERE name_teacher = ?",(h,)).fetchall()
+    date = cur.execute("SELECT `date` FROM teachers_name WHERE name_teacher = ?",(h,)).fetchall()
+    try:
+        lens = len(photo[0][0])
+    except TypeError:
+        lens = 1
+    if lens <= 5:
+        return False
+    elif lens >=6:
+        datka = date_coupes.get()
+        reslt = photka_teachers.get()
+        reslt = photo[0][0]
+        datka = date[0][0]
+        date_coupes.set(datka)
+        photka_teachers.set(reslt)
+        return True
+
 async def see_calls_sql():
     id = 1
     ress = cur.execute("SELECT `id` FROM all_photo WHERE id = ?", (id,))
@@ -202,6 +275,7 @@ async def see_calls_sql():
         resulta = res[0][0]
         id_photka.set(resulta)
         return True
+
 
 async def count_user_sql():
     reslt = count_us.get()
@@ -220,6 +294,9 @@ async def group_photo_update_sql(photo, groupname,transl):
     cur.execute("UPDATE `groupa` SET photos = ?, date = ? WHERE groupname = ?", (photo,transl,groupname,))
     return base.commit()
 
+async def teacher_photo_update_sql(photo, name_teacher,transl):
+    cur.execute("UPDATE `teachers_name` SET photos = ?, date = ? WHERE name_teacher = ?", (photo,transl,name_teacher,))
+    return base.commit()
 
 #================= ДОДАВАННЯ В ТАБЛИЦІ =================
 
@@ -235,11 +312,23 @@ async def add_group_sql(user_id, group):
     cur.execute("INSERT INTO `groupa` (`user_id`,`groupname`) VALUES (?,?)", (user_id, group))
     return base.commit()
 
+async def add_teachers_sql(user_id, Name, Nickname, teachers_name):
+    cur.execute("INSERT INTO `teachers` (`user_id`, `Name`, `Nickname`, `teacher_name`) VALUES (?,?,?,?)", (user_id, Name, Nickname, teachers_name))
+    return base.commit()
+
+async def add_teachers_name_sql(user_id, name_teacher):
+    cur.execute("INSERT INTO `teachers_name` (`user_id`,`name_teacher`) VALUES (?,?)", (user_id, name_teacher))
+    return base.commit()
+
 
 #================= ВИДАЛЕННЯ В ТАБЛИЦІ =================
 
 async def delete_users_sql(user_id):
     cur.execute("DELETE FROM user WHERE user_id = ?", (user_id,))
+    return base.commit()
+
+async def delete_teachers_sql(user_id):
+    cur.execute("DELETE FROM teachers WHERE user_id = ?", (user_id,))
     return base.commit()
 
 async def delete_admins_sql(user_id):
@@ -248,6 +337,14 @@ async def delete_admins_sql(user_id):
 
 async def delete_groups_sql(text):
     cur.execute("DELETE FROM groupa WHERE groupname = ?", (text,))
+    return base.commit()
+
+async def delete_name_techers_sql(text):
+    cur.execute("DELETE FROM teachers_name WHERE name_teacher = ?", (text,))
+    return base.commit()
+
+async def delete_teachers_name_sql(text):
+    cur.execute("DELETE FROM teachers WHERE teacher_name = ?", (text,))
     return base.commit()
 
 async def delete_user_groups_sql(text):

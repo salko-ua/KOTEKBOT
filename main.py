@@ -8,7 +8,7 @@ from create_bot import bot,dp
 from config import token_sentry
 from aiogram.utils.executor import start_webhook
 from data_base.controller_db import bd_Start
-from handlers import admin, client, super_admin, other
+from handlers import admin, client, other, super_admin
 
 
 APP_URL = os.getenv('APP_URL')

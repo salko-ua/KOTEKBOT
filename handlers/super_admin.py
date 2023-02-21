@@ -11,6 +11,7 @@ from keyboards import *
 from data_base.controller_db import *
 from config import super_admin
 from create_bot import bot
+from handlers.other import passwords
 
 
 class FSMSuperA(StatesGroup):
@@ -33,8 +34,6 @@ async def super_admin_kb(msg: types.Message):
 async def user_kb(msg: types.Message):
     if await user_exists_sql(msg.from_user.id) or msg.from_user.id == super_admin:
         await msg.answer("Клавіатура юзера", reply_markup=kb_client)
-
-
 
 
 #Показати таблицю користувачів
@@ -135,14 +134,23 @@ async def super_admin_admin(msg: types.Message):
         await dels.delete()
              
 
-
+async def password(msg: types.Message):
+    if msg.from_user.id == super_admin:
+        await msg.answer(f'PASSWORD : {passwords}')
+    else:
+        dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
+        await asyncio.sleep(4)
+        await msg.delete()
+        await dels.delete()
+             
 #===========================реєстратор============================
 def register_handler_sadmin(dp : Dispatcher):
-    dp.register_message_handler(admin_kb, text = 'адмін')
+    dp.register_message_handler(password, text = 'p')
+    dp.register_message_handler(admin_kb, text = 'Адмін 🔑')
     dp.register_message_handler(super_admin_kb, text = 'власник')
     dp.register_message_handler(user_kb, text = 'студент')
-    dp.register_message_handler(super_admin_user, text = 'Показати таблицю студентів')
-    dp.register_message_handler(super_admin_user_for_group, text = 'Показати користувачів за групою',state=None)
+    dp.register_message_handler(super_admin_user, text = 'таблиця студентів')
+    dp.register_message_handler(super_admin_user_for_group, text = 'таблиця за групою',state=None)
     dp.register_message_handler(super_admin_user_for_group1, state = FSMSuperA.group)
-    dp.register_message_handler(super_admin_groupa, text = 'Показати таблицю групи')
-    dp.register_message_handler(super_admin_admin, text = 'Показати таблицю адмінів')
+    dp.register_message_handler(super_admin_groupa, text = 'таблиця групи')
+    dp.register_message_handler(super_admin_admin, text = 'таблиця адмінів')

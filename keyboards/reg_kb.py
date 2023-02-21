@@ -10,10 +10,12 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemo
 
 
 #===========================1 Keyboards============================
-button1 = KeyboardButton("Студент")
-button2 = KeyboardButton("Назад")
+student = KeyboardButton("Студент 👩‍🎓")
+teacher = KeyboardButton("Викладач 👨‍🏫")
+admin = KeyboardButton("Адміністратор 🔐")
+back = KeyboardButton("Назад")
 
-kb_choice = ReplyKeyboardMarkup(resize_keyboard=True) .add(button1).add(button2)
+kb_choice = ReplyKeyboardMarkup(resize_keyboard=True).row(student, teacher).add(admin).add(back)
 #===========================2 Keyboards============================
 
 
