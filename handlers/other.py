@@ -41,7 +41,7 @@ async def start(message: types.Message):
         elif await teachers_exists_sql(message.from_user.id):
             await message.answer("⬇️ Клавіатура ⬇️", reply_markup = kb_start_user)
         else:
-            await message.answer("Коли не зареєстрований", reply_markup = kb_start)
+            await message.answer("⬇️ Клавіатура ⬇️", reply_markup = kb_start)
     else:
         try:
             msg = await message.answer("❗️Цю команду можна використовувати тільки в особистих повідомленнях\nПерейдіть до @pedbot_bot", reply_markup=ReplyKeyboardRemove())
