@@ -8,6 +8,7 @@ all_user = ContextVar('all_user_id',default=[])
 user_id_group = ContextVar("ids", default=0)
 count_us = ContextVar('count',default=0)
 count_gr = ContextVar('count_gr',default=0)
+count_teach = ContextVar('count_teach',default=0)
 photka  = ContextVar("photo", default='')
 photka_teachers  = ContextVar("photo_t", default='')
 id_photka = ContextVar("id_photka", default='')
@@ -199,7 +200,6 @@ async def teachers_name_list_sql():
     kb_teachers_reg.set(keys)
     return kb_teachers_reg.get()
 
-
 async def get_list_sql():
     await clear_sql()
     await group_list_sql()
@@ -276,7 +276,6 @@ async def see_calls_sql():
         id_photka.set(resulta)
         return True
 
-
 async def count_user_sql():
     reslt = count_us.get()
     counts = cur.execute("SELECT `id` FROM user").fetchall()
@@ -285,6 +284,16 @@ async def count_user_sql():
     else:
         reslt = len(counts)
         count_us.set(reslt)
+        return True
+    
+async def count_teacher_sql():
+    reslt = count_teach.get()
+    counts = cur.execute("SELECT `id` FROM teachers").fetchall()
+    if len(counts) == 0:
+        return False
+    else:
+        reslt = len(counts)
+        count_teach.set(reslt)
         return True
 
 

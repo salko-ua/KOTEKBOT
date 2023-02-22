@@ -181,7 +181,7 @@ async def add_schedule_to_group2(message: types.Message, state: FSMContext):
         async with state.proxy() as data:
             data["curse_group_rad"] = message.text
         now = datetime.datetime.now()
-        now = now.strftime("%d - %B, %A, %H:%M")
+        now = now.strftime("%d - %B, %A")
         translation = translator.translate(now)
         await group_photo_update_sql(data["curse_group_rad_photo"],data["curse_group_rad"],"Зміненно: "+translation)
         await message.answer('Розклад успішно добавлено',reply_markup=kb_admin)
@@ -220,7 +220,7 @@ async def add_schedule_to_teacher2(message: types.Message, state: FSMContext):
         async with state.proxy() as data:
             data["teachers_rad"] = message.text
         now = datetime.datetime.now()
-        now = now.strftime("%d - %B, %A, %H:%M")
+        now = now.strftime("%d - %B, %A")
         translation = translator.translate(now)
         await teacher_photo_update_sql(data["teachers_rad_photo"],data["teachers_rad"],"Зміненно: "+translation)
         await message.answer('Розклад успішно добавлено',reply_markup=kb_admin)
@@ -497,7 +497,7 @@ async def add_calls1(message: types.Message, state: FSMContext):
             data["id_photo"] = message.photo[0].file_id
             data["type"] = "calls"
         now = datetime.datetime.now()
-        now = now.strftime("%d - %B, %A, %H:%M")
+        now = now.strftime("%d - %B, %A")
         translation = translator.translate(now)
         await add_calls_sql(data["type"],data["id_photo"],"Зміненно: "+translation)
         await state.finish()

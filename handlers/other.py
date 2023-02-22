@@ -153,18 +153,6 @@ async def registration(message: types.Message):
                 await msg.delete()
             except (MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest):
                 await message.answer("Помилка, я не можу автовидалити своє повідомлення, мені потрібні права адміна")
-    elif await admin_exists_sql(message.from_user.id):
-        if message.chat.type == "private":
-            await message.answer("🤔 Реєстрація 🤔\nВиберіть тип акаунту ⬇️", reply_markup = kb_choice)
-            await FSMReg.reply_reg.set()
-        else:
-            try:
-                msg = await message.answer("🤨 Перейдіть в особисті повідомлення до @pedbot_bot\nі зареєструйтесь за командою /start")
-                await asyncio.sleep(2)
-                await message.delete()
-                await msg.delete()
-            except (MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest):
-                await message.answer("Помилка, я не можу автовидалити своє повідомлення, мені потрібні права адміна")
     elif await teachers_exists_sql(message.from_user.id):
         if message.chat.type == "private":
             await message.answer("Ваша клавіатура ⌨️", reply_markup = kb_teachers)
@@ -176,6 +164,19 @@ async def registration(message: types.Message):
                 await msg.delete()
             except (MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest):
                 await message.answer("Помилка, я не можу автовидалити своє повідомлення, мені потрібні права адміна")
+    elif await admin_exists_sql(message.from_user.id):
+            if message.chat.type == "private":
+                await message.answer("🤔 Реєстрація 🤔\nВиберіть тип акаунту ⬇️", reply_markup = kb_choice)
+                await FSMReg.reply_reg.set()
+            else:
+                try:
+                    msg = await message.answer("🤨 Перейдіть в особисті повідомлення до @pedbot_bot\nі зареєструйтесь за командою /start")
+                    await asyncio.sleep(2)
+                    await message.delete()
+                    await msg.delete()
+                except (MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest):
+                    await message.answer("Помилка, я не можу автовидалити своє повідомлення, мені потрібні права адміна")
+            
 
 async def reg(message: types.Message, state: FSMContext):
     await clear_sql()
@@ -297,10 +298,10 @@ async def count_user(message: types.Message):
     if check:
         try:
             if message.chat.type == "private":
-                msg = await message.answer(f"📈 Кількість зареєстрованих людей : {count_us.get()}")
+                msg = await message.answer(f"📈 Кількість зареєстрованих студентів : {count_us.get()}")
             else:
                 await count_user_sql()
-                msg = await message.answer(f"📈 Кількість зареєстрованих людей : {count_us.get()}")
+                msg = await message.answer(f"📈 Кількість зареєстрованих студентів : {count_us.get()}")
                 await asyncio.sleep(2)
                 await message.delete()
                 await msg.delete()
@@ -309,9 +310,35 @@ async def count_user(message: types.Message):
     elif not check:
         try:
             if message.chat.type == "private":
-                msg = await message.answer(f"🤪 В боті незареєстровано нікого 🤪")
+                msg = await message.answer(f"🤪 В боті незареєстровано студентів 🤪")
             else:
-                msg = await message.answer(f"🤪 В боті незареєстровано нікого 🤪")
+                msg = await message.answer(f"🤪 В боті незареєстровано студентів 🤪")
+                await asyncio.sleep(2)
+                await message.delete()
+                await msg.delete()
+        except (MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest):
+                await message.answer("Помилка, я не можу автовидалити своє повідомлення, мені потрібні права адміна")
+
+async def count_teachers(message: types.Message):
+    check = await count_teacher_sql()
+    if check:
+        try:
+            if message.chat.type == "private":
+                msg = await message.answer(f"📈 Кількість зареєстрованих викладачів : {count_teach.get()}")
+            else:
+                await count_teacher_sql()
+                msg = await message.answer(f"📈 Кількість зареєстрованих викладачів : {count_teach.get()}")
+                await asyncio.sleep(2)
+                await message.delete()
+                await msg.delete()
+        except (MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest):
+                await message.answer("Помилка, я не можу автовидалити своє повідомлення, мені потрібні права адміна")
+    elif not check:
+        try:
+            if message.chat.type == "private":
+                msg = await message.answer(f"🤪 В боті незареєстровано викладачів 🤪")
+            else:
+                msg = await message.answer(f"🤪 В боті незареєстровано викладачів 🤪")
                 await asyncio.sleep(2)
                 await message.delete()
                 await msg.delete()
@@ -487,6 +514,9 @@ def register_handler_other(dp : Dispatcher):
     #Кількість користувачів
     dp.register_message_handler(count_user,text = "К-сть студентів в боті 📊")
     dp.register_message_handler(count_user,commands=["count"])
+    #Кількість викладачів
+    dp.register_message_handler(count_teachers,text = "К-сть викладачів в боті 📊")
+    dp.register_message_handler(count_teachers,commands=["countch"])
     #Кількість груп
     dp.register_message_handler(count_group,text = "К-сть груп в боті 📊")
     dp.register_message_handler(count_group,commands = ["countg"])
