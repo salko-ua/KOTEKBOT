@@ -34,7 +34,7 @@ async def on_startup(dp):
     await bot.set_webhook(APP_URL)
     await regiseter_handlers()
     print("BOT ONLINE")
-    bd_Start()
+    await bd_Start()
     
 
 async def on_shutdown(dp):
