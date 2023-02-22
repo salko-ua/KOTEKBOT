@@ -9,55 +9,72 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemo
 #one_time_keyboard = True
 
 
+
+
+
 #===========================1 Keyboards============================
-introduction = KeyboardButton("Вступ 📗")
-specialty = KeyboardButton("Спеціальності 📜")
 reg = KeyboardButton("Реєстрація ⚙️")
-about_collage = KeyboardButton("Про коледж 🛡")
 stikers = KeyboardButton("Стікери 👨‍👩‍👧‍👦")
+applicant = KeyboardButton("Для абітурієнта 🧑‍💻")
 others = KeyboardButton("Інше 📌")
 
-
 kb_start = ReplyKeyboardMarkup(resize_keyboard=True)
-kb_start.row(introduction, about_collage).row(reg, stikers).row(others,specialty)
+kb_start.row(reg, stikers).row(others,applicant)
 #===========================2 Keyboards============================
-introduction = KeyboardButton("Вступ 📗")
-specialty = KeyboardButton("Спеціальності 📜")
 reg = KeyboardButton("Розклад ⚙️")
-about_collage = KeyboardButton("Про коледж 🛡")
 stikers = KeyboardButton("Стікери 👨‍👩‍👧‍👦")
+applicant = KeyboardButton("Для абітурієнта 🧑‍💻")
 others = KeyboardButton("Інше 📌")
 
 kb_start_user = ReplyKeyboardMarkup(resize_keyboard=True)
-kb_start_user.row(introduction, about_collage).row(reg, stikers).row(others,specialty)
+kb_start_user.row(reg, stikers).row(others,applicant)
 #===========================3 Keyboards============================
 #ADMIN 1 reg
-introduction = KeyboardButton("Вступ 📗")
-specialty = KeyboardButton("Спеціальності 📜")
-admin = KeyboardButton("Адмін 🔑")
 reg = KeyboardButton("Розклад ⚙️")
-about_collage = KeyboardButton("Про коледж 🛡")
+admin = KeyboardButton("Адмін 🔑")
 stikers = KeyboardButton("Стікери 👨‍👩‍👧‍👦")
 others = KeyboardButton("Інше 📌")
+applicant = KeyboardButton("Для абітурієнта 🧑‍💻")
 
 kb_start_admin = ReplyKeyboardMarkup(resize_keyboard=True)
-kb_start_admin.row(introduction, about_collage).row(reg, admin).row(others,specialty).add(stikers)
+kb_start_admin.row(reg, admin).row(others, stikers).add(applicant)
 #===========================4 Keyboards============================
-about_author =KeyboardButton("Про бота 🖇")
+about_author = KeyboardButton("Про бота 🖇")
+commandsk = KeyboardButton("Донат 🫡") 
+helPa = KeyboardButton("Команди 🛠")
 time_work = KeyboardButton("Час роботи 📅")
 addres = KeyboardButton("Адреса 📫")
-fraction = KeyboardButton("Ч/З 🤨")
 menu = KeyboardButton("Меню 👥")
+stats = KeyboardButton("Статистика 🧮")
+
 kb_infs = ReplyKeyboardMarkup(resize_keyboard=True)
-kb_infs.row(about_author, fraction).row(addres, time_work).add(menu)
+kb_infs.row(about_author, helPa).add(stats).row(addres, time_work).row(menu,commandsk)
 #===========================5 Keyboards============================
+introduction = KeyboardButton("Вступ 📗")
+specialty = KeyboardButton("Спеціальності 📜")
+about_collage = KeyboardButton("Про коледж 🛡")
+menu1 = KeyboardButton("Меню 👥")
+
+kb_for_applicant = ReplyKeyboardMarkup(resize_keyboard=True)
+kb_for_applicant.row(introduction, about_collage).row(menu1, specialty)
+#===========================6 Keyboards============================
 spec012 = KeyboardButton('Дошкільна освіта')
 spec013 = KeyboardButton('Початкова освіта')
 spec014 = KeyboardButton('Трудове навчання')
 spec014_12 = KeyboardButton('Образотворче 🎨')
 spec015_39 = KeyboardButton('Цифрові технології')
 spec029 = KeyboardButton('Діловодство')
-menu = KeyboardButton("Меню 👥")
+back = KeyboardButton("🔙 Назад")
 
 kb_speciality = ReplyKeyboardMarkup(resize_keyboard=True)
-kb_speciality.add(spec012).insert(spec013).add(spec014).insert(spec015_39).row(spec014_12, spec029).add(menu)
+kb_speciality.add(spec012).insert(spec013).add(spec014).insert(spec015_39).row(spec014_12, spec029).add(back)
+
+
+#===========================6 Keyboards============================
+student = KeyboardButton("К-сть студентів в боті 📊")
+teacher = KeyboardButton("К-сть викладачів в боті 📊")
+group = KeyboardButton("К-сть груп в боті 📊")
+back1 = KeyboardButton("⬅️ Назад")
+
+kb_stats = ReplyKeyboardMarkup(resize_keyboard=True)
+kb_stats.add(student).add(teacher).add(group).add(back1)

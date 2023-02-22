@@ -30,7 +30,6 @@ class FSMReg(StatesGroup):
     password_reg = State()
     reply_reg = State()
     specialtys = State()
-
 #                            СТАРТ
 async def start(message: types.Message):
     if message.chat.type == "private":
@@ -102,15 +101,15 @@ async def specialty(message: types.Message):
 
 async def specialty1(m: types.Message,state = FSMContext):
     if m.chat.type == "private":
-        if m.text == "Меню 👥":
+        if m.text == "🔙 Назад":
             if await admin_exists_sql(m.from_user.id):
-                await m.answer("⬇️Головне меню⬇️", reply_markup = kb_start_admin)
+                await m.answer("⬇️Інше 📌⬇️", reply_markup = kb_for_applicant)
             elif await user_exists_sql(m.from_user.id):
-                await m.answer("⬇️Головне меню⬇️", reply_markup = kb_start_user)
+                await m.answer("⬇️Інше 📌⬇️", reply_markup = kb_for_applicant)
             elif await teachers_exists_sql(m.from_user.id):
-                await m.answer("⬇️Головне меню⬇️", reply_markup = kb_start_user)
+                await m.answer("⬇️Інше 📌⬇️", reply_markup = kb_for_applicant)
             else:
-                await m.answer("⬇️Головне меню⬇️", reply_markup = kb_start)
+                await m.answer("⬇️Інше 📌⬇️", reply_markup = kb_for_applicant)
             await state.finish()
         else:
             if m.text == "Діловодство":
@@ -283,25 +282,39 @@ async def others(message: types.Message):
 async def stick(message: types.Message):
     await message.answer_sticker(r'CAACAgIAAxkBAAEH15Nj9O7fae-x_g7MdX6tus4wAh8SngACLQAD3jyHIuJ7Rhz4aJKDLgQ')
 
+#===========================Інформація для абітурієнта============================
+async def for_applicant(message: types.Message):
+    await message.answer("Інформація для абітурієнта", reply_markup = kb_for_applicant)
+
+#===========================Статистика============================
+async def stats_f(message: types.Message):
+    await message.answer("Інформація про статистику", reply_markup = kb_stats)
+        
 #                             КОМАНДИ
 #@dp.message_handler(commands=["count"])
 async def count_user(message: types.Message):
     check = await count_user_sql()
     if check:
         try:
-            await count_user_sql()
-            msg = await message.answer(f"📈 Кількість зареєстрованих людей : {count_us.get()}")
-            await asyncio.sleep(2)
-            await message.delete()
-            await msg.delete()
+            if message.chat.type == "private":
+                msg = await message.answer(f"📈 Кількість зареєстрованих людей : {count_us.get()}")
+            else:
+                await count_user_sql()
+                msg = await message.answer(f"📈 Кількість зареєстрованих людей : {count_us.get()}")
+                await asyncio.sleep(2)
+                await message.delete()
+                await msg.delete()
         except (MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest):
                 await message.answer("Помилка, я не можу автовидалити своє повідомлення, мені потрібні права адміна")
     elif not check:
         try:
-            msg = await message.answer(f"🤪 В боті незареєстровано нікого 🤪")
-            await asyncio.sleep(2)
-            await message.delete()
-            await msg.delete()
+            if message.chat.type == "private":
+                msg = await message.answer(f"🤪 В боті незареєстровано нікого 🤪")
+            else:
+                msg = await message.answer(f"🤪 В боті незареєстровано нікого 🤪")
+                await asyncio.sleep(2)
+                await message.delete()
+                await msg.delete()
         except (MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest):
                 await message.answer("Помилка, я не можу автовидалити своє повідомлення, мені потрібні права адміна")
 
@@ -310,19 +323,25 @@ async def count_group(message: types.Message):
     check = await count_group_sql()
     if check:
         try:
-            await count_group_sql()
-            msg = await message.answer(f"📈 Кількість груп : {count_gr.get()}")
-            await asyncio.sleep(2)
-            await message.delete()
-            await msg.delete()
+            if message.chat.type == "private":
+                msg = await message.answer(f"📈 Кількість груп : {count_gr.get()}")
+            else:
+                await count_group_sql()
+                msg = await message.answer(f"📈 Кількість груп : {count_gr.get()}")
+                await asyncio.sleep(2)
+                await message.delete()
+                await msg.delete()
         except (MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest):
                 await message.answer("Помилка, я не можу автовидалити своє повідомлення, мені потрібні права адміна")
     elif not check:
         try:
-            msg = await message.answer(f"🤪 Адміністратор ще не додав жодної групи 🤪")
-            await asyncio.sleep(2)
-            await message.delete()
-            await msg.delete()
+            if message.chat.type == "private":
+                msg = await message.answer(f"🤪 Адміністратор ще не додав жодної групи 🤪")
+            else:
+                msg = await message.answer(f"🤪 Адміністратор ще не додав жодної групи 🤪")
+                await asyncio.sleep(2)
+                await message.delete()
+                await msg.delete()
         except (MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest):
                 await message.answer("Помилка, я не можу автовидалити своє повідомлення, мені потрібні права адміна")
 
@@ -368,60 +387,73 @@ async def delete_keyboard(message: types.Message):
 #@dp.message_handler(commands=["version"])
 async def versions(message: types.Message):
     try:
-        version = "Версія бота : release 1.0\nВерсія Python : 3.11.1\nВерсія aiogram : 2.24"
+        version = "Версія бота : release 1.2 \nВерсія Python : 3.11.1\nВерсія aiogram : 2.24"
         await message.answer(version)
     except (MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest):
         await message.answer("Помилка, я не можу автовидалити своє повідомлення, мені потрібні права адміна")
 
 #@dp.message_handler(commands=["info"])
-async def info(message: types.Message):
-    try:
-        version = "Це бот для Володимирсього Педагогічного Фахового Коледжу ім. А.Ю.Кримського\nНаразі у бота є функції перегляду розкладу дзвінків і пар, але ви можете надати будь-яку ідею, яка здасться вам доцільною для цього бота і з часом вона буде додана)\n\nПідтримати проєкт можна\nза номером карти : 5375411202975004\nабо за посиланням : https://send.monobank.ua/jar/5uzN1NcwYA"
-        await message.answer(version)
-    except (MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest):
-        await message.answer("Помилка, я не можу автовидалити своє повідомлення, мені потрібні права адміна")
+async def donate(message: types.Message):
+    version = "Підтримати проєкт можна\nза номером карти : 5375411202975004\nабо за посиланням : https://send.monobank.ua/jar/5uzN1NcwYA"
+    await message.answer(version)
 
 #@dp.message_handler(commands=["help"])
 async def help(message: types.Message):
     try:
-        help = '''❗️Команди з префіксом '/'\nзручно використовувати в групах.\n
-    ❓Щоб використовувати бота в групах:
-    1.Додайте його в свою групу.
-    2.Дайте права адміністратора.
-    3.Напишіть / і бот покаже всі доступні команди.
+        help = '''❗️Команди з префіксом '/'
+зручно використовувати в групах.
 
-    📺Команди:
-    /start - реєстрація
+❓Щоб використовувати бота в групах:
+1.Додайте його в свою групу.
+2.Дайте права адміністратора.
+3.Напишіть / і бот покаже всі доступні команди.
 
-    /info - інформація про бота
+📺Команди:
+/start - реєстрація,
 
-    /coupes - Надсилає розклад вашої групи
+/donate - підтримати проєк,
 
-    /count - кількість зареєстрованих людей,
+/coupes - Надсилає розклад вашої групи,
 
-    /countg - кількість груп,
-        
-    /help - показує команди
+/count - кількість зареєстрованих людей,
 
-    /version - показує версії ПЕДКОТА
-    '''
+/countg - кількість груп,
+    
+/help - показує команди,
+
+/version - показує версії ПЕДКОТА'''
         await message.answer(help)
     except (MessageToDeleteNotFound,  MessageCantBeDeleted, BadRequest):
         pass
 
 async def about_bot(message: types.Message):
     await message.answer("""БОТ ВВПК ПЕДКІТ
-Версія : release 1.0
-
-Автор: Мусаєв Джаміль
-
+Версія : release 1.2
 Розробник: Мусаєв Джаміль
+Дизайнер: Коновалець Юра
 
-Дизайнер: Коновалець Юрій
+Бот створено для спрощення
+виконання будь - яких речей
+зв'язаних з коледжем
+У ньоиу є купа потрібних
+і не дуже функцій, які
+розставленні в зручних місцях
 
-Піар менеджери : 
-Назаров Андрій
-Цурбанов Максим""")
+посилання на код проєку :
+https://github.com/salko-ua/KOTEKBOT
+посилання на телеграм автора :
+https://t.me/xxxzburogaxxx
+посилання на офіційний сайт ВВПФК :
+https://vvpc.com.ua/
+посилання на телеграм дизайнера :
+https://t.me/yurchh
+посилання на інших людей, які були
+залучені в адмінструванні бота,
+піарі, сторення розкладів та ін:
+https://t.me/zityxaghsjdb
+https://t.me/UnknownWhited
+https://t.me/a
+""")
 
 
 #===========================реєстратор============================
@@ -429,25 +461,40 @@ def register_handler_other(dp : Dispatcher):
     dp.register_message_handler(start,commands=['start'])
     dp.register_message_handler(menu,text = "Меню 👥")
     dp.register_message_handler(about_bot,text = "Про бота 🖇")
-    dp.register_message_handler(registration,text = ["Реєстрація ⚙️","Розклад ⚙️"])
     dp.register_message_handler(about_collasge,text = "Про коледж 🛡")
     dp.register_message_handler(introduction,text = "Вступ 📗")
     dp.register_message_handler(time_work,text = "Час роботи 📅")
     dp.register_message_handler(addres,text = "Адреса 📫")
     dp.register_message_handler(others,text = "Інше 📌")
     dp.register_message_handler(stick,text = "Стікери 👨‍👩‍👧‍👦")
+    dp.register_message_handler(for_applicant, text = "Для абітурієнта 🧑‍💻")
+    dp.register_message_handler(stats_f, text = "Статистика 🧮")
+
     dp.register_message_handler(specialty,text = "Спеціальності 📜", state = None)
     dp.register_message_handler(specialty1,state = FSMReg.specialtys)
-    dp.register_message_handler(help,commands=["help"])
-    dp.register_message_handler(info,commands=["info"])
+    #Реєстрація
+    dp.register_message_handler(registration,text = ["Реєстрація ⚙️","Розклад ⚙️"], state = None)
     dp.register_message_handler(reg,state = FSMReg.reply_reg)
     dp.register_message_handler(regAdmin,state = FSMReg.password_reg)
     dp.register_message_handler(regUser,state = FSMReg.course_groupe_reg)
     dp.register_message_handler(regTeachers,state = FSMReg.teachers_reg)
+    #Команди
+    dp.register_message_handler(help,text = "Команди 🛠")
+    dp.register_message_handler(help,commands=["help"])
+    #Підтримка
+    dp.register_message_handler(donate,text = "Донат 🫡")
+    dp.register_message_handler(donate,commands=["donate"])
+    #Кількість користувачів
+    dp.register_message_handler(count_user,text = "К-сть студентів в боті 📊")
     dp.register_message_handler(count_user,commands=["count"])
-    dp.register_message_handler(count_group,commands=["countg"])
+    #Кількість груп
+    dp.register_message_handler(count_group,text = "К-сть груп в боті 📊")
+    dp.register_message_handler(count_group,commands = ["countg"])
+    #Розклад
     dp.register_message_handler(view_coupes_comm,commands=["coupes"])
+    #Видалення клавіатури
     dp.register_message_handler(delete_keyboard,commands=["delete_keyboards"])
+    #Версія
     dp.register_message_handler(versions,commands=["version"])
 
     

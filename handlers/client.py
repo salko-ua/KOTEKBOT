@@ -70,6 +70,8 @@ async def all_text(message: types.Message):
         await message.answer("Бот оновився, оновлення завантажено ⬇️",reply_markup = kb_start_user)
     elif await admin_exists_sql(message.from_user.id) and message.text == "Адмін 🔑":
         await message.answer("Адмінська частина", reply_markup = kb_admin)
+    elif message.text == "⬅️ Назад":
+        await message.answer("⬇️Головне меню⬇️", reply_markup = kb_infs)
 #    elif message.text == "Назад" and await admin_exists_sql(message.from_user.id):
 #        await message.answer("Ваша клавіатура ⌨️",reply_markup=kb_admin)
 #    elif message.text == "Назад" and await user_exists_sql(message.from_user.id):
