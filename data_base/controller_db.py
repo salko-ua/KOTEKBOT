@@ -410,7 +410,7 @@ async def user_all_sql():
     if len(list_r) == 0:
         return True
     elif len(list_r) > 0:
-        for i in await cur.execute('SELECT * FROM `user`'):
+        for i in list_r:
             keys.append(i)
         reslt = ''
         for i in range(0,len(keys)):
@@ -428,7 +428,7 @@ async def user_for_group_sql(groupe):
     if len(list_r) == 0:
         return True
     elif len(list_r) > 0:
-        for i in await cur.execute('SELECT * FROM `user` WHERE group_user = ?',(groupe,)):
+        for i in list_r:
             keys.append(i)
         reslt = ''
         for i in range(0,len(keys)):
@@ -446,7 +446,7 @@ async def groupa_all_sql():
     if len(list_r) == 0:
         return True
     elif len(list_r) > 0:
-        for i in await cur.execute('SELECT * FROM `groupa`'):
+        for i in list_r:
             keys.append(i)
         reslt = ''
         for i in range(0,len(keys)):
@@ -464,7 +464,7 @@ async def admin_all_sql():
     if len(list_r) == 0:
         return True
     elif len(list_r) > 0:
-        for i in await cur.execute('SELECT * FROM `admin`'):
+        for i in list_r:
             keys.append(i)
         reslt = ''
         for i in range(0,len(keys)):
