@@ -9,7 +9,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from keyboards import *
 from data_base.controller_db import *
-from config import super_admin
+from config import super_admin_admin, super_admin_ura
 from create_bot import bot
 from handlers.other import passwords
 
@@ -22,23 +22,23 @@ class FSMSuperA(StatesGroup):
 #===========================Список груп============================
 #Клавіаура адміна
 async def admin_kb(msg: types.Message):
-    if await admin_exists_sql(msg.from_user.id) or msg.from_user.id == super_admin:
+    if await admin_exists_sql(msg.from_user.id) or msg.from_user.id == super_admin_admin or msg.from_user.id == super_admin_ura:
         await msg.answer("Клавіатура адміна", reply_markup=kb_admin)
 
 #Клавіаура власника
 async def super_admin_kb(msg: types.Message):
-    if msg.from_user.id == super_admin:
+    if msg.from_user.id == super_admin_admin or msg.from_user.id == super_admin_ura:
         await msg.answer("Клавіатура власника", reply_markup=sadmin)
 
 #Клавіаура користувача
 async def user_kb(msg: types.Message):
-    if await user_exists_sql(msg.from_user.id) or msg.from_user.id == super_admin:
+    if await user_exists_sql(msg.from_user.id) or msg.from_user.id == super_admin_admin or msg.from_user.id == super_admin_ura:
         await msg.answer("Клавіатура юзера", reply_markup=kb_client)
 
 
 #Показати таблицю користувачів
 async def super_admin_user(msg: types.Message):
-    if msg.from_user.id == super_admin:
+    if msg.from_user.id == super_admin_admin or msg.from_user.id == super_admin_ura:
         try:
             booled = await user_all_sql()
             if booled:
@@ -57,7 +57,7 @@ async def super_admin_user(msg: types.Message):
 
 #Показати користувачів за групою
 async def super_admin_user_for_group(msg: types.Message, state: FSMContext):
-    if msg.from_user.id == super_admin:
+    if msg.from_user.id == super_admin_admin or msg.from_user.id == super_admin_ura:
         await clear_sql()
         await group_list_sql()
         await msg.answer("Введіть групу для перегляду таблиці за цією групою",reply_markup = get_kb())
@@ -69,7 +69,7 @@ async def super_admin_user_for_group(msg: types.Message, state: FSMContext):
         await dels.delete()
 
 async def super_admin_user_for_group1(msg: types.Message, state: FSMContext):
-    if msg.from_user.id == super_admin:
+    if msg.from_user.id == super_admin_admin or msg.from_user.id == super_admin_ura:
         if await group_exists_sql(msg.text): 
             try:
                 booled = await user_for_group_sql(msg.text)
@@ -101,7 +101,7 @@ async def super_admin_user_for_group1(msg: types.Message, state: FSMContext):
 
 #Показати таблицю груп
 async def super_admin_groupa(msg: types.Message):
-    if msg.from_user.id == super_admin:
+    if msg.from_user.id == super_admin_admin or msg.from_user.id == super_admin_ura:
         try:
             booled = await groupa_all_sql()
             if booled:
@@ -119,8 +119,8 @@ async def super_admin_groupa(msg: types.Message):
         await dels.delete()
              
 #Показати таблицю адмінів
-async def super_admin_admin(msg: types.Message):
-    if msg.from_user.id == super_admin:
+async def super_admin_admins(msg: types.Message):
+    if msg.from_user.id == super_admin_admin or msg.from_user.id == super_admin_ura:
         booled = await admin_all_sql()
         if booled:
             await msg.answer("Немає адмінів")
@@ -135,7 +135,7 @@ async def super_admin_admin(msg: types.Message):
              
 
 async def password(msg: types.Message):
-    if msg.from_user.id == super_admin:
+    if msg.from_user.id == super_admin_admin or msg.from_user.id == super_admin_ura:
         await msg.answer(f'PASSWORD : {passwords}')
     else:
         dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
@@ -153,4 +153,4 @@ def register_handler_sadmin(dp : Dispatcher):
     dp.register_message_handler(super_admin_user_for_group, text = 'таблиця за групою',state=None)
     dp.register_message_handler(super_admin_user_for_group1, state = FSMSuperA.group)
     dp.register_message_handler(super_admin_groupa, text = 'таблиця групи')
-    dp.register_message_handler(super_admin_admin, text = 'таблиця адмінів')
+    dp.register_message_handler(super_admin_admins, text = 'таблиця адмінів')

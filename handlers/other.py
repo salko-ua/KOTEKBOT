@@ -30,6 +30,8 @@ class FSMReg(StatesGroup):
     password_reg = State()
     reply_reg = State()
     specialtys = State()
+
+
 #                            СТАРТ
 async def start(message: types.Message):
     if message.chat.type == "private":

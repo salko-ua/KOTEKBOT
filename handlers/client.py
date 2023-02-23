@@ -1,6 +1,6 @@
 from aiogram import types
 from aiogram.dispatcher import Dispatcher
-from config import super_admin
+from config import super_admin_admin, super_admin_ura
 from keyboards import *
 from data_base.controller_db import *
 import datetime
@@ -24,7 +24,7 @@ async def view_coupes(message: types.Message):
 
 #===========================Змінити групу============================
 async def view_calls(message: types.Message):
-    if await user_exists_sql(message.from_user.id) or super_admin == message.from_user.id or await teachers_exists_sql(message.from_user.id):
+    if await user_exists_sql(message.from_user.id) or  message.from_user.id == super_admin_admin or super_admin_ura == message.from_user.id or await teachers_exists_sql(message.from_user.id):
         check = await see_calls_sql()
         if not check:
             await message.answer("☹️Розклад дзвінків ще не додано☹️")
@@ -76,7 +76,7 @@ async def all_text(message: types.Message):
 #        await message.answer("Ваша клавіатура ⌨️",reply_markup=kb_admin)
 #    elif message.text == "Назад" and await user_exists_sql(message.from_user.id):
 #        await message.answer("Ваша клавіатура ⌨️",reply_markup=kb_client)
-#    elif message.text == "Назад" and message.from_user.id == super_admin:
+#    elif message.text == "Назад" and message.from_user.id == super_admin_admin or message.from_user.id == super_admin_ura:
 #        await message.answer("Ваша клавіатура ⌨️", reply_markup=sadmin)
     
 
