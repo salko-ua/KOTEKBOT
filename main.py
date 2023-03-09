@@ -1,17 +1,17 @@
-#import
+# import
 import os
 import sentry_sdk
 
 
-#from import
-from create_bot import bot,dp
+# from import
+from create_bot import bot, dp
 from config import token_sentry
 from aiogram.utils.executor import start_webhook
 from data_base.controller_db import bd_Start
 from handlers import admin, client, other, super_admin
 
 
-APP_URL = os.getenv('APP_URL')
+APP_URL = os.getenv("APP_URL")
 
 
 sentry_sdk.init(
@@ -19,7 +19,7 @@ sentry_sdk.init(
     # Set traces_sample_rate to 1.0 to capture 100%
     # of transactions for performance monitoring.
     # We recommend adjusting this value in production.
-    traces_sample_rate=1.0
+    traces_sample_rate=1.0,
 )
 
 
@@ -35,7 +35,7 @@ async def on_startup(dp):
     await regiseter_handlers()
     print("BOT ONLINE")
     await bd_Start()
-    
+
 
 async def on_shutdown(dp):
     await bot.delete_webhook()
@@ -44,12 +44,10 @@ async def on_shutdown(dp):
 def start_bot():
     start_webhook(
         dispatcher=dp,
-        webhook_path='',
+        webhook_path="",
         on_startup=on_startup,
         on_shutdown=on_shutdown,
         skip_updates=True,
-        host = '0.0.0.0',
-        port = int(os.environ.get("WEBHOOK_PORT", 8000)))
-
-
-
+        host="0.0.0.0",
+        port=int(os.environ.get("WEBHOOK_PORT", 8000)),
+    )
