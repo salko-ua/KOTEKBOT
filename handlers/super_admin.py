@@ -69,7 +69,7 @@ async def super_admin_user(msg: types.Message):
 async def super_admin_user_for_group(msg: types.Message, state: FSMContext):
     if msg.from_user.id == super_admin_admin or msg.from_user.id == super_admin_ura:
         await msg.answer(
-            "Введіть групу для перегляду таблиці за цією групою", reply_markup=get_kb()
+            "Введіть групу для перегляду таблиці за цією групою", reply_markup=await get_kb()
         )
         await FSMSuperA.group.set()
     else:
