@@ -80,6 +80,11 @@ async def fraction(message: types.Message):
     elif week_number % 2 != 0:
         await message.answer("Цей тиждень - <b>чисельник</b> 🫡", parse_mode="HTML")
 
+# =========================== Тривога ===========================
+async def alert(message: types.Message):
+    await message.answer("Функція в розробці 😁")
+
+
 
 # ===========================Пустий хендлер============================
 # @dp.message_handler()
@@ -110,8 +115,9 @@ async def all_text(message: types.Message):
 
 # ===========================реєстратор============================
 def register_handler_client(dp: Dispatcher):
-    dp.register_message_handler(view_coupes, text=["Розклад пар 🥱", "Розклад занять 🥱"])
+    dp.register_message_handler(view_coupes, text=["Розклад пар 👀", "Розклад занять 👀"])
     dp.register_message_handler(view_calls, text="Розклад дзвінків ⌚️")
-    dp.register_message_handler(delete_user, text=["Переєструватись 🤨"])
-    dp.register_message_handler(fraction, text=["Ч/З 🤨"])
+    dp.register_message_handler(delete_user, text=["Вийти 🚫", "Змінити групу 🚫"])
+    dp.register_message_handler(fraction, text=["Ч/З тиждень ✏️"])
+    dp.register_message_handler(alert, text=["Тривоги ⚠️"])
     dp.register_message_handler(all_text)

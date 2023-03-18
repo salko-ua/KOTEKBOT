@@ -500,7 +500,7 @@ async def delete_keyboard(message: types.Message):
 async def versions(message: types.Message):
     try:
         version = (
-            "Версія бота : release 1.2 \nВерсія Python : 3.11.1\nВерсія aiogram : 2.24"
+            "Версія бота : release 1.5 \nВерсія Python : 3.11.1\nВерсія Aiogram : 2.24"
         )
         await message.answer(version)
     except (MessageToDeleteNotFound, MessageCantBeDeleted, BadRequest):
@@ -548,7 +548,7 @@ async def help(message: types.Message):
 async def about_bot(message: types.Message):
     await message.answer(
         """БОТ ВВПК ПЕДКІТ
-Версія : release 1.2
+Версія : release 1.5
 Розробник: Мусаєв Джаміль
 Дизайнер: Коновалець Юра
 

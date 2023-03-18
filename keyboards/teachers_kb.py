@@ -23,12 +23,13 @@ async def get_t_kb():
 
 
 # ===========================2 Keyboards================================
-kb1 = KeyboardButton("Розклад занять 🥱")
+kb1 = KeyboardButton("Розклад занять 👀")
 kb2 = KeyboardButton("Розклад дзвінків ⌚️")
-kb3 = KeyboardButton("Ч/З 🤨")
-kb4 = KeyboardButton("Переєструватись 🤨")
+kb3 = KeyboardButton("Ч/З тиждень ✏️")
+kb4 = KeyboardButton("Вийти 🚫")
 kb5 = KeyboardButton("Меню 👥")
+kb6 = KeyboardButton("Тривоги ⚠️")
 kb_teachers = (
-    ReplyKeyboardMarkup(resize_keyboard=True).row(kb1, kb2).row(kb5, kb3).add(kb4)
+    ReplyKeyboardMarkup(resize_keyboard=True).row(kb1, kb2).row(kb6, kb3).row(kb5, kb4)
 )
 # ======================================================================
