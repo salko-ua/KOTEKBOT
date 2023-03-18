@@ -1,6 +1,6 @@
 import os
 
-TOKEN = os.environ.get("BOT_TOKEN", "6232873353:AAFQsoaO3OtYzV6pVJZzRyRQ1gU0K9YwCBU")
+TOKEN = os.environ.get("BOT_TOKEN", "")
 super_admin_admin = os.environ.get("sadmin", 5963046063)
 super_admin_ura = os.environ.get("sadminura", 862361179)
 token_sentry = os.environ.get(
