@@ -572,7 +572,6 @@ https://t.me/yurchh
 піарі, сторення розкладів та ін:
 https://t.me/zityxaghsjdb
 https://t.me/UnknownWhited
-https://t.me/a
 """
     )
 

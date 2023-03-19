@@ -6,6 +6,7 @@ from data_base.controller_db import *
 import datetime
 
 
+
 # ===========================Переглянути розклад============================
 async def view_coupes(message: types.Message):
     if await user_exists_sql(message.from_user.id):
@@ -73,7 +74,12 @@ async def delete_user(message: types.Message):
 
 # =========================== Дріб ===========================
 async def fraction(message: types.Message):
-    today = datetime.date.today()
+    delta = datetime.timedelta(hours=2, minutes=0)
+    todays = datetime.datetime.now(datetime.timezone.utc) + delta
+    days = int(todays.strftime("%d"))
+    years = int(todays.strftime("%y"))
+    mouth = int(todays.strftime("%m"))
+    today = datetime.date(year=years,month=mouth,day=days)
     week_number = today.isocalendar()[1]
     if week_number % 2 == 0:
         await message.answer("Цей тиждень - <b>знаменник</b> 🫡", parse_mode="HTML")
