@@ -421,6 +421,7 @@ async def delete_user_groups_sql(text):
 
 # ONLYSUPERADMIN
 list_all_user = ContextVar("list_all_user", default=[])
+list_all_teach = ContextVar("list_all_teach",default=[])
 list_all_user_for_group = ContextVar("list_all_user_for_group", default=[])
 list_all_groupa = ContextVar("list_all_groupa", default=[])
 list_all_admin = ContextVar("list_all_admin", default=[])
@@ -443,6 +444,25 @@ async def user_all_sql():
             reslt += str(i + 1) + ". " + str(keys[i]) + "\n"
         list_all_user.set(reslt)
         return False
+
+# Переглянути таблицю викладачів
+async def teach_all_sql():
+    keys = list_all_teach.get()
+    keys.clear()
+    list_all_teach.set(keys)
+    result = await cur.execute("SELECT * FROM `teachers`")
+    list_r = await result.fetchall()
+    if len(list_r) == 0:
+        return True
+    elif len(list_r) > 0:
+        for i in list_r:
+            keys.append(i)
+        reslt = ""
+        for i in range(0, len(keys)):
+            reslt += str(i + 1) + ". " + str(keys[i]) + "\n"
+        list_all_teach.set(reslt)
+        return False
+
 
 
 # Переглянути таблицю користувачів за групою

@@ -65,6 +65,27 @@ async def super_admin_user(msg: types.Message):
         await dels.delete()
 
 
+# Показати таблицю викладачів
+async def super_admin_teach(msg: types.Message):
+    if msg.from_user.id == super_admin_admin or msg.from_user.id == super_admin_ura:
+        try:
+            booled = await teach_all_sql()
+            if booled:
+                await msg.answer("Немає користувачів")
+            elif not booled:
+                spisok = list_all_teach.get()
+                await msg.answer(spisok)
+        except MessageIsTooLong:
+            for x in range(0, len(spisok), 4096):
+                await bot.send_message(msg.chat.id, spisok[x : x + 4096])
+    else:
+        dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
+        await asyncio.sleep(4)
+        await msg.delete()
+        await dels.delete()
+
+
+
 # Показати користувачів за групою
 async def super_admin_user_for_group(msg: types.Message, state: FSMContext):
     if msg.from_user.id == super_admin_admin or msg.from_user.id == super_admin_ura:
@@ -168,6 +189,7 @@ def register_handler_sadmin(dp: Dispatcher):
     dp.register_message_handler(super_admin_kb, text="власник")
     dp.register_message_handler(user_kb, text="студент")
     dp.register_message_handler(super_admin_user, text="таблиця студентів")
+    dp.register_message_handler(super_admin_teach, text="таблиця викладачів")
     dp.register_message_handler(super_admin_user_for_group, text="таблиця за групою", state=None)
     dp.register_message_handler(super_admin_user_for_group1, state=FSMSuperA.group)
     dp.register_message_handler(super_admin_groupa, text="таблиця групи")

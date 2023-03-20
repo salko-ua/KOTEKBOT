@@ -8,8 +8,8 @@ menu = KeyboardButton("Меню 👥")
 text1 = KeyboardButton("Перегляд бази данних 👀")
 button5 = KeyboardButton("таблиця студентів")
 button6 = KeyboardButton("таблиця за групою")
-button7 = KeyboardButton("таблиця групи")
-button8 = KeyboardButton("таблиця адмінів")
+button7 = KeyboardButton("таблиця адмінів")
+button8 = KeyboardButton("таблиця викладачів")
 
 sadmin = (
     ReplyKeyboardMarkup(resize_keyboard=True)
