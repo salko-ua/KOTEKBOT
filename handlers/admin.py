@@ -603,8 +603,8 @@ async def send_news5(message: types.Message, state: FSMContext):
                                 reply_markup=kb_start_user,
                             )
                         except BotBlocked:
-                            await delete_users_sql(rest[all_id])
-                            await bot.send_message(5963046063,f"Видалено користувача {rest[all_id]}")
+                            await delete_users_sql(rest[all_ids])
+                            await bot.send_message(5963046063,f"Видалено користувача {rest[all_ids]}")
                             await asyncio.sleep(0.5)
                     await message.answer("Готово!", reply_markup=kb_admin)
                     await state.finish()
