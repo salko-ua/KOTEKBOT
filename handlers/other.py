@@ -16,6 +16,8 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from keyboards import *
 from data_base.controller_db import *
 from random import randint as rd
+from handlers.stats import stats_schedule_add, see_all_stats
+
 
 passwords = str(rd(10, 20)) + str(rd(10, 20)) + str(rd(10, 20)) + str(rd(10, 20))
 
@@ -78,6 +80,7 @@ async def menu(message: types.Message):
 #                          Елемнти Меню
 # ===========================Вступ 📗============================
 async def introduction(message: types.Message):
+    await stats_schedule_add("Вступ 📗", 1)
     await message.answer(
         "Інформація про <a href='https://telegra.ph/%D0%86nformac%D1%96ya-dlya-vstupnika-2023-02-21'>вступ</a> на 2023 рік\nвсе скопійовано з офіційного\nсайту.У 2023 році - актуально",
         parse_mode="HTML",
@@ -86,6 +89,7 @@ async def introduction(message: types.Message):
 
 # ===========================Про коледж 🛡============================
 async def about_collasge(message: types.Message):
+    await stats_schedule_add("Про коледж 🛡", 1)
     await message.answer(
         "<a href='https://telegra.ph/Pro-koledzh-02-21'>Про коледж</a>",
         parse_mode="HTML",
@@ -94,6 +98,7 @@ async def about_collasge(message: types.Message):
 
 # ===========================Час роботи 📅============================
 async def time_work(message: types.Message):
+    await stats_schedule_add("Час роботи 📅", 1)
     await message.answer(
         """Час роботи ⌚️
 Понеділок - П'ятниця: 8:00–17:00.
@@ -103,6 +108,7 @@ async def time_work(message: types.Message):
 
 # ===========================Адреса 📫============================
 async def addres(message: types.Message):
+    await stats_schedule_add("Адреса 📫", 1)
     await message.answer(
         """•Земля 🌍
 •Україна 🇺🇦
@@ -114,6 +120,7 @@ async def addres(message: types.Message):
 
 # ===========================Спеціальності 📜============================
 async def specialty(message: types.Message):
+    await stats_schedule_add("Спеціальності 📜", 1)
     if message.chat.type == "private":
         await message.answer("Cпеціальності 📜 ВВПФК", reply_markup=kb_speciality)
         await FSMReg.specialtys.set()
@@ -171,6 +178,8 @@ async def specialty1(m: types.Message, state=FSMContext):
 
 # ===========================Реєстрація ⚙️============================
 async def registration(message: types.Message):
+    if message.text == "Розклад ⚙️":
+        await stats_schedule_add("Розклад ⚙️", 1)
     if (
         (not await user_exists_sql(message.from_user.id))
         and (not await admin_exists_sql(message.from_user.id))
@@ -350,11 +359,13 @@ async def regTeachers(message: types.Message, state: FSMContext):
 
 # ===========================Інше 📌============================
 async def others(message: types.Message):
+    await stats_schedule_add("Інше 📌", 1)
     await message.answer("Інше 🫤", reply_markup=kb_infs)
 
 
 # ===========================Стікери 👨‍👩‍👧‍👦============================
 async def stick(message: types.Message):
+    await stats_schedule_add("Стікери 👨‍👩‍👧‍👦", 1)
     await message.answer_sticker(
         r"CAACAgIAAxkBAAEH15Nj9O7fae-x_g7MdX6tus4wAh8SngACLQAD3jyHIuJ7Rhz4aJKDLgQ"
     )
@@ -362,85 +373,12 @@ async def stick(message: types.Message):
 
 # ===========================Інформація для абітурієнта============================
 async def for_applicant(message: types.Message):
+    await stats_schedule_add("Для абітурієнта 🧑‍💻", 1)
     await message.answer("Інформація для абітурієнта", reply_markup=kb_for_applicant)
 
 
-# ===========================Статистика============================
-async def stats_f(message: types.Message):
-    await message.answer("Інформація про статистику", reply_markup=kb_stats)
-
 
 #                             КОМАНДИ
-# @dp.message_handler(commands=["count"])
-async def count_user(message: types.Message):
-    check, value = await count_user_sql()
-    if check:
-        try:
-            if message.chat.type == "private":
-                msg = await message.answer(
-                    f"📈 Кількість зареєстрованих студентів : {value}"
-                )
-            else:
-                await count_user_sql()
-                msg = await message.answer(
-                    f"📈 Кількість зареєстрованих студентів : {value}"
-                )
-                await asyncio.sleep(2)
-                await message.delete()
-                await msg.delete()
-        except (MessageToDeleteNotFound, MessageCantBeDeleted, BadRequest):
-            await message.answer(
-                "Помилка, я не можу автовидалити своє повідомлення, мені потрібні права адміна"
-            )
-    elif not check:
-        try:
-            if message.chat.type == "private":
-                msg = await message.answer(f"🤪 В боті незареєстровано студентів 🤪")
-            else:
-                msg = await message.answer(f"🤪 В боті незареєстровано студентів 🤪")
-                await asyncio.sleep(2)
-                await message.delete()
-                await msg.delete()
-        except (MessageToDeleteNotFound, MessageCantBeDeleted, BadRequest):
-            await message.answer(
-                "Помилка, я не можу автовидалити своє повідомлення, мені потрібні права адміна"
-            )
-
-
-async def count_teachers(message: types.Message):
-    check, value = await count_teacher_sql()
-    if check:
-        try:
-            if message.chat.type == "private":
-                msg = await message.answer(
-                    f"📈 Кількість зареєстрованих викладачів : {value}"
-                )
-            else:
-                await count_teacher_sql()
-                msg = await message.answer(
-                    f"📈 Кількість зареєстрованих викладачів : {value}"
-                )
-                await asyncio.sleep(2)
-                await message.delete()
-                await msg.delete()
-        except (MessageToDeleteNotFound, MessageCantBeDeleted, BadRequest):
-            await message.answer(
-                "Помилка, я не можу автовидалити своє повідомлення, мені потрібні права адміна"
-            )
-    elif not check:
-        try:
-            if message.chat.type == "private":
-                msg = await message.answer(f"🤪 В боті незареєстровано викладачів 🤪")
-            else:
-                msg = await message.answer(f"🤪 В боті незареєстровано викладачів 🤪")
-                await asyncio.sleep(2)
-                await message.delete()
-                await msg.delete()
-        except (MessageToDeleteNotFound, MessageCantBeDeleted, BadRequest):
-            await message.answer(
-                "Помилка, я не можу автовидалити своє повідомлення, мені потрібні права адміна"
-            )
-
 
 # @dp.message_handler(commands=["coupes"])
 async def view_coupes_comm(message: types.Message):
@@ -511,69 +449,61 @@ async def versions(message: types.Message):
 
 # @dp.message_handler(commands=["info"])
 async def donate(message: types.Message):
-    version = "Підтримати проєкт можна\nза номером карти : 5375411202975004\nабо за посиланням : https://send.monobank.ua/jar/5uzN1NcwYA"
-    await message.answer(version)
+    await stats_schedule_add("Донат 🫡", 1)
+    version = "Підтримати проєкт можна\nза номером карти : 5375411202975004\n\
+або за посиланням : <a href='https://send.monobank.ua/jar/5uzN1NcwYA'>monobank</a>"
+    await message.answer(version,parse_mode="HTML",disable_web_page_preview=True)
 
 
 # @dp.message_handler(commands=["help"])
 async def help(message: types.Message):
+    await stats_schedule_add("Команди 🛠", 1)
     try:
         help = """❗️Команди з префіксом '/'
 зручно використовувати в групах.
 
 ❓Щоб використовувати бота в групах:
-1.Додайте його в свою групу.
+1.Додайте його у свою групу.
 2.Дайте права адміністратора.
 3.Напишіть / і бот покаже всі доступні команди.
-
-📺Команди:
-/start - реєстрація,
-
-/donate - підтримати проєк,
-
-/coupes - Надсилає розклад вашої групи,
-
-/count - кількість зареєстрованих людей,
-
-/countg - кількість груп,
-    
-/help - показує команди,
-
-/version - показує версії ПЕДКОТА"""
+"""
         await message.answer(help)
     except (MessageToDeleteNotFound, MessageCantBeDeleted, BadRequest):
         pass
 
 
 async def about_bot(message: types.Message):
+    await stats_schedule_add("Про бота 🖇", 1)
     await message.answer(
-        """БОТ ВВПК ПЕДКІТ
+"""БОТ ВПК ПЕДКІТ
 Версія : release 1.5
-Розробник: Мусаєв Джаміль
-Дизайнер: Коновалець Юра
+Розробник: <a href='https://t.me/salkooua'>Мусаєв Джаміль</a>
+Зробив аватарку: <a href='https://t.me/yurchh'>Коновалець Юра</a>
 
 Бот створено для спрощення
 виконання будь - яких речей
 зв'язаних з коледжем
-У ньоиу є купа потрібних
+У ньому є купа потрібних
 і не дуже функцій, які
 розставленні в зручних місцях
 
-посилання на код проєку :
-https://github.com/salko-ua/KOTEKBOT
-посилання на телеграм автора :
-https://t.me/xxxzburogaxxx
-посилання на офіційний сайт ВВПФК :
-https://vvpc.com.ua/
-посилання на телеграм дизайнера :
-https://t.me/yurchh
-посилання на інших людей, які були
-залучені в адмінструванні бота,
-піарі, сторення розкладів та ін:
-https://t.me/zityxaghsjdb
-https://t.me/UnknownWhited
-"""
-    )
+<a href='https://vvpc.com.ua/'>Офіційний сайт ВПФК</a>
+""",parse_mode="HTML",disable_web_page_preview=True)
+
+
+async def stats_all(message: types.Message):
+    boolean, text = await see_all_stats()
+    check, value_stud = await count_user_sql()
+    check, value_teach = await count_teacher_sql()
+    await message.answer(
+f"""📊 Статистика користувачів :
+ • Кількість студентів у боті : {value_stud}
+ • Кількість викладачів у боті : {value_teach}
+
+🧮Статистика активності за місяць :
+{text}
+(Натискання цих кнопок)
+""")
 
 
 # ===========================реєстратор============================
@@ -588,7 +518,8 @@ def register_handler_other(dp: Dispatcher):
     dp.register_message_handler(others, text="Інше 📌")
     dp.register_message_handler(stick, text="Стікери 👨‍👩‍👧‍👦")
     dp.register_message_handler(for_applicant, text="Для абітурієнта 🧑‍💻")
-    dp.register_message_handler(stats_f, text="Статистика 🧮")
+    dp.register_message_handler(stats_all, text="Статистика 🧮")
+    dp.register_message_handler(stats_all, commands=["stats"])
 
     dp.register_message_handler(specialty, text="Спеціальності 📜", state=None)
     dp.register_message_handler(specialty1, state=FSMReg.specialtys)
@@ -606,12 +537,6 @@ def register_handler_other(dp: Dispatcher):
     # Підтримка
     dp.register_message_handler(donate, text="Донат 🫡")
     dp.register_message_handler(donate, commands=["donate"])
-    # Кількість користувачів
-    dp.register_message_handler(count_user, text="К-сть студентів в боті 📊")
-    dp.register_message_handler(count_user, commands=["count"])
-    # Кількість викладачів
-    dp.register_message_handler(count_teachers, text="К-сть викладачів в боті 📊")
-    dp.register_message_handler(count_teachers, commands=["countch"])
     # Розклад
     dp.register_message_handler(view_coupes_comm, commands=["coupes"])
     # Видалення клавіатури

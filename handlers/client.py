@@ -1,14 +1,20 @@
+import datetime
+import asyncio
+import asyncache
+import cachetools
+
 from aiogram import types
 from aiogram.dispatcher import Dispatcher
 from config import super_admin_admin, super_admin_ura
 from keyboards import *
 from data_base.controller_db import *
-import datetime
-
-
+from aiogram.utils.exceptions import BotBlocked
+from create_bot import alerts_client
+from handlers.stats import stats_schedule_add
 
 # ===========================Переглянути розклад============================
 async def view_coupes(message: types.Message):
+    await stats_schedule_add("Розклад пар 👀", 1)
     if await user_exists_sql(message.from_user.id):
         boolen, photo, date = await see_rod_sql(message.from_user.id)
         if boolen:
@@ -29,6 +35,7 @@ async def view_coupes(message: types.Message):
 
 # ===========================Змінити групу============================
 async def view_calls(message: types.Message):
+    await stats_schedule_add("Розклад дзвінків ⌚️", 1)
     if (
         await user_exists_sql(message.from_user.id)
         or message.from_user.id == super_admin_admin
@@ -74,6 +81,7 @@ async def delete_user(message: types.Message):
 
 # =========================== Дріб ===========================
 async def fraction(message: types.Message):
+    await stats_schedule_add("Ч/З тиждень ✏️", 1)
     delta = datetime.timedelta(hours=2, minutes=0)
     todays = datetime.datetime.now(datetime.timezone.utc) + delta
     days = int(todays.strftime("%d"))
@@ -87,13 +95,45 @@ async def fraction(message: types.Message):
         await message.answer("Цей тиждень - <b>чисельник</b> 🫡", parse_mode="HTML")
 
 # =========================== Тривога ===========================
-async def alert(message: types.Message):
-    await message.answer("Функція в розробці 😁")
+@asyncache.cached(cachetools.TTLCache(1,23))
+async def alert_func():
+    #Достаю список областей у яких повітряна тривога типу air_raid
+    active_alerts = await alerts_client.get_active_alerts()
+    filtered_alerts = active_alerts.filter('location_type', 'oblast', 'alert_type', 'air_raid')
 
+    #Достаю список назв областей у яких повітряна тривога
+    count = len(filtered_alerts)
+    alerts = f"🌍 Області з тривогою({count} з 26):\n\n"
+    list_alerts_oblast_title = []
+    for title in filtered_alerts:
+        list_alerts_oblast_title.append(title.location_title)
+    list_alerts_oblast_title.sort()
+
+    #Області які будуть на першому місці
+    need_oblast_title = ["Львівська область","Рівненська область","Волинська область"]
+
+    for j in range(0,len(need_oblast_title)):
+        try:
+            list_alerts_oblast_title.index(need_oblast_title[j])
+            list_alerts_oblast_title.remove(need_oblast_title[j])
+            list_alerts_oblast_title.insert(0, need_oblast_title[j])
+        except ValueError:
+            await asyncio.sleep(0.05)
+
+    #Роблю гарне повідомлення
+    for alert in list_alerts_oblast_title:
+        alerts += " • "+ alert + "\n"
+    return alerts
+
+
+# =========================== Тривога ===========================
+async def alert(message: types.Message):
+    await stats_schedule_add("Тривоги ⚠️", 1)
+    result = await alert_func()
+    await message.answer(result+"\n"+"<a href='https://alerts.in.ua/'>Дані з сайту</a>",parse_mode="HTML",disable_web_page_preview=True)
 
 
 # ===========================Пустий хендлер============================
-# @dp.message_handler()
 async def all_text(message: types.Message):
     if (
         message.text == "Переглянути розклад пар"
@@ -110,14 +150,45 @@ async def all_text(message: types.Message):
     elif message.text == "⬅️ Назад":
         await message.answer("⬇️Головне меню⬇️", reply_markup=kb_infs)
 
+'''В розробці
+async def send_message_on_time(dp: Dispatcher):
+    print("in func")
+    all_users = await all_user_id_sql()
+    rest=[]
+    for i in range(0, len(all_users)):
+        rest.append(all_users[i][0])
+    for all_id in range(0, len(rest)):
+        try:
+            await dp.bot.send_message(rest[all_id], "Хвилина мовчання")
+        except BotBlocked:
+            await delete_users_sql(rest[all_id])
+            await dp.bot.send_message(5963046063,f"Видалено користувача {rest[all_id]}")'''
 
-#    elif message.text == "Назад" and await admin_exists_sql(message.from_user.id):
-#        await message.answer("Ваша клавіатура ⌨️",reply_markup=kb_admin)
-#    elif message.text == "Назад" and await user_exists_sql(message.from_user.id):
-#        await message.answer("Ваша клавіатура ⌨️",reply_markup=kb_client)
-#    elif message.text == "Назад" and message.from_user.id == super_admin_admin or message.from_user.id == super_admin_ura:
-#        await message.answer("Ваша клавіатура ⌨️", reply_markup=sadmin)
 
+'''Приклад даних які надходять від API https://alerts.in.ua/
+    {'id': 8757,
+      'location_title': 'Луганська область', 
+      'location_type': 'oblast',
+      'started_at': datetime.datetime(2022, 4, 4, 19, 45, 39, tzinfo=<DstTzInfo 'Europe/Kyiv' EEST+3:00:00 DST>),
+      'finished_at': None, 'updated_at': datetime.datetime(2022, 4, 8, 11, 4, 26, 316000, tzinfo=<DstTzInfo 'Europe/Kyiv' EEST+3:00:00 DST>),
+      'alert_type': 'air_raid',
+      'location_uid': '16',
+      'location_oblast': 'Луганська область',
+      'location_raion': None,
+      'notes': None,
+      'calculated': None}, 
+
+    {'id': 28288, 
+     'location_title': 'Автономна Республіка Крим', 
+     'location_type': 'oblast', 
+     'started_at': datetime.datetime(2022, 12, 11, 0, 22, tzinfo=<DstTzInfo 'Europe/Kyiv' EET+2:00:00 STD>), 
+     'finished_at': None, 'updated_at': datetime.datetime(2022, 12, 12, 14, 20, 11, 900000, tzinfo=<DstTzInfo 'Europe/Kyiv' EET+2:00:00 STD>), 
+     'alert_type': 'air_raid', 
+     'location_uid': '29', 
+     'location_oblast': 'Автономна Республіка Крим', 
+     'location_raion': None, 
+     'notes': 'Згідно інформації з Офіційних карт тривог', 
+     'calculated': None}'''
 
 # ===========================реєстратор============================
 def register_handler_client(dp: Dispatcher):

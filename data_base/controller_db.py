@@ -72,10 +72,35 @@ async def bd_Start():
         )
         """
     )
+    await base.execute(
+        """
+        CREATE TABLE IF NOT EXISTS stats(
+            id           INTEGER PRIMARY KEY,
+            stats_name   TEXT NOT NULL,
+            count        TEXT
+        )
+        """
+    )
     await base.commit()
 
 
 # ================= ЗМІШАНЕ =================
+
+async def add_or_update_stats(name, count):
+    name_exits = await cur.execute("SELECT `id` FROM `stats` WHERE `stats_name` = ?", (name,))
+    name_exits = await name_exits.fetchall()
+    if bool(len(name_exits)) == False:
+        await cur.execute("INSERT INTO `stats` (`stats_name`) VALUES(?)", (name,))
+        await cur.execute("UPDATE `stats` SET `count` = ? WHERE `stats_name` = ?",(count, name,))
+    elif name_exits[0][0] >= 1:
+        count_db = await cur.execute("SELECT `count` FROM `stats` WHERE `stats_name` = ?", (name,))
+        count_db = await count_db.fetchall()
+        count_finish = int(count_db[0][0]) + int(count)
+        await cur.execute("UPDATE `stats` SET `count` = ? WHERE `stats_name` = ?",(count_finish, name,))
+    return await base.commit()
+
+
+
 
 
 async def add_calls_sql(types, id_photo, date_photo):
@@ -188,6 +213,25 @@ async def group_exists_sql(groupname):
 
 
 # other
+async def see_all_stats():
+    all_stats = await cur.execute("SELECT `stats_name`, `count` FROM `stats`")
+    all_stats_list = await all_stats.fetchall()
+    if len(all_stats_list) == 0:
+        return True, " • Немає"
+    elif len(all_stats_list) > 0:
+        text = ""
+        lists = []
+        lists.clear()
+        for i in all_stats_list:
+            lists.append(i)
+        
+        print(lists)
+        print(lists.sort())
+        for i in range(0,len(all_stats_list)):
+            text += " • " + all_stats_list[i][0] + " : " + all_stats_list[i][1] + '\n'
+        return False, text
+
+
 async def id_from_group_exists_sql(groupname):
     result = await cur.execute(
         "SELECT `user_id` FROM `user` WHERE `group_user` = ?", (groupname,)
@@ -296,23 +340,23 @@ async def count_user_sql():
     counts = await cur.execute("SELECT `id` FROM user")
     row_counts = await counts.fetchall()
     if len(row_counts) == 0:
-        return False, None
+        return False, 0
     else:
         reslt = len(row_counts)
         return True, reslt
-
 
 async def count_teacher_sql():
     counts = await cur.execute("SELECT `id` FROM teachers")
     row_counts = await counts.fetchall()
     if len(row_counts) == 0:
-        return False, None
+        return False, 0
     else:
         reslt = len(row_counts)
         return True, reslt
 
 
 # ================= ОНОВЛЕННЯ В ТАБЛИЦІ =================
+
 
 
 async def group_photo_update_sql(photo, groupname, transl):
@@ -340,7 +384,6 @@ async def teacher_photo_update_sql(photo, name_teacher, transl):
 
 
 # ================= ДОДАВАННЯ В ТАБЛИЦІ =================
-
 
 async def add_admin_sql(user_id, Name, Nickname):
     await cur.execute(

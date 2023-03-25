@@ -1,18 +1,20 @@
 # import
 import os
 import sentry_sdk
-
-
+import logging
+import datetime
+import asyncio
 # from import
 from create_bot import bot, dp
 from config import token_sentry
 from aiogram.utils.executor import start_webhook
 from data_base.controller_db import bd_Start
 from handlers import admin, client, other, super_admin
-
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 APP_URL = os.getenv("APP_URL")
 
+#logging.basicConfig(level=logging.INFO)
 
 sentry_sdk.init(
     dsn=token_sentry,
@@ -21,7 +23,6 @@ sentry_sdk.init(
     # We recommend adjusting this value in production.
     traces_sample_rate=1.0,
 )
-
 
 async def regiseter_handlers():
     other.register_handler_other(dp)
@@ -40,7 +41,7 @@ async def on_startup(dp):
 async def on_shutdown(dp):
     await bot.delete_webhook()
 
-
+    
 def start_bot():
     start_webhook(
         dispatcher=dp,
@@ -51,3 +52,4 @@ def start_bot():
         host="0.0.0.0",
         port=int(os.environ.get("WEBHOOK_PORT", 8000)),
     )
+

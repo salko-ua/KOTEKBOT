@@ -67,11 +67,3 @@ kb_speciality.add(spec012).insert(spec013).add(spec014).insert(spec015_39).row(
     spec014_12, spec029
 ).add(back)
 
-
-# ===========================6 Keyboards============================
-student = KeyboardButton("К-сть студентів в боті 📊")
-teacher = KeyboardButton("К-сть викладачів в боті 📊")
-back1 = KeyboardButton("⬅️ Назад")
-
-kb_stats = ReplyKeyboardMarkup(resize_keyboard=True)
-kb_stats.add(student).add(teacher).add(back1)
