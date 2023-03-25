@@ -1,16 +1,13 @@
 # import
 import os
 import sentry_sdk
-import logging
-import datetime
-import asyncio
 # from import
 from create_bot import bot, dp
 from config import token_sentry
 from aiogram.utils.executor import start_webhook
 from data_base.controller_db import bd_Start
 from handlers import admin, client, other, super_admin
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
+
 
 APP_URL = os.getenv("APP_URL")
 
