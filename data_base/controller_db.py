@@ -218,21 +218,14 @@ async def group_exists_sql(groupname):
 
 # other
 async def see_all_stats():
-    all_stats = await cur.execute("SELECT `stats_name`, `count` FROM `stats`")
-    all_stats_list = await all_stats.fetchall()
-    if len(all_stats_list) == 0:
+    all_stats: list[tuple[str, str]] = await (await cur.execute("SELECT `stats_name`, `count` FROM `stats`")).fetchall()
+    all_stats.sort(key = lambda e: int(e[1]), reverse=True)
+    if len(all_stats) == 0:
         return True, " • Немає"
-    elif len(all_stats_list) > 0:
-        text = ""
-        lists = []
-        lists.clear()
-        for i in all_stats_list:
-            lists.append(i)
-        lists.sort(key = lambda e: e[1], reverse=True)
-        for i in range(0,len(lists)):
-            text += " • " + lists[i][0] + " : " + lists[i][1] + '\n'
-        return False, text
-
+    text = ""
+    for category, number in all_stats:
+        text += f" • {category} : {number}\n"
+    return False, text
 
 async def id_from_group_exists_sql(groupname):
     result = await cur.execute(
