@@ -75,7 +75,7 @@ async def bd_Start():
     await base.execute(
         """
         CREATE TABLE IF NOT EXISTS stats(
-            id           INTEGER PRIMARY KEY,
+            id           INTEGER PRIMARY KEY NOT NULL,
             stats_name   TEXT NOT NULL,
             count        TEXT
         )
@@ -89,14 +89,18 @@ async def bd_Start():
 async def add_or_update_stats(name, count):
     name_exits = await cur.execute("SELECT `id` FROM `stats` WHERE `stats_name` = ?", (name,))
     name_exits = await name_exits.fetchall()
-    if bool(len(name_exits)) == False:
+    if len(name_exits) == 0:
         await cur.execute("INSERT INTO `stats` (`stats_name`) VALUES(?)", (name,))
         await cur.execute("UPDATE `stats` SET `count` = ? WHERE `stats_name` = ?",(count, name,))
-    elif name_exits[0][0] >= 1:
+    elif len(name_exits) == 1:
         count_db = await cur.execute("SELECT `count` FROM `stats` WHERE `stats_name` = ?", (name,))
         count_db = await count_db.fetchall()
         count_finish = int(count_db[0][0]) + int(count)
         await cur.execute("UPDATE `stats` SET `count` = ? WHERE `stats_name` = ?",(count_finish, name,))
+    elif len(name_exits) > 1:
+        id = await cur.execute("SELECT `id` FROM `stats` WHERE `stats_name` = ?", (name,))
+        id = await id.fetchone()
+        await cur.execute("DELETE FROM `stats` WHERE `id` = ?", (id[0],))
     return await base.commit()
 
 
@@ -224,11 +228,9 @@ async def see_all_stats():
         lists.clear()
         for i in all_stats_list:
             lists.append(i)
-        
-        print(lists)
-        print(lists.sort())
-        for i in range(0,len(all_stats_list)):
-            text += " • " + all_stats_list[i][0] + " : " + all_stats_list[i][1] + '\n'
+        lists.sort(key = lambda e: e[1], reverse=True)
+        for i in range(0,len(lists)):
+            text += " • " + lists[i][0] + " : " + lists[i][1] + '\n'
         return False, text
 
 
