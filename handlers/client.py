@@ -103,34 +103,49 @@ async def alert_func():
 
     #Достаю список назв областей у яких повітряна тривога
     count = len(filtered_alerts)
-    alerts = f"🌍 Області з тривогою({count} з 26):\n\n"
+    all_alerts = f"🌍 Області з тривогою({count} з 26):\n\n"
     list_alerts_oblast_title = []
     for title in filtered_alerts:
         list_alerts_oblast_title.append(title.location_title)
     list_alerts_oblast_title.sort()
 
     #Області які будуть на першому місці
-    need_oblast_title = ["Львівська область","Рівненська область","Волинська область"]
-
+    need_oblast_title = ["Тернопільська область","Івано-Франківська область","Хмельницька область","Чернівецька область","Закарпатська область","Львівська область","Рівненська область","Волинська область"]
+    #список у якому будуть області які нам підходять за списоки вище і у них тривога
+    need_oblast_title_list_new = []
+    #Цикл пеоевірки черещ помилку
     for j in range(0,len(need_oblast_title)):
         try:
             list_alerts_oblast_title.index(need_oblast_title[j])
             list_alerts_oblast_title.remove(need_oblast_title[j])
-            list_alerts_oblast_title.insert(0, need_oblast_title[j])
+            need_oblast_title_list_new.insert(0, need_oblast_title[j])
         except ValueError:
             await asyncio.sleep(0.05)
-
     #Роблю гарне повідомлення
-    for alert in list_alerts_oblast_title:
-        alerts += " • "+ alert + "\n"
-    return alerts
+    if len(need_oblast_title_list_new) == 0 and len(list_alerts_oblast_title) == 0:
+        all_alerts += f" - Тривоги відсутні 🟢\n"
+    else:
+        if len(need_oblast_title_list_new) == 0:
+            all_alerts += f"Західні області :\n • Немає\n\n"
+        else:
+            all_alerts += f"Західні області :\n"
+            for alert in need_oblast_title_list_new:
+                all_alerts += " • "+ alert + "\n"
+            all_alerts += "\n"
+        if len(list_alerts_oblast_title) == 0:
+            all_alerts += f"Інші області :\n • Немає"
+        else:
+            all_alerts += f"Інші області :\n"
+            for alert in list_alerts_oblast_title:
+                all_alerts += " • "+ alert + "\n"
+    return all_alerts
 
 
 # =========================== Тривога ===========================
 async def alert(message: types.Message):
     await stats_schedule_add("Тривоги ⚠️", 1)
-    result = await alert_func()
-    await message.answer(result+"\n"+"<a href='https://alerts.in.ua/'>Дані з сайту</a>",parse_mode="HTML",disable_web_page_preview=True)
+    all_alerts = await alert_func()
+    await message.answer(all_alerts+"\n"+"<a href='https://alerts.in.ua/'>Дані з сайту</a>",parse_mode="HTML",disable_web_page_preview=True)
 
 
 # ===========================Пустий хендлер============================
