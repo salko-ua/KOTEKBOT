@@ -23,31 +23,31 @@ from create_bot import bot
 from translate import Translator
 from config import super_admin_admin, super_admin_ura
 
-translator=Translator(to_lang="uk")
+translator = Translator(to_lang="uk")
 
 
 # =========Класс машини стану=========
 class FSMAdmin(StatesGroup):
     # GROP MANAGMENT
-    curse_group=State()
-    curse_group_delete=State()
+    curse_group = State()
+    curse_group_delete = State()
     # TEACHERS MANAGMENT
-    teachers_name=State()
-    teachers_delete=State()
+    teachers_name = State()
+    teachers_delete = State()
     # Розклад пар студ
-    curse_group_rad=State()
-    curse_group_rad_photo=State()
+    curse_group_rad = State()
+    curse_group_rad_photo = State()
     # Розклад пар викдаж
-    teachers_rad=State()
-    teachers_rad_photo=State()
+    teachers_rad = State()
+    teachers_rad_photo = State()
     # NEWS
-    all_or_one=State()
-    text_news=State()
-    photo_news=State()
-    namegroups=State()
+    all_or_one = State()
+    text_news = State()
+    photo_news = State()
+    namegroups = State()
     # Розклад дзвінків
-    id_photo=State()
-    type=State()
+    id_photo = State()
+    type = State()
 
 
 # ===========================Додавання викладача============================
@@ -78,8 +78,8 @@ async def add_teachers1(message: types.Message, state: FSMContext):
             await state.finish()
         else:
             async with state.proxy() as data:
-                data["teachers_name"]=message.text
-            fullname=data["teachers_name"]
+                data["teachers_name"] = message.text
+            fullname = data["teachers_name"]
             if not await teachers_name_exists_sql(fullname):
                 if len(fullname) <= 15:
                     await add_teachers_name_sql(message.from_user.id, fullname)
@@ -128,8 +128,8 @@ async def delete_teachers1(message: types.Message, state: FSMContext):
             await state.finish()
         elif message.text != "Назад":
             async with state.proxy() as data:
-                data["teachers_delete"]=message.text
-            fullname=data["teachers_delete"]
+                data["teachers_delete"] = message.text
+            fullname = data["teachers_delete"]
             if await teachers_name_exists_sql(fullname):
                 if len(fullname) <= 15:
                     if await teacher_name_exists_sql(fullname):
@@ -188,8 +188,8 @@ async def add_group1(message: types.Message, state: FSMContext):
             await state.finish()
         else:
             async with state.proxy() as data:
-                data["curse_group"]=message.text
-            fullname=data["curse_group"]
+                data["curse_group"] = message.text
+            fullname = data["curse_group"]
             if not await group_exists_sql(fullname):
                 if len(fullname) <= 3:
                     await add_group_sql(message.from_user.id, fullname)
@@ -234,7 +234,7 @@ async def add_schedule_to_group1(message: types.Message, state: FSMContext):
         or message.from_user.id == super_admin_ura
     ):
         async with state.proxy() as data:
-            data["curse_group_rad_photo"]=message.photo[0].file_id
+            data["curse_group_rad_photo"] = message.photo[0].file_id
         await FSMAdmin.curse_group_rad.set()
         await message.answer("До якої групи привязати", reply_markup=await get_kb())
 
@@ -251,10 +251,10 @@ async def add_schedule_to_group2(message: types.Message, state: FSMContext):
         or message.from_user.id == super_admin_ura
     ):
         async with state.proxy() as data:
-            data["curse_group_rad"]=message.text
-        now=datetime.datetime.now()
-        now=now.strftime("%d - %B, %A")
-        translation=translator.translate(now)
+            data["curse_group_rad"] = message.text
+        now = datetime.datetime.now()
+        now = now.strftime("%d - %B, %A")
+        translation = translator.translate(now)
         await group_photo_update_sql(
             data["curse_group_rad_photo"],
             data["curse_group_rad"],
@@ -288,7 +288,7 @@ async def add_schedule_to_teacher1(message: types.Message, state: FSMContext):
         or message.from_user.id == super_admin_ura
     ):
         async with state.proxy() as data:
-            data["teachers_rad_photo"]=message.photo[0].file_id
+            data["teachers_rad_photo"] = message.photo[0].file_id
         await FSMAdmin.teachers_rad.set()
         await message.answer("До якої групи привязати", reply_markup=await get_t_kb())
 
@@ -304,10 +304,10 @@ async def add_schedule_to_teacher2(message: types.Message, state: FSMContext):
         or message.from_user.id == super_admin_ura
     ):
         async with state.proxy() as data:
-            data["teachers_rad"]=message.text
-        now=datetime.datetime.now()
-        now=now.strftime("%d - %B, %A")
-        translation=translator.translate(now)
+            data["teachers_rad"] = message.text
+        now = datetime.datetime.now()
+        now = now.strftime("%d - %B, %A")
+        translation = translator.translate(now)
         await teacher_photo_update_sql(
             data["teachers_rad_photo"], data["teachers_rad"], "Зміненно: " + translation
         )
@@ -368,8 +368,8 @@ async def load_group(message: types.Message, state: FSMContext):
             await state.finish()
         elif message.text != "Назад":
             async with state.proxy() as data:
-                data["curse_group_delete"]=message.text
-            fullname=data["curse_group_delete"]
+                data["curse_group_delete"] = message.text
+            fullname = data["curse_group_delete"]
             if await group_exists_sql(fullname):
                 if len(fullname) <= 3:
                     if await user_group_exists_sql(fullname):
@@ -432,7 +432,7 @@ async def send_news1(message: types.Message, state: FSMContext):
     ):
         if message.text == "Одна" or message.text == "Всі":
             async with state.proxy() as data:
-                data["all_or_one"]=message.text
+                data["all_or_one"] = message.text
             await message.answer(
                 "Введіть текст новини :", reply_markup=ReplyKeyboardRemove()
             )
@@ -457,7 +457,7 @@ async def send_news2(message: types.Message, state: FSMContext):
         or message.from_user.id == super_admin_ura
     ):
         async with state.proxy() as data:
-            data["text_news"]=message.text
+            data["text_news"] = message.text
         await FSMAdmin.photo_news.set()
         await message.answer(
             "Скиньте фото новини або натисніть \nкнопку [<b>не треба</b>]\nякщо новина без фото",
@@ -482,7 +482,7 @@ async def send_news3(message: types.Message, state: FSMContext):
     ):
         if message.text == "не треба":
             async with state.proxy() as data:
-                data["photo_news"]="a"
+                data["photo_news"] = "a"
                 if data["all_or_one"] == "Одна":
                     await FSMAdmin.namegroups.set()
                     await message.answer(
@@ -515,7 +515,7 @@ async def send_news4(message: types.Message, state: FSMContext):
         async with state.proxy() as data:
             if data["all_or_one"] == "Одна":
                 async with state.proxy() as data:
-                    data["photo_news"]=message.photo[0].file_id
+                    data["photo_news"] = message.photo[0].file_id
                 await FSMAdmin.namegroups.set()
                 await message.answer(
                     "Виберіть назву групи :", reply_markup=await get_kb()
@@ -523,7 +523,7 @@ async def send_news4(message: types.Message, state: FSMContext):
 
             elif data["all_or_one"] == "Всі":
                 async with state.proxy() as data:
-                    data["photo_news"]=message.photo[0].file_id
+                    data["photo_news"] = message.photo[0].file_id
                 await FSMAdmin.namegroups.set()
                 await message.answer("Підтвердити надсилання", reply_markup=kb_ys)
 
@@ -543,17 +543,17 @@ async def send_news5(message: types.Message, state: FSMContext):
         or message.from_user.id == super_admin_ura
     ):
         async with state.proxy() as data:
-            data["namegroups"]=message.text
+            data["namegroups"] = message.text
         if data["all_or_one"] == "Одна":
             try:
-                h=await id_from_group_exists_sql(data["namegroups"])
-                error=h[0][0]
-                new=[]
+                h = await id_from_group_exists_sql(data["namegroups"])
+                error = h[0][0]
+                new = []
                 for i in range(0, len(h)):
                     new.append(h[i][0])
                 if len(data["photo_news"]) > 3:
-                    texts=data["text_news"]
-                    photo=data["photo_news"]
+                    texts = data["text_news"]
+                    photo = data["photo_news"]
                     for all_id in range(0, len(new)):
                         try:
                             await bot.send_photo(new[all_id], photo, texts)
@@ -577,20 +577,22 @@ async def send_news5(message: types.Message, state: FSMContext):
                 await state.finish()
 
         if data["all_or_one"] == "Всі":
-            all_users=await all_user_id_sql()
-            rest=[]
+            all_users = await all_user_id_sql()
+            rest = []
             for i in range(0, len(all_users)):
                 rest.append(all_users[i][0])
             async with state.proxy() as data:
                 if len(data["photo_news"]) > 3:
-                    texts=data["text_news"]
-                    photo=data["photo_news"]
+                    texts = data["text_news"]
+                    photo = data["photo_news"]
                     for all_id in range(0, len(rest)):
                         try:
                             await bot.send_photo(rest[all_id], photo, texts)
                         except BotBlocked:
                             await delete_users_sql(rest[all_id])
-                            await bot.send_message(5963046063,f"Видалено користувача {rest[all_id]}")
+                            await bot.send_message(
+                                5963046063, f"Видалено користувача {rest[all_id]}"
+                            )
                             await asyncio.sleep(0.5)
                     await message.answer("Готово!", reply_markup=kb_admin)
                     await state.finish()
@@ -604,7 +606,9 @@ async def send_news5(message: types.Message, state: FSMContext):
                             )
                         except BotBlocked:
                             await delete_users_sql(rest[all_ids])
-                            await bot.send_message(5963046063,f"Видалено користувача {rest[all_ids]}")
+                            await bot.send_message(
+                                5963046063, f"Видалено користувача {rest[all_ids]}"
+                            )
                             await asyncio.sleep(0.5)
                     await message.answer("Готово!", reply_markup=kb_admin)
                     await state.finish()
@@ -640,11 +644,11 @@ async def add_calls1(message: types.Message, state: FSMContext):
         or message.from_user.id == super_admin_ura
     ):
         async with state.proxy() as data:
-            data["id_photo"]=message.photo[0].file_id
-            data["type"]="calls"
-        now=datetime.datetime.now()
-        now=now.strftime("%d - %B, %A")
-        translation=translator.translate(now)
+            data["id_photo"] = message.photo[0].file_id
+            data["type"] = "calls"
+        now = datetime.datetime.now()
+        now = now.strftime("%d - %B, %A")
+        translation = translator.translate(now)
         await add_calls_sql(data["type"], data["id_photo"], "Зміненно: " + translation)
         await state.finish()
         await message.answer("Розклад дзвінків успішно оновлено", reply_markup=kb_admin)
@@ -664,7 +668,7 @@ async def delete_calls(message: types.Message):
         or message.from_user.id == super_admin_admin
         or message.from_user.id == super_admin_ura
     ):
-        check=await delete_calls_sql()
+        check = await delete_calls_sql()
         if not check:
             await message.answer(
                 "Розкладу дзвінків ще не додано", reply_markup=kb_admin
@@ -695,11 +699,21 @@ def register_handler_admin(dp: Dispatcher):
     dp.register_message_handler(load_group, state=FSMAdmin.curse_group_delete)
     # ===========================Додати розклад до курсу=====================
     dp.register_message_handler(add_schedule_to_group, text="групі ❇️", state=None)
-    dp.register_message_handler(add_schedule_to_group1, content_types=["photo"], state=FSMAdmin.curse_group_rad_photo)
+    dp.register_message_handler(
+        add_schedule_to_group1,
+        content_types=["photo"],
+        state=FSMAdmin.curse_group_rad_photo,
+    )
     dp.register_message_handler(add_schedule_to_group2, state=FSMAdmin.curse_group_rad)
     # ===========================Додати розклад викладачу=====================
-    dp.register_message_handler(add_schedule_to_teacher, text="викладачу ❇️", state=None)
-    dp.register_message_handler(add_schedule_to_teacher1, content_types=["photo"], state=FSMAdmin.teachers_rad_photo)
+    dp.register_message_handler(
+        add_schedule_to_teacher, text="викладачу ❇️", state=None
+    )
+    dp.register_message_handler(
+        add_schedule_to_teacher1,
+        content_types=["photo"],
+        state=FSMAdmin.teachers_rad_photo,
+    )
     dp.register_message_handler(add_schedule_to_teacher2, state=FSMAdmin.teachers_rad)
     # ===========================Видалити акаунт=============================
     dp.register_message_handler(delete_admin, text="Видалити акаунт")
@@ -708,10 +722,14 @@ def register_handler_admin(dp: Dispatcher):
     dp.register_message_handler(send_news1, state=FSMAdmin.all_or_one)
     dp.register_message_handler(send_news2, state=FSMAdmin.text_news)
     dp.register_message_handler(send_news3, state=FSMAdmin.photo_news)
-    dp.register_message_handler(send_news4, content_types=["photo"], state=FSMAdmin.photo_news)
+    dp.register_message_handler(
+        send_news4, content_types=["photo"], state=FSMAdmin.photo_news
+    )
     dp.register_message_handler(send_news5, state=FSMAdmin.namegroups)
     # ===========================Додати розклад дзвінків======================
     dp.register_message_handler(add_calls, text="дзвінків ❇️", state=None)
-    dp.register_message_handler(add_calls1, content_types=["photo"], state=FSMAdmin.id_photo)
+    dp.register_message_handler(
+        add_calls1, content_types=["photo"], state=FSMAdmin.id_photo
+    )
     # ===========================Видалити розклад дзвінків============================
     dp.register_message_handler(delete_calls, text="дзвінків 🗑")

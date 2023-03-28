@@ -12,6 +12,7 @@ from aiogram.utils.exceptions import BotBlocked
 from create_bot import alerts_client
 from handlers.stats import stats_schedule_add
 
+
 # ===========================Переглянути розклад============================
 async def view_coupes(message: types.Message):
     await stats_schedule_add("Розклад пар 👀", 1)
@@ -87,21 +88,24 @@ async def fraction(message: types.Message):
     days = int(todays.strftime("%d"))
     years = int(todays.strftime("%y"))
     mouth = int(todays.strftime("%m"))
-    today = datetime.date(year=years,month=mouth,day=days)
+    today = datetime.date(year=years, month=mouth, day=days)
     week_number = today.isocalendar()[1]
     if week_number % 2 == 0:
         await message.answer("Цей тиждень - <b>знаменник</b> 🫡", parse_mode="HTML")
     elif week_number % 2 != 0:
         await message.answer("Цей тиждень - <b>чисельник</b> 🫡", parse_mode="HTML")
 
-# =========================== Тривога ===========================
-@asyncache.cached(cachetools.TTLCache(1,23))
-async def alert_func():
-    #Достаю список областей у яких повітряна тривога типу air_raid
-    active_alerts = await alerts_client.get_active_alerts()
-    filtered_alerts = active_alerts.filter('location_type', 'oblast', 'alert_type', 'air_raid')
 
-    #Достаю список назв областей у яких повітряна тривога
+# =========================== Тривога ===========================
+@asyncache.cached(cachetools.TTLCache(1, 23))
+async def alert_func():
+    # Достаю список областей у яких повітряна тривога типу air_raid
+    active_alerts = await alerts_client.get_active_alerts()
+    filtered_alerts = active_alerts.filter(
+        "location_type", "oblast", "alert_type", "air_raid"
+    )
+
+    # Достаю список назв областей у яких повітряна тривога
     count = len(filtered_alerts)
     all_alerts = f"🌍 Області з тривогою({count} з 26):\n\n"
     list_alerts_oblast_title = []
@@ -109,19 +113,28 @@ async def alert_func():
         list_alerts_oblast_title.append(title.location_title)
     list_alerts_oblast_title.sort()
 
-    #Області які будуть на першому місці
-    need_oblast_title = ["Тернопільська область","Івано-Франківська область","Хмельницька область","Чернівецька область","Закарпатська область","Львівська область","Рівненська область","Волинська область"]
-    #список у якому будуть області які нам підходять за списоки вище і у них тривога
+    # Області які будуть на першому місці
+    need_oblast_title = [
+        "Тернопільська область",
+        "Івано-Франківська область",
+        "Хмельницька область",
+        "Чернівецька область",
+        "Закарпатська область",
+        "Львівська область",
+        "Рівненська область",
+        "Волинська область",
+    ]
+    # список у якому будуть області які нам підходять за списоки вище і у них тривога
     need_oblast_title_list_new = []
-    #Цикл пеоевірки черещ помилку
-    for j in range(0,len(need_oblast_title)):
+    # Цикл пеоевірки черещ помилку
+    for j in range(0, len(need_oblast_title)):
         try:
             list_alerts_oblast_title.index(need_oblast_title[j])
             list_alerts_oblast_title.remove(need_oblast_title[j])
             need_oblast_title_list_new.insert(0, need_oblast_title[j])
         except ValueError:
             await asyncio.sleep(0.05)
-    #Роблю гарне повідомлення
+    # Роблю гарне повідомлення
     if len(need_oblast_title_list_new) == 0 and len(list_alerts_oblast_title) == 0:
         all_alerts += f" - Тривоги відсутні 🟢\n"
     else:
@@ -130,14 +143,14 @@ async def alert_func():
         else:
             all_alerts += f"Західні області :\n"
             for alert in need_oblast_title_list_new:
-                all_alerts += " • "+ alert + "\n"
+                all_alerts += " • " + alert + "\n"
             all_alerts += "\n"
         if len(list_alerts_oblast_title) == 0:
             all_alerts += f"Інші області :\n • Немає"
         else:
             all_alerts += f"Інші області :\n"
             for alert in list_alerts_oblast_title:
-                all_alerts += " • "+ alert + "\n"
+                all_alerts += " • " + alert + "\n"
     return all_alerts
 
 
@@ -145,7 +158,11 @@ async def alert_func():
 async def alert(message: types.Message):
     await stats_schedule_add("Тривоги ⚠️", 1)
     all_alerts = await alert_func()
-    await message.answer(all_alerts+"\n"+"<a href='https://alerts.in.ua/'>Дані з сайту</a>",parse_mode="HTML",disable_web_page_preview=True)
+    await message.answer(
+        all_alerts + "\n" + "<a href='https://alerts.in.ua/'>Дані з сайту</a>",
+        parse_mode="HTML",
+        disable_web_page_preview=True,
+    )
 
 
 # ===========================Пустий хендлер============================
@@ -165,7 +182,8 @@ async def all_text(message: types.Message):
     elif message.text == "⬅️ Назад":
         await message.answer("⬇️Головне меню⬇️", reply_markup=kb_infs)
 
-'''В розробці
+
+"""В розробці
 async def send_message_on_time(dp: Dispatcher):
     print("in func")
     all_users = await all_user_id_sql()
@@ -177,10 +195,10 @@ async def send_message_on_time(dp: Dispatcher):
             await dp.bot.send_message(rest[all_id], "Хвилина мовчання")
         except BotBlocked:
             await delete_users_sql(rest[all_id])
-            await dp.bot.send_message(5963046063,f"Видалено користувача {rest[all_id]}")'''
+            await dp.bot.send_message(5963046063,f"Видалено користувача {rest[all_id]}")"""
 
 
-'''Приклад даних які надходять від API https://alerts.in.ua/
+"""Приклад даних які надходять від API https://alerts.in.ua/
     {'id': 8757,
       'location_title': 'Луганська область', 
       'location_type': 'oblast',
@@ -203,7 +221,8 @@ async def send_message_on_time(dp: Dispatcher):
      'location_oblast': 'Автономна Республіка Крим', 
      'location_raion': None, 
      'notes': 'Згідно інформації з Офіційних карт тривог', 
-     'calculated': None}'''
+     'calculated': None}"""
+
 
 # ===========================реєстратор============================
 def register_handler_client(dp: Dispatcher):

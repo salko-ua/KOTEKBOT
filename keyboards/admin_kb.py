@@ -27,17 +27,15 @@ menu = KeyboardButton("Меню 👥")
 
 kb_admin = ReplyKeyboardMarkup(resize_keyboard=True)
 
-kb_admin.add(but_post_news)\
-.insert(menu)\
-.add(but_add_teachers)\
-.insert(but_delete_teachers)\
-.add(but_add_group)\
-.insert(but_delete_group)\
-.add(neactive)\
-.add(but_couples_t)\
-.insert(but_couples)\
-.add(but_add_calls)\
-.insert(but_delete_calls)
+kb_admin.add(but_post_news).insert(menu).add(but_add_teachers).insert(
+    but_delete_teachers
+).add(but_add_group).insert(but_delete_group).add(neactive).add(but_couples_t).insert(
+    but_couples
+).add(
+    but_add_calls
+).insert(
+    but_delete_calls
+)
 # ======================================================================
 
 

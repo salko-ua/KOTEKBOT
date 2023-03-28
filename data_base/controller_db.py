@@ -1,6 +1,7 @@
 import aiosqlite
 from contextvars import ContextVar
 
+
 async def bd_Start():
     global base
     global cur
@@ -86,25 +87,41 @@ async def bd_Start():
 
 # ================= ЗМІШАНЕ =================
 
+
 async def add_or_update_stats(name, count):
-    name_exits = await cur.execute("SELECT `id` FROM `stats` WHERE `stats_name` = ?", (name,))
+    name_exits = await cur.execute(
+        "SELECT `id` FROM `stats` WHERE `stats_name` = ?", (name,)
+    )
     name_exits = await name_exits.fetchall()
     if len(name_exits) == 0:
         await cur.execute("INSERT INTO `stats` (`stats_name`) VALUES(?)", (name,))
-        await cur.execute("UPDATE `stats` SET `count` = ? WHERE `stats_name` = ?",(count, name,))
+        await cur.execute(
+            "UPDATE `stats` SET `count` = ? WHERE `stats_name` = ?",
+            (
+                count,
+                name,
+            ),
+        )
     elif len(name_exits) == 1:
-        count_db = await cur.execute("SELECT `count` FROM `stats` WHERE `stats_name` = ?", (name,))
+        count_db = await cur.execute(
+            "SELECT `count` FROM `stats` WHERE `stats_name` = ?", (name,)
+        )
         count_db = await count_db.fetchall()
         count_finish = int(count_db[0][0]) + int(count)
-        await cur.execute("UPDATE `stats` SET `count` = ? WHERE `stats_name` = ?",(count_finish, name,))
+        await cur.execute(
+            "UPDATE `stats` SET `count` = ? WHERE `stats_name` = ?",
+            (
+                count_finish,
+                name,
+            ),
+        )
     elif len(name_exits) > 1:
-        id = await cur.execute("SELECT `id` FROM `stats` WHERE `stats_name` = ?", (name,))
+        id = await cur.execute(
+            "SELECT `id` FROM `stats` WHERE `stats_name` = ?", (name,)
+        )
         id = await id.fetchone()
         await cur.execute("DELETE FROM `stats` WHERE `id` = ?", (id[0],))
     return await base.commit()
-
-
-
 
 
 async def add_calls_sql(types, id_photo, date_photo):
@@ -218,14 +235,17 @@ async def group_exists_sql(groupname):
 
 # other
 async def see_all_stats():
-    all_stats: list[tuple[str, str]] = await (await cur.execute("SELECT `stats_name`, `count` FROM `stats`")).fetchall()
-    all_stats.sort(key = lambda e: int(e[1]), reverse=True)
+    all_stats: list[tuple[str, str]] = await (
+        await cur.execute("SELECT `stats_name`, `count` FROM `stats`")
+    ).fetchall()
+    all_stats.sort(key=lambda e: int(e[1]), reverse=True)
     if len(all_stats) == 0:
-        return True, " • Немає"
+        return " • Немає"
     text = ""
     for category, number in all_stats:
         text += f" • {category} : {number}\n"
-    return False, text
+    return text
+
 
 async def id_from_group_exists_sql(groupname):
     result = await cur.execute(
@@ -340,6 +360,7 @@ async def count_user_sql():
         reslt = len(row_counts)
         return True, reslt
 
+
 async def count_teacher_sql():
     counts = await cur.execute("SELECT `id` FROM teachers")
     row_counts = await counts.fetchall()
@@ -351,7 +372,6 @@ async def count_teacher_sql():
 
 
 # ================= ОНОВЛЕННЯ В ТАБЛИЦІ =================
-
 
 
 async def group_photo_update_sql(photo, groupname, transl):
@@ -379,6 +399,7 @@ async def teacher_photo_update_sql(photo, name_teacher, transl):
 
 
 # ================= ДОДАВАННЯ В ТАБЛИЦІ =================
+
 
 async def add_admin_sql(user_id, Name, Nickname):
     await cur.execute(
@@ -459,7 +480,7 @@ async def delete_user_groups_sql(text):
 
 # ONLYSUPERADMIN
 list_all_user = ContextVar("list_all_user", default=[])
-list_all_teach = ContextVar("list_all_teach",default=[])
+list_all_teach = ContextVar("list_all_teach", default=[])
 list_all_user_for_group = ContextVar("list_all_user_for_group", default=[])
 list_all_groupa = ContextVar("list_all_groupa", default=[])
 list_all_admin = ContextVar("list_all_admin", default=[])
@@ -479,9 +500,10 @@ async def user_all_sql():
             keys.append(i)
         reslt = ""
         for i in range(0, len(keys)):
-            reslt += str(i + 1) + ". " + str(keys[i]) + "\n"
+            reslt +=f"id : {keys[i][0]}\nid_user : {keys[i][1]}\nІм'я : {keys[i][2]}\nНік : {keys[i][3]}\nГрупа : {keys[i][4]}\n\n"
         list_all_user.set(reslt)
         return False
+
 
 # Переглянути таблицю викладачів
 async def teach_all_sql():
@@ -497,10 +519,9 @@ async def teach_all_sql():
             keys.append(i)
         reslt = ""
         for i in range(0, len(keys)):
-            reslt += str(i + 1) + ". " + str(keys[i]) + "\n"
+            reslt +=f"id : {keys[i][0]}\nid_user : {keys[i][1]}\nІм'я : {keys[i][2]}\nНік : {keys[i][3]}\nГрупа : {keys[i][4]}\n\n"
         list_all_teach.set(reslt)
         return False
-
 
 
 # Переглянути таблицю користувачів за групою
@@ -515,9 +536,9 @@ async def user_for_group_sql(groupe):
     elif len(list_r) > 0:
         for i in list_r:
             keys.append(i)
-        reslt = ""
+        reslt = f"Група : {keys[0][4]}\n\n"
         for i in range(0, len(keys)):
-            reslt += str(i + 1) + ". " + str(keys[i]) + "\n"
+            reslt +=f"id : {keys[i][0]}\nid_user : {keys[i][1]}\nІм'я : {keys[i][2]}\nНік : {keys[i][3]}\n\n"
         list_all_user_for_group.set(reslt)
         return False
 
@@ -555,6 +576,6 @@ async def admin_all_sql():
             keys.append(i)
         reslt = ""
         for i in range(0, len(keys)):
-            reslt += str(i + 1) + ". " + str(keys[i]) + "\n"
+            reslt +=f"id : {keys[i][0]}\nid_user : {keys[i][1]}\nІм'я : {keys[i][2]}\nНік : {keys[i][3]}\n\n"
         list_all_admin.set(reslt)
         return False

@@ -37,7 +37,7 @@ kb_start_admin.row(reg, admin).row(others, stikers).add(applicant)
 # ===========================4 Keyboards============================
 about_author = KeyboardButton("Про бота 🖇")
 commandsk = KeyboardButton("Донат 🫡")
-helPa = KeyboardButton("Команди 🛠")
+helPa = KeyboardButton("Допомога 🛠")
 time_work = KeyboardButton("Час роботи 📅")
 addres = KeyboardButton("Адреса 📫")
 menu = KeyboardButton("Меню 👥")
@@ -66,4 +66,3 @@ kb_speciality = ReplyKeyboardMarkup(resize_keyboard=True)
 kb_speciality.add(spec012).insert(spec013).add(spec014).insert(spec015_39).row(
     spec014_12, spec029
 ).add(back)
-

@@ -85,12 +85,12 @@ async def super_admin_teach(msg: types.Message):
         await dels.delete()
 
 
-
 # Показати користувачів за групою
 async def super_admin_user_for_group(msg: types.Message, state: FSMContext):
     if msg.from_user.id == super_admin_admin or msg.from_user.id == super_admin_ura:
         await msg.answer(
-            "Введіть групу для перегляду таблиці за цією групою", reply_markup=await get_kb()
+            "Введіть групу для перегляду таблиці за цією групою",
+            reply_markup=await get_kb(),
         )
         await FSMSuperA.group.set()
     else:
@@ -190,7 +190,9 @@ def register_handler_sadmin(dp: Dispatcher):
     dp.register_message_handler(user_kb, text="студент")
     dp.register_message_handler(super_admin_user, text="таблиця студентів")
     dp.register_message_handler(super_admin_teach, text="таблиця викладачів")
-    dp.register_message_handler(super_admin_user_for_group, text="таблиця за групою", state=None)
+    dp.register_message_handler(
+        super_admin_user_for_group, text="таблиця за групою", state=None
+    )
     dp.register_message_handler(super_admin_user_for_group1, state=FSMSuperA.group)
     dp.register_message_handler(super_admin_groupa, text="таблиця групи")
     dp.register_message_handler(super_admin_admins, text="таблиця адмінів")

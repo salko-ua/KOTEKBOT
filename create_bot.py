@@ -7,5 +7,5 @@ from alerts_in_ua import AsyncClient as AsyncAlertsClient
 
 
 bot = Bot(TOKEN)
-dp = Dispatcher(bot, storage = MemoryStorage())
-alerts_client = AsyncAlertsClient(token = token_alert)
+dp = Dispatcher(bot, storage=MemoryStorage())
+alerts_client = AsyncAlertsClient(token=token_alert)
