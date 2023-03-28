@@ -149,7 +149,7 @@ async def about_bot(message: types.Message):
     await stats_schedule_add("Про бота 🖇", 1)
     await message.answer(
 """БОТ ВПК ПЕДКІТ
-Версія : release 1.6e7
+Версія : release 1.6e8
 Розробник: <a href='https://t.me/salkooua'>Мусаєв Джаміль</a>
 Зробив аватарку: <a href='https://t.me/yurchh'>Коновалець Юра</a>
 

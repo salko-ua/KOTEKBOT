@@ -12,7 +12,6 @@ async def bd_Start():
     await base.execute(
         """
         CREATE TABLE IF NOT EXISTS user(
-            id         INTEGER PRIMARY KEY,
             user_id    INTEGER UNIQUE,
             Name       TEXT,
             Nickname   TEXT,
@@ -170,7 +169,7 @@ async def delete_calls_sql():
 # exists
 async def user_exists_sql(user_id):
     result = await cur.execute(
-        "SELECT COUNT(`id`) FROM `user` WHERE `user_id` = ?", (user_id,)
+        "SELECT COUNT(`user_id`) FROM `user` WHERE `user_id` = ?", (user_id,)
     )
     result = await result.fetchall()
     return bool(result[0][0])
@@ -352,23 +351,23 @@ async def see_calls_sql():
 
 
 async def count_user_sql():
-    counts = await cur.execute("SELECT `id` FROM user")
+    counts = await cur.execute("SELECT `user_id` FROM user")
     row_counts = await counts.fetchall()
     if len(row_counts) == 0:
-        return False, 0
+        return 0
     else:
         reslt = len(row_counts)
-        return True, reslt
+        return reslt
 
 
 async def count_teacher_sql():
     counts = await cur.execute("SELECT `id` FROM teachers")
     row_counts = await counts.fetchall()
     if len(row_counts) == 0:
-        return False, 0
+        return 0
     else:
         reslt = len(row_counts)
-        return True, reslt
+        return reslt
 
 
 # ================= ОНОВЛЕННЯ В ТАБЛИЦІ =================
@@ -486,6 +485,36 @@ list_all_groupa = ContextVar("list_all_groupa", default=[])
 list_all_admin = ContextVar("list_all_admin", default=[])
 
 
+
+#Реставрування бд
+async def update_user_db_sql():
+    all_user = await (await cur.execute("SELECT * FROM user")).fetchall()
+    new_list_all_user = []
+    for i in range(0,len(all_user)):
+        new_tuple = all_user[i][1],all_user[i][2],all_user[i][3],all_user[i][4]
+        new_list_all_user.append(tuple(new_tuple))
+    await cur.execute("DROP TABLE user")
+    await base.commit()
+    await base.execute(
+        """
+        CREATE TABLE IF NOT EXISTS user(
+            user_id    INTEGER UNIQUE,
+            Name       TEXT,
+            Nickname   TEXT,
+            group_user TEXT
+        )
+        """
+    )
+    await base.commit()
+    for i in range(0,len(new_list_all_user)):
+        await cur.execute(
+        "INSERT INTO `user` (`user_id`, `Name`, `Nickname`, `group_user`) VALUES (?,?,?,?)",
+        (new_list_all_user[i][0],new_list_all_user[i][1],new_list_all_user[i][2],new_list_all_user[i][3])
+    )
+    await base.commit()
+
+
+
 # Переглянути таблицю користувачів
 async def user_all_sql():
     keys = list_all_user.get()
@@ -500,7 +529,7 @@ async def user_all_sql():
             keys.append(i)
         reslt = ""
         for i in range(0, len(keys)):
-            reslt +=f"{i + 1}|{keys[i][1]}|[{keys[i][2]}]|{keys[i][4]}|\n"
+            reslt +=f"{i + 1}|{keys[i][0]}|[{keys[i][1]}]|{keys[i][3]}|\n"
         list_all_user.set(reslt)
         return False
 
@@ -536,9 +565,9 @@ async def user_for_group_sql(groupe):
     elif len(list_r) > 0:
         for i in list_r:
             keys.append(i)
-        reslt = f"Група : {keys[0][4]}\n\n"
+        reslt = f"Група : {keys[0][3]}\n\n"
         for i in range(0, len(keys)):
-            reslt +=f"{i + 1}|{keys[i][1]}|[{keys[i][2]}]\n"
+            reslt +=f"{i + 1}|{keys[i][0]}|[{keys[i][1]}]\n"
         list_all_user_for_group.set(reslt)
         return False
 

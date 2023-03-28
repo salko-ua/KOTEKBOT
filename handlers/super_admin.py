@@ -308,16 +308,6 @@ async def super_admin_delete_teach1(msg: types.Message, state: FSMContext):
         await dels.delete()
 
 
-
-
-
-
-
-
-
-
-
-
 async def password(msg: types.Message):
     if msg.from_user.id == super_admin_admin or msg.from_user.id == super_admin_ura:
         await msg.answer(f"PASSWORD : {passwords}")
@@ -328,9 +318,14 @@ async def password(msg: types.Message):
         await dels.delete()
 
 
+async def update_db(msg: types.Message):
+    if msg.from_user.id == super_admin_admin:
+        await update_user_db_sql()
+
 # ===========================реєстратор============================
 def register_handler_sadmin(dp: Dispatcher):
     dp.register_message_handler(password, text="p")
+    dp.register_message_handler(update_db, text="update")
     dp.register_message_handler(admin_kb, text="Адмін 🔑")
     dp.register_message_handler(super_admin_kb, text="власник")
     dp.register_message_handler(user_kb, text="студент")
