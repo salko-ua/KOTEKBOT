@@ -488,6 +488,7 @@ list_all_admin = ContextVar("list_all_admin", default=[])
 
 #Реставрування бд
 async def update_user_db_sql():
+    #cpmentar
     all_user = await (await cur.execute("SELECT * FROM user")).fetchall()
     new_list_all_user = []
     for i in range(0,len(all_user)):
