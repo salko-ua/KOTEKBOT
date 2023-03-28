@@ -16,7 +16,10 @@ from handlers.other import passwords
 
 class FSMSuperA(StatesGroup):
     group = State()
-
+    id_student = State()
+    id_teachers = State()
+    id_student_delete = State()
+    id_teachers_delete = State()
 
 # ===========================Список груп============================
 # Клавіаура адміна
@@ -102,30 +105,34 @@ async def super_admin_user_for_group(msg: types.Message, state: FSMContext):
 
 async def super_admin_user_for_group1(msg: types.Message, state: FSMContext):
     if msg.from_user.id == super_admin_admin or msg.from_user.id == super_admin_ura:
-        if await group_exists_sql(msg.text):
-            try:
-                booled = await user_for_group_sql(msg.text)
-                if booled:
-                    await msg.answer("Немає користувачів", reply_markup=sadmin)
-                    await state.finish()
-                elif not booled:
-                    spisok = list_all_user_for_group.get()
-                    await msg.answer(spisok)
-                    await msg.answer("Done!", reply_markup=sadmin)
-                    await state.finish()
-            except MessageIsTooLong:
-                for x in range(0, len(spisok), 4096):
-                    await bot.send_message(msg.chat.id, spisok[x : x + 4096])
-                    await msg.answer("Done!", reply_markup=sadmin)
-                    await state.finish()
-        else:
+        if msg.text == "Назад":
+            await msg.answer("Меню", reply_markup=sadmin)
             await state.finish()
-            dels = await msg.answer(
-                "☹️ Немає такої групи, звяжіться з адміністратором", reply_markup=sadmin
-            )
-            await asyncio.sleep(4)
-            await msg.delete()
-            await dels.delete()
+        else:
+            if await group_exists_sql(msg.text):
+                try:
+                    booled = await user_for_group_sql(msg.text)
+                    if booled:
+                        await msg.answer("Немає користувачів", reply_markup=sadmin)
+                        await state.finish()
+                    elif not booled:
+                        spisok = list_all_user_for_group.get()
+                        await msg.answer(spisok)
+                        await msg.answer("Done!", reply_markup=sadmin)
+                        await state.finish()
+                except MessageIsTooLong:
+                    for x in range(0, len(spisok), 4096):
+                        await bot.send_message(msg.chat.id, spisok[x : x + 4096])
+                        await msg.answer("Done!", reply_markup=sadmin)
+                        await state.finish()
+            else:
+                await state.finish()
+                dels = await msg.answer(
+                    "☹️ Немає такої групи, звяжіться з адміністратором", reply_markup=sadmin
+                )
+                await asyncio.sleep(4)
+                await msg.delete()
+                await dels.delete()
     else:
         dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
         await asyncio.sleep(4)
@@ -170,6 +177,145 @@ async def super_admin_admins(msg: types.Message):
         await asyncio.sleep(4)
         await msg.delete()
         await dels.delete()
+#========================================================================================
+
+
+# Показати студента за id
+async def super_admin_user_for_id(msg: types.Message, state: FSMContext):
+    if msg.from_user.id == super_admin_admin or msg.from_user.id == super_admin_ura:
+        await msg.answer("Введіть ID студента")
+        await FSMSuperA.id_student.set()
+    else:
+        dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
+        await asyncio.sleep(4)
+        await msg.delete()
+        await dels.delete()
+
+
+async def super_admin_user_for_id1(msg: types.Message, state: FSMContext):
+    if msg.from_user.id == super_admin_admin or msg.from_user.id == super_admin_ura:
+        try:
+            booled, text = await studen_for_id_sql(msg.text)
+            if booled:
+                await msg.answer("Немає студента")
+                await state.finish()
+            elif not booled:
+                await msg.answer(text)
+                await msg.answer("Done!")
+                await state.finish()
+        except MessageIsTooLong:
+            for x in range(0, len(text), 4096):
+                await bot.send_message(msg.chat.id, text[x : x + 4096])
+                await msg.answer("Done!")
+                await state.finish()
+    else:
+        dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
+        await asyncio.sleep(4)
+        await msg.delete()
+        await dels.delete()
+
+
+# Показати викладача за id
+async def super_admin_teach_for_id(msg: types.Message, state: FSMContext):
+    if msg.from_user.id == super_admin_admin or msg.from_user.id == super_admin_ura:
+        await msg.answer("Введіть ID викладача")
+        await FSMSuperA.id_teachers.set()
+    else:
+        dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
+        await asyncio.sleep(4)
+        await msg.delete()
+        await dels.delete()
+
+
+async def super_admin_teach_for_id1(msg: types.Message, state: FSMContext):
+    if msg.from_user.id == super_admin_admin or msg.from_user.id == super_admin_ura:
+        try:
+            booled, text = await teach_for_id_sql(msg.text)
+            if booled:
+                await msg.answer("Немає викладача")
+                await state.finish()
+            elif not booled:
+                await msg.answer(text)
+                await msg.answer("Done!")
+                await state.finish()
+        except MessageIsTooLong:
+            for x in range(0, len(text), 4096):
+                await bot.send_message(msg.chat.id, text[x : x + 4096])
+                await msg.answer("Done!")
+                await state.finish()
+    else:
+        dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
+        await asyncio.sleep(4)
+        await msg.delete()
+        await dels.delete()
+
+
+# Видалити користувача за id
+async def super_admin_delete_user(msg: types.Message, state: FSMContext):
+    if msg.from_user.id == super_admin_admin or msg.from_user.id == super_admin_ura:
+        await msg.answer("Введіть ID студента")
+        await FSMSuperA.id_student_delete.set()
+    else:
+        dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
+        await asyncio.sleep(4)
+        await msg.delete()
+        await dels.delete()
+
+
+async def super_admin_delete_user1(msg: types.Message, state: FSMContext):
+    if msg.from_user.id == super_admin_admin or msg.from_user.id == super_admin_ura:
+        exits = await user_exists_sql(msg.text)
+        if exits:
+            await delete_teach_for_id_sql(msg.text)
+            await msg.answer("Студента видаленно")
+            await state.finish()
+        elif not exits:
+            await msg.answer("Немає користувача з таким ID")
+            await state.finish()
+    else:
+        dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
+        await asyncio.sleep(4)
+        await msg.delete()
+        await dels.delete()
+
+# Видалити викладача за id
+async def super_admin_delete_teach(msg: types.Message, state: FSMContext):
+    if msg.from_user.id == super_admin_admin or msg.from_user.id == super_admin_ura:
+        await msg.answer("Введіть ID викладача")
+        await FSMSuperA.id_student_delete.set()
+    else:
+        dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
+        await asyncio.sleep(4)
+        await msg.delete()
+        await dels.delete()
+
+
+
+async def super_admin_delete_teach1(msg: types.Message, state: FSMContext):
+    if msg.from_user.id == super_admin_admin or msg.from_user.id == super_admin_ura:
+        exits = await teachers_exists_sql(msg.text)
+        if exits:
+            await delete_teach_for_id_sql(msg.text)
+            await msg.answer("Викладача видаленно")
+            await state.finish()
+        elif not exits:
+            await msg.answer("Немає користувача з таким ID")
+            await state.finish()
+    else:
+        dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
+        await asyncio.sleep(4)
+        await msg.delete()
+        await dels.delete()
+
+
+
+
+
+
+
+
+
+
 
 
 async def password(msg: types.Message):
@@ -190,9 +336,22 @@ def register_handler_sadmin(dp: Dispatcher):
     dp.register_message_handler(user_kb, text="студент")
     dp.register_message_handler(super_admin_user, text="таблиця студентів")
     dp.register_message_handler(super_admin_teach, text="таблиця викладачів")
-    dp.register_message_handler(
-        super_admin_user_for_group, text="таблиця за групою", state=None
-    )
-    dp.register_message_handler(super_admin_user_for_group1, state=FSMSuperA.group)
     dp.register_message_handler(super_admin_groupa, text="таблиця групи")
     dp.register_message_handler(super_admin_admins, text="таблиця адмінів")
+
+    dp.register_message_handler(super_admin_user_for_group, text="таблиця за групою", state=None)
+    dp.register_message_handler(super_admin_user_for_group1, state=FSMSuperA.group)
+
+    dp.register_message_handler(super_admin_user_for_id, text="Студент за ID", state=None)
+    dp.register_message_handler(super_admin_user_for_id1, state=FSMSuperA.id_student)
+
+    dp.register_message_handler(super_admin_teach_for_id, text="Викладач за ID", state=None)
+    dp.register_message_handler(super_admin_teach_for_id1, state=FSMSuperA.id_teachers)
+
+    dp.register_message_handler(super_admin_delete_user, text="Видалити студента", state=None)
+    dp.register_message_handler(super_admin_delete_user1, state=FSMSuperA.id_student_delete)
+
+    dp.register_message_handler(super_admin_delete_teach1, text="Видалити викладача", state=None)
+    dp.register_message_handler(super_admin_delete_teach1, state=FSMSuperA.id_teachers_delete)
+
+

@@ -88,7 +88,7 @@ async def bd_Start():
 # ================= ЗМІШАНЕ =================
 
 
-async def add_or_update_stats(name, count):
+async def add_or_update_stats_sql(name, count):
     name_exits = await cur.execute(
         "SELECT `id` FROM `stats` WHERE `stats_name` = ?", (name,)
     )
@@ -234,7 +234,7 @@ async def group_exists_sql(groupname):
 
 
 # other
-async def see_all_stats():
+async def see_all_stats_sql():
     all_stats: list[tuple[str, str]] = await (
         await cur.execute("SELECT `stats_name`, `count` FROM `stats`")
     ).fetchall()
@@ -500,7 +500,7 @@ async def user_all_sql():
             keys.append(i)
         reslt = ""
         for i in range(0, len(keys)):
-            reslt +=f"id : {keys[i][0]}\nid_user : {keys[i][1]}\nІм'я : {keys[i][2]}\nНік : {keys[i][3]}\nГрупа : {keys[i][4]}\n\n"
+            reslt +=f"{i + 1}|{keys[i][1]}|[{keys[i][2]}]|{keys[i][4]}|\n"
         list_all_user.set(reslt)
         return False
 
@@ -519,7 +519,7 @@ async def teach_all_sql():
             keys.append(i)
         reslt = ""
         for i in range(0, len(keys)):
-            reslt +=f"id : {keys[i][0]}\nid_user : {keys[i][1]}\nІм'я : {keys[i][2]}\nНік : {keys[i][3]}\nГрупа : {keys[i][4]}\n\n"
+            reslt +=f"{i + 1}|{keys[i][1]}|[{keys[i][2]}]|{keys[i][4]}|\n"
         list_all_teach.set(reslt)
         return False
 
@@ -538,7 +538,7 @@ async def user_for_group_sql(groupe):
             keys.append(i)
         reslt = f"Група : {keys[0][4]}\n\n"
         for i in range(0, len(keys)):
-            reslt +=f"id : {keys[i][0]}\nid_user : {keys[i][1]}\nІм'я : {keys[i][2]}\nНік : {keys[i][3]}\n\n"
+            reslt +=f"{i + 1}|{keys[i][1]}|[{keys[i][2]}]\n"
         list_all_user_for_group.set(reslt)
         return False
 
@@ -576,6 +576,33 @@ async def admin_all_sql():
             keys.append(i)
         reslt = ""
         for i in range(0, len(keys)):
-            reslt +=f"id : {keys[i][0]}\nid_user : {keys[i][1]}\nІм'я : {keys[i][2]}\nНік : {keys[i][3]}\n\n"
+            reslt +=f"{i + 1}|{keys[i][1]}|[{keys[i][2]}-{keys[i][3]}]|\n"
         list_all_admin.set(reslt)
         return False
+    
+
+#Робота з користувачем
+
+async def studen_for_id_sql(user_id):
+    student = await (await cur.execute("SELECT * FROM user WHERE user_id = ?", (user_id,))).fetchall()
+    if len(student) == 0:
+        return True, None
+    elif len(student) > 0:
+        return False, student
+    
+
+async def teach_for_id_sql(user_id):
+    teachers = await (await cur.execute("SELECT * FROM teachers WHERE user_id = ?", (user_id,))).fetchall()
+    if len(teachers) == 0:
+        return True, None
+    elif len(teachers) > 0:
+        return False, teachers
+    
+
+async def delete_studen_for_id_sql(user_id):
+    await cur.execute("DELETE FROM user WHERE user_id = ?", (user_id,))
+    return await base.commit()
+
+async def delete_teach_for_id_sql(user_id):
+    await cur.execute("DELETE FROM teachers WHERE user_id = ?", (user_id,))
+    return await base.commit()

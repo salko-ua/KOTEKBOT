@@ -5,12 +5,12 @@ from data_base.controller_db import *
 
 
 async def stats_schedule_add(name, count):
-    await add_or_update_stats(name, count)
+    await add_or_update_stats_sql(name, count)
 
 
 # ===========================Статистика 🧮============================
 async def stats_all(message: types.Message):
-    text = await see_all_stats()
+    text = await see_all_stats_sql()
     value_stud = await count_user_sql()
     value_teach = await count_teacher_sql()
     await message.answer(
