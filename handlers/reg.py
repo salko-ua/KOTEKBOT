@@ -1,5 +1,6 @@
 # import
 import asyncio
+
 # from import
 from aiogram import types
 from aiogram.dispatcher import Dispatcher
@@ -11,12 +12,13 @@ from aiogram.utils.exceptions import (
     BadRequest,
 )
 from aiogram.dispatcher.filters.state import State, StatesGroup
+from aiogram.dispatcher.filters import Text, ChatTypeFilter
 from keyboards import *
 from data_base.controller_db import *
 from random import randint as rd
 from handlers.stats import stats_schedule_add
 
-passwords = str(rd(10, 20)) + str(rd(10, 20)) + str(rd(10, 20)) + str(rd(10, 20))
+passwords = str(rd(1, 9)) + str(rd(1, 9)) + str(rd(1, 9)) + str(rd(1, 9)) + str(rd(1, 9)) + str(rd(1, 9)) + str(rd(1, 9)) + str(rd(1, 9))
 
 
 # answer - повідомлення
@@ -30,7 +32,6 @@ class FSMReg(StatesGroup):
     teachers_reg = State()
     password_reg = State()
     reply_reg = State()
-
 
 
 # ===========================Реєстрація ⚙️============================
@@ -214,12 +215,20 @@ async def regTeachers(message: types.Message, state: FSMContext):
         await state.finish()
 
 
+text = {
+    "registration": ["Реєстрація ⚙️", "Розклад ⚙️", "Reg", "registration", "Реєстрація", "Розклад"],
+}
+
+
 # ===========================реєстратор============================
-def register_handler_other(dp: Dispatcher):
+def register_handler_reg(dp: Dispatcher):
     # Реєстрація
-    dp.register_message_handler(registration, text=["Реєстрація ⚙️", "Розклад ⚙️"], state=None)
+    dp.register_message_handler(
+        registration,
+        Text(ignore_case=True, equals=text["registration"]),
+        ChatTypeFilter("private"),
+        state=None)
     dp.register_message_handler(reg, state=FSMReg.reply_reg)
     dp.register_message_handler(regAdmin, state=FSMReg.password_reg)
     dp.register_message_handler(regUser, state=FSMReg.course_groupe_reg)
     dp.register_message_handler(regTeachers, state=FSMReg.teachers_reg)
-

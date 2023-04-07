@@ -1,8 +1,7 @@
 from aiogram import types
 from aiogram.dispatcher import Dispatcher
 from data_base.controller_db import *
-
-
+from aiogram.dispatcher.filters import Text
 
 async def stats_schedule_add(name, count):
     await add_or_update_stats_sql(name, count)
@@ -14,7 +13,7 @@ async def stats_all(message: types.Message):
     value_stud = await count_user_sql()
     value_teach = await count_teacher_sql()
     await message.answer(
-f"""📊 Статистика користувачів :
+        f"""📊 Статистика користувачів :
  • Кількість студентів у боті : {value_stud}
  • Кількість викладачів у боті : {value_teach}
 
@@ -22,8 +21,12 @@ f"""📊 Статистика користувачів :
 {text}
 (Натискання цих кнопок)
 """
-)
+    )
+
+text = {
+    "stats_all": ["Статистика 🧮", "Статистика", "Stats", "stat", "S"],
+}
 
 
 def register_handler_stats(dp: Dispatcher):
-    dp.register_message_handler(stats_all, text="Статистика 🧮")
+    dp.register_message_handler(stats_all, Text(ignore_case=True, equals=text["stats_all"]))

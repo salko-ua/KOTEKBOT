@@ -1,24 +1,19 @@
 # import
 import asyncio
+
 # from import
 from aiogram import types
 from aiogram.dispatcher import Dispatcher
 from aiogram.types import ReplyKeyboardRemove
-from aiogram.dispatcher import FSMContext
 from aiogram.utils.exceptions import (
     MessageToDeleteNotFound,
     MessageCantBeDeleted,
     BadRequest,
 )
-from aiogram.dispatcher.filters.state import State, StatesGroup
+from aiogram.dispatcher.filters import Text
 from keyboards import *
 from data_base.controller_db import *
-from random import randint as rd
 from handlers.stats import stats_schedule_add, stats_all
-
-
-
-
 
 
 #                            СТАРТ
@@ -45,12 +40,6 @@ async def start(message: types.Message):
             await message.answer(
                 "Помилка, я не можу автовидалити своє повідомлення, мені потрібні права адміна"
             )
-
-
-
-
-
-
 
 
 # @dp.message_handler(commands=["coupes"])
@@ -111,7 +100,7 @@ async def delete_keyboard(message: types.Message):
 async def versions(message: types.Message):
     try:
         version = (
-            "Версія бота : release 1.6 \nВерсія Python : 3.11.1\nВерсія Aiogram : 2.24"
+            "Версія бота : release 1.7 \nВерсія Python : 3.11.1\nВерсія Aiogram : 2.24"
         )
         await message.answer(version)
     except (MessageToDeleteNotFound, MessageCantBeDeleted, BadRequest):
@@ -144,16 +133,21 @@ async def help(message: types.Message):
     except (MessageToDeleteNotFound, MessageCantBeDeleted, BadRequest):
         pass
 
+text = {
+    "help": ["Допомога 🛠","Допомога", "help"],
+    "donate": ["Донат 🫡", "Донат", "donate"]
+}
+
 
 # ===========================реєстратор============================
 def register_handler_commands(dp: Dispatcher):
-    #start
+    # start
     dp.register_message_handler(start, commands=["start"])
     # Команди
-    dp.register_message_handler(help, text="Допомога 🛠")
+    dp.register_message_handler(help, Text(ignore_case=True, equals=text["help"]))
     dp.register_message_handler(help, commands=["help"])
     # Підтримка
-    dp.register_message_handler(donate, text="Донат 🫡")
+    dp.register_message_handler(donate, Text(ignore_case=True, equals=text["donate"]))
     dp.register_message_handler(donate, commands=["donate"])
     # Розклад
     dp.register_message_handler(view_coupes_comm, commands=["coupes"])
@@ -161,11 +155,11 @@ def register_handler_commands(dp: Dispatcher):
     dp.register_message_handler(delete_keyboard, commands=["delete_keyboards"])
     # Версія
     dp.register_message_handler(versions, commands=["version"])
-    #Ститистика
+    # Ститистика
     dp.register_message_handler(stats_all, commands=["stats"])
 
 
-''' список для BotFather
+""" список для BotFather
 start - запуск / перезапуск бота
 coupes - перегляд розкладу
 stats - статистика
@@ -173,4 +167,4 @@ help - допомога
 donate - підтримка проєкту
 version - версія
 delete_keyboards - видалити клавіатуру
-'''
+"""

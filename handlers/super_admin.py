@@ -11,7 +11,7 @@ from keyboards import *
 from data_base.controller_db import *
 from config import super_admin_admin, super_admin_ura
 from create_bot import bot
-from handlers.other import passwords
+from handlers.reg import passwords
 
 
 class FSMSuperA(StatesGroup):
@@ -20,6 +20,7 @@ class FSMSuperA(StatesGroup):
     id_teachers = State()
     id_student_delete = State()
     id_teachers_delete = State()
+
 
 # ===========================Список груп============================
 # Клавіаура адміна
@@ -128,7 +129,8 @@ async def super_admin_user_for_group1(msg: types.Message, state: FSMContext):
             else:
                 await state.finish()
                 dels = await msg.answer(
-                    "☹️ Немає такої групи, звяжіться з адміністратором", reply_markup=sadmin
+                    "☹️ Немає такої групи, звяжіться з адміністратором",
+                    reply_markup=sadmin,
                 )
                 await asyncio.sleep(4)
                 await msg.delete()
@@ -177,7 +179,9 @@ async def super_admin_admins(msg: types.Message):
         await asyncio.sleep(4)
         await msg.delete()
         await dels.delete()
-#========================================================================================
+
+
+# ========================================================================================
 
 
 # Показати студента за id
@@ -278,6 +282,7 @@ async def super_admin_delete_user1(msg: types.Message, state: FSMContext):
         await msg.delete()
         await dels.delete()
 
+
 # Видалити викладача за id
 async def super_admin_delete_teach(msg: types.Message, state: FSMContext):
     if msg.from_user.id == super_admin_admin or msg.from_user.id == super_admin_ura:
@@ -288,7 +293,6 @@ async def super_admin_delete_teach(msg: types.Message, state: FSMContext):
         await asyncio.sleep(4)
         await msg.delete()
         await dels.delete()
-
 
 
 async def super_admin_delete_teach1(msg: types.Message, state: FSMContext):
@@ -322,6 +326,7 @@ async def update_db(msg: types.Message):
     if msg.from_user.id == super_admin_admin:
         await update_user_db_sql()
 
+
 # ===========================реєстратор============================
 def register_handler_sadmin(dp: Dispatcher):
     dp.register_message_handler(password, text="p")
@@ -334,19 +339,31 @@ def register_handler_sadmin(dp: Dispatcher):
     dp.register_message_handler(super_admin_groupa, text="таблиця групи")
     dp.register_message_handler(super_admin_admins, text="таблиця адмінів")
 
-    dp.register_message_handler(super_admin_user_for_group, text="таблиця за групою", state=None)
+    dp.register_message_handler(
+        super_admin_user_for_group, text="таблиця за групою", state=None
+    )
     dp.register_message_handler(super_admin_user_for_group1, state=FSMSuperA.group)
 
-    dp.register_message_handler(super_admin_user_for_id, text="Студент за ID", state=None)
+    dp.register_message_handler(
+        super_admin_user_for_id, text="Студент за ID", state=None
+    )
     dp.register_message_handler(super_admin_user_for_id1, state=FSMSuperA.id_student)
 
-    dp.register_message_handler(super_admin_teach_for_id, text="Викладач за ID", state=None)
+    dp.register_message_handler(
+        super_admin_teach_for_id, text="Викладач за ID", state=None
+    )
     dp.register_message_handler(super_admin_teach_for_id1, state=FSMSuperA.id_teachers)
 
-    dp.register_message_handler(super_admin_delete_user, text="Видалити студента", state=None)
-    dp.register_message_handler(super_admin_delete_user1, state=FSMSuperA.id_student_delete)
+    dp.register_message_handler(
+        super_admin_delete_user, text="Видалити студента", state=None
+    )
+    dp.register_message_handler(
+        super_admin_delete_user1, state=FSMSuperA.id_student_delete
+    )
 
-    dp.register_message_handler(super_admin_delete_teach1, text="Видалити викладача", state=None)
-    dp.register_message_handler(super_admin_delete_teach1, state=FSMSuperA.id_teachers_delete)
-
-
+    dp.register_message_handler(
+        super_admin_delete_teach1, text="Видалити викладача", state=None
+    )
+    dp.register_message_handler(
+        super_admin_delete_teach1, state=FSMSuperA.id_teachers_delete
+    )

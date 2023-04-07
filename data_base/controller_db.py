@@ -485,14 +485,13 @@ list_all_groupa = ContextVar("list_all_groupa", default=[])
 list_all_admin = ContextVar("list_all_admin", default=[])
 
 
-
-#Реставрування бд
+# Реставрування бд
 async def update_user_db_sql():
-    #cpmentarів
+    # cpmentarів
     all_user = await (await cur.execute("SELECT * FROM user")).fetchall()
     new_list_all_user = []
-    for i in range(0,len(all_user)):
-        new_tuple = all_user[i][1],all_user[i][2],all_user[i][3],all_user[i][4]
+    for i in range(0, len(all_user)):
+        new_tuple = all_user[i][1], all_user[i][2], all_user[i][3], all_user[i][4]
         new_list_all_user.append(tuple(new_tuple))
     await cur.execute("DROP TABLE user")
     await base.commit()
@@ -507,13 +506,17 @@ async def update_user_db_sql():
         """
     )
     await base.commit()
-    for i in range(0,len(new_list_all_user)):
+    for i in range(0, len(new_list_all_user)):
         await cur.execute(
-        "INSERT INTO `user` (`user_id`, `Name`, `Nickname`, `group_user`) VALUES (?,?,?,?)",
-        (new_list_all_user[i][0],new_list_all_user[i][1],new_list_all_user[i][2],new_list_all_user[i][3])
-    )
+            "INSERT INTO `user` (`user_id`, `Name`, `Nickname`, `group_user`) VALUES (?,?,?,?)",
+            (
+                new_list_all_user[i][0],
+                new_list_all_user[i][1],
+                new_list_all_user[i][2],
+                new_list_all_user[i][3],
+            ),
+        )
     await base.commit()
-
 
 
 # Переглянути таблицю користувачів
@@ -530,7 +533,7 @@ async def user_all_sql():
             keys.append(i)
         reslt = ""
         for i in range(0, len(keys)):
-            reslt +=f"{i + 1}|{keys[i][0]}|[{keys[i][1]}]|{keys[i][3]}|\n"
+            reslt += f"{i + 1}|{keys[i][0]}|[{keys[i][1]}]|{keys[i][3]}|\n"
         list_all_user.set(reslt)
         return False
 
@@ -549,7 +552,7 @@ async def teach_all_sql():
             keys.append(i)
         reslt = ""
         for i in range(0, len(keys)):
-            reslt +=f"{i + 1}|{keys[i][1]}|[{keys[i][2]}]|{keys[i][4]}|\n"
+            reslt += f"{i + 1}|{keys[i][1]}|[{keys[i][2]}]|{keys[i][4]}|\n"
         list_all_teach.set(reslt)
         return False
 
@@ -568,7 +571,7 @@ async def user_for_group_sql(groupe):
             keys.append(i)
         reslt = f"Група : {keys[0][3]}\n\n"
         for i in range(0, len(keys)):
-            reslt +=f"{i + 1}|{keys[i][0]}|[{keys[i][1]}]\n"
+            reslt += f"{i + 1}|{keys[i][0]}|[{keys[i][1]}]\n"
         list_all_user_for_group.set(reslt)
         return False
 
@@ -606,32 +609,38 @@ async def admin_all_sql():
             keys.append(i)
         reslt = ""
         for i in range(0, len(keys)):
-            reslt +=f"{i + 1}|{keys[i][1]}|[{keys[i][2]}-{keys[i][3]}]|\n"
+            reslt += f"{i + 1}|{keys[i][1]}|[{keys[i][2]}-{keys[i][3]}]|\n"
         list_all_admin.set(reslt)
         return False
-    
 
-#Робота з користувачем
+
+# Робота з користувачем
+
 
 async def studen_for_id_sql(user_id):
-    student = await (await cur.execute("SELECT * FROM user WHERE user_id = ?", (user_id,))).fetchall()
+    student = await (
+        await cur.execute("SELECT * FROM user WHERE user_id = ?", (user_id,))
+    ).fetchall()
     if len(student) == 0:
         return True, None
     elif len(student) > 0:
         return False, student
-    
+
 
 async def teach_for_id_sql(user_id):
-    teachers = await (await cur.execute("SELECT * FROM teachers WHERE user_id = ?", (user_id,))).fetchall()
+    teachers = await (
+        await cur.execute("SELECT * FROM teachers WHERE user_id = ?", (user_id,))
+    ).fetchall()
     if len(teachers) == 0:
         return True, None
     elif len(teachers) > 0:
         return False, teachers
-    
+
 
 async def delete_studen_for_id_sql(user_id):
     await cur.execute("DELETE FROM user WHERE user_id = ?", (user_id,))
     return await base.commit()
+
 
 async def delete_teach_for_id_sql(user_id):
     await cur.execute("DELETE FROM teachers WHERE user_id = ?", (user_id,))

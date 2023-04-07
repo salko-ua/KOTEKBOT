@@ -6,9 +6,11 @@ import cachetools
 from aiogram import types
 from aiogram.dispatcher import Dispatcher
 from config import super_admin_admin, super_admin_ura
+from create_bot import bot
 from keyboards import *
 from data_base.controller_db import *
-from aiogram.utils.exceptions import BotBlocked
+from aiogram.dispatcher.filters import Text
+import random as r
 from create_bot import alerts_client
 from handlers.stats import stats_schedule_add
 
@@ -31,7 +33,10 @@ async def view_coupes(message: types.Message):
     elif not await user_exists_sql(
         message.from_user.id
     ) and not await teachers_exists_sql(message.from_user.id):
-        await message.answer("❗️Нажміть кнопку реєстрації❗️", reply_markup=kb_start)
+        if message.chat.type == "private":
+            await message.answer("❗️Нажміть кнопку реєстрації❗️", reply_markup=kb_start)
+        else:
+            await message.answer("❗️Перейдіть у бота та зареєструйтесь❗️")
 
 
 # ===========================Змінити групу============================
@@ -52,7 +57,10 @@ async def view_calls(message: types.Message):
     elif not await user_exists_sql(
         message.from_user.id
     ) and not await teachers_exists_sql(message.from_user.id):
-        await message.answer("❗️Нажміть кнопку реєстрації❗️", reply_markup=kb_start)
+        if message.chat.type == "private":
+            await message.answer("❗️Нажміть кнопку реєстрації❗️", reply_markup=kb_start)
+        else:
+            await message.answer("❗️Перейдіть у бота та зареєструйтесь❗️")
 
 
 # ===========================Змінити групу============================
@@ -74,10 +82,10 @@ async def delete_user(message: types.Message):
     elif not await user_exists_sql(
         message.from_user.id
     ) and not await teachers_exists_sql(message.from_user.id):
-        await message.answer(
-            "🌚Ви і так не зареєстрованні\nНажміть кнопку реєстрації",
-            reply_markup=kb_start,
-        )
+        if message.chat.type == "private":
+            await message.answer("🌚Ви і так не зареєстрованні\nНажміть кнопку реєстрації", reply_markup=kb_start)
+        else:
+            await message.answer("🌚Ви і так не зареєстрованні\nПерейдіть у бота та зареєструйтесь")
 
 
 # =========================== Дріб ===========================
@@ -152,53 +160,7 @@ async def alert_func():
             for alert in list_alerts_oblast_title:
                 all_alerts += " • " + alert + "\n"
     return all_alerts
-
-
-# =========================== Тривога ===========================
-async def alert(message: types.Message):
-    await stats_schedule_add("Тривоги ⚠️", 1)
-    all_alerts = await alert_func()
-    await message.answer(
-        all_alerts + "\n" + "<a href='https://alerts.in.ua/'>Дані з сайту</a>",
-        parse_mode="HTML",
-        disable_web_page_preview=True,
-    )
-
-
-# ===========================Пустий хендлер============================
-async def all_text(message: types.Message):
-    if (
-        message.text == "Переглянути розклад пар"
-        or message.text == "Переглянути розклад дзвінків"
-        or message.text == "Змінити групу"
-        or message.text == "розклад дзвінків"
-        or message.text == "розклад пар"
-    ):
-        await message.answer(
-            "Бот оновився, оновлення завантажено ⬇️", reply_markup=kb_start_user
-        )
-    elif await admin_exists_sql(message.from_user.id) and message.text == "Адмін 🔑":
-        await message.answer("Адмінська частина", reply_markup=kb_admin)
-    elif message.text == "⬅️ Назад":
-        await message.answer("⬇️Головне меню⬇️", reply_markup=kb_infs)
-
-
-"""В розробці
-async def send_message_on_time(dp: Dispatcher):
-    print("in func")
-    all_users = await all_user_id_sql()
-    rest=[]
-    for i in range(0, len(all_users)):
-        rest.append(all_users[i][0])
-    for all_id in range(0, len(rest)):
-        try:
-            await dp.bot.send_message(rest[all_id], "Хвилина мовчання")
-        except BotBlocked:
-            await delete_users_sql(rest[all_id])
-            await dp.bot.send_message(5963046063,f"Видалено користувача {rest[all_id]}")"""
-
-
-"""Приклад даних які надходять від API https://alerts.in.ua/
+    """Приклад даних які надходять від API https://alerts.in.ua/
     {'id': 8757,
       'location_title': 'Луганська область', 
       'location_type': 'oblast',
@@ -224,11 +186,71 @@ async def send_message_on_time(dp: Dispatcher):
      'calculated': None}"""
 
 
+# =========================== Тривога ===========================
+async def alert(message: types.Message):
+    await stats_schedule_add("Тривоги ⚠️", 1)
+    all_alerts = await alert_func()
+    await message.answer(
+        all_alerts + "\n" + "<a href='https://alerts.in.ua/'>Дані з сайту</a>",
+        parse_mode="HTML",
+        disable_web_page_preview=True,
+    )
+
+
+
+
+
+# ===========================Пустий хендлер============================
+async def all_text(message: types.Message):
+    if await admin_exists_sql(message.from_user.id) and message.text == "Адмін 🔑":
+        await message.answer("Адмінська частина", reply_markup=kb_admin)
+    else:
+        if message.chat.type == "private":
+            await message.answer("Незнаю такої командм\nНатисни /start і використовуй\nклавіатуру з кнопками знизу")
+        else:
+            await bot.send_message(-813473243, "Група " + str(message.chat.title) + "\n" + str(message.from_user.username) + "\n" + str(message.from_user.id) + "\n\n" + message.text)
+
+
+
+
+
+
+text = {
+    "view_coupes": ["Розклад пар 👀",
+                    "Розклад занять 👀",
+                    "який розклад?",
+                    "розклад",
+                    "пари",
+                    "Розклад пар",
+                    "Розклад занять",
+                    "coupes"
+                    "які завтра пари",
+                    "які пари",
+                    "які завтра пари?",
+                    "які пари?",
+                    "Які завтра пари?",
+                    "Яка перша пара завтра?",
+                    "Розклад на завтра?",
+                    "Які пари будуть на завтра?",
+                    ],
+    "view_calls": ["Розклад дзвінків ⌚️","Розклад дзвінків","дзвінки"],
+    "delete_user": ["Вийти 🚫", "Змінити групу 🚫"],
+    "fraction": ["Ч/З тиждень ✏️",
+                 "чз",
+                 "Ч/З",
+                 "Ч/З тиждень",
+                 "чисельник",
+                 "знаменник",
+                 "який тиждень"
+                 ],
+    "alert": ["Тривоги ⚠️", "Тривога", "alert", "тривога є?"],
+}
+
 # ===========================реєстратор============================
 def register_handler_client(dp: Dispatcher):
-    dp.register_message_handler(view_coupes, text=["Розклад пар 👀", "Розклад занять 👀"])
-    dp.register_message_handler(view_calls, text="Розклад дзвінків ⌚️")
+    dp.register_message_handler(view_coupes, Text(ignore_case=True, equals=text["view_coupes"]))
+    dp.register_message_handler(view_calls,Text(ignore_case=True, equals=text["view_calls"]))
     dp.register_message_handler(delete_user, text=["Вийти 🚫", "Змінити групу 🚫"])
-    dp.register_message_handler(fraction, text=["Ч/З тиждень ✏️"])
-    dp.register_message_handler(alert, text=["Тривоги ⚠️"])
+    dp.register_message_handler(fraction,  Text(ignore_case=True, equals=text["fraction"]))
+    dp.register_message_handler(alert, Text(ignore_case=True, equals=text["alert"]))
     dp.register_message_handler(all_text)
