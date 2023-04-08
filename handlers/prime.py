@@ -5,7 +5,7 @@ from aiogram.dispatcher.filters import Text
 
 async def text_save(message: types.Message):
     if await user_exists_sql(message.from_user.id):
-        if message.text[7::] < 2:
+        if len(message.text[7::]) < 2:
             await message.answer("текст закороткий")
         else:
             link = message.text[7::]
@@ -13,7 +13,7 @@ async def text_save(message: types.Message):
             await add_text_sql(link, groups)
             await message.answer("Успішно додано!")
     elif await teachers_exists_sql(message.from_user.id):
-        if message.text[7::] < 2:
+        if len(message.text[7::]) < 2:
             await message.answer("текст закороткий")
         else:
             link = message.text[7::]
