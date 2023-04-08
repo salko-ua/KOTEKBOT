@@ -133,9 +133,10 @@ async def help(message: types.Message):
     except (MessageToDeleteNotFound, MessageCantBeDeleted, BadRequest):
         pass
 
+
 text = {
-    "help": ["Допомога 🛠","Допомога", "help"],
-    "donate": ["Донат 🫡", "Донат", "donate"]
+    "help": ["Допомога 🛠", "Допомога", "help"],
+    "donate": ["Донат 🫡", "Донат", "donate"],
 }
 
 
@@ -162,6 +163,7 @@ def register_handler_commands(dp: Dispatcher):
 """ список для BotFather
 start - запуск / перезапуск бота
 coupes - перегляд розкладу
+text - ваш текст
 stats - статистика
 help - допомога
 donate - підтримка проєкту

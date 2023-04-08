@@ -18,7 +18,16 @@ from data_base.controller_db import *
 from random import randint as rd
 from handlers.stats import stats_schedule_add
 
-passwords = str(rd(1, 9)) + str(rd(1, 9)) + str(rd(1, 9)) + str(rd(1, 9)) + str(rd(1, 9)) + str(rd(1, 9)) + str(rd(1, 9)) + str(rd(1, 9))
+passwords = (
+    str(rd(1, 9))
+    + str(rd(1, 9))
+    + str(rd(1, 9))
+    + str(rd(1, 9))
+    + str(rd(1, 9))
+    + str(rd(1, 9))
+    + str(rd(1, 9))
+    + str(rd(1, 9))
+)
 
 
 # answer - повідомлення
@@ -216,7 +225,14 @@ async def regTeachers(message: types.Message, state: FSMContext):
 
 
 text = {
-    "registration": ["Реєстрація ⚙️", "Розклад ⚙️", "Reg", "registration", "Реєстрація", "Розклад"],
+    "registration": [
+        "Реєстрація ⚙️",
+        "Розклад ⚙️",
+        "Reg",
+        "registration",
+        "Реєстрація",
+        "Розклад",
+    ],
 }
 
 
@@ -227,7 +243,8 @@ def register_handler_reg(dp: Dispatcher):
         registration,
         Text(ignore_case=True, equals=text["registration"]),
         ChatTypeFilter("private"),
-        state=None)
+        state=None,
+    )
     dp.register_message_handler(reg, state=FSMReg.reply_reg)
     dp.register_message_handler(regAdmin, state=FSMReg.password_reg)
     dp.register_message_handler(regUser, state=FSMReg.course_groupe_reg)

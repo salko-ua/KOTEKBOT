@@ -81,11 +81,42 @@ async def bd_Start():
         )
         """
     )
+    await base.execute(
+        """
+        CREATE TABLE IF NOT EXISTS text(
+            id           INTEGER PRIMARY KEY NOT NULL,
+            text_user   TEXT NOT NULL,
+            group_name TEXT
+        )
+        """
+    )
     await base.commit()
 
 
 # ================= ЗМІШАНЕ =================
 
+async def add_text_sql(text_user, group_name):
+    exits = await (await cur.execute("SELECT id FROM text WHERE group_name=?", (group_name,))).fetchall()
+    
+    if len(exits) < 1:
+        await cur.execute(
+            "INSERT INTO `text` (`text_user`, `group_name`) VALUES (?,?)",
+            (text_user, group_name,),
+        )
+    elif len(exits) > 0:
+        await cur.execute(
+            "UPDATE `text` SET `text_user` = ? WHERE `group_name` = ?",
+            (text_user, group_name,)
+        )
+    return await base.commit()
+
+async def see_text_sql(group_name):
+    exits = await (await cur.execute("SELECT text_user FROM text WHERE group_name=?", (group_name,))).fetchall()
+    
+    if len(exits) < 1:
+        return False, None
+    elif len(exits) > 0:
+        return True, exits[0][0]
 
 async def add_or_update_stats_sql(name, count):
     name_exits = await cur.execute(
@@ -245,6 +276,17 @@ async def see_all_stats_sql():
         text += f" • {category} : {number}\n"
     return text
 
+async def see_group_for_user_id(user_id):
+    # назва групи користувача
+    groups = await cur.execute("SELECT `group_user` FROM `user` WHERE `user_id` = ?", (user_id,))
+    result = await groups.fetchall()
+    return result[0][0]
+
+async def see_group_for_teach_id(user_id):
+    # назва групи користувача
+    groups = await cur.execute("SELECT `teacher_name` FROM `teachers` WHERE `user_id` = ?", (user_id,))
+    result = await groups.fetchall()
+    return result[0][0]
 
 async def id_from_group_exists_sql(groupname):
     result = await cur.execute(
@@ -398,7 +440,6 @@ async def teacher_photo_update_sql(photo, name_teacher, transl):
 
 
 # ================= ДОДАВАННЯ В ТАБЛИЦІ =================
-
 
 async def add_admin_sql(user_id, Name, Nickname):
     await cur.execute(

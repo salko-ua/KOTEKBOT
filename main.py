@@ -8,7 +8,7 @@ from create_bot import bot, dp
 from config import TOKEN_SENTRY
 from aiogram.utils.executor import start_webhook
 from data_base.controller_db import bd_Start
-from handlers import admin, client, reg, super_admin, menu, stats, commands
+from handlers import admin, client, reg, super_admin, menu, stats, commands, prime
 
 
 APP_URL = os.getenv("APP_URL")
@@ -28,6 +28,7 @@ async def regiseter_handlers():
     menu.register_handler_menu(dp)
     stats.register_handler_stats(dp)
     commands.register_handler_commands(dp)
+    prime.register_handler_stats(dp)
     client.register_handler_client(dp)
 
 

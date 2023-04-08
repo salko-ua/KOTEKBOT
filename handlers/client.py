@@ -83,9 +83,14 @@ async def delete_user(message: types.Message):
         message.from_user.id
     ) and not await teachers_exists_sql(message.from_user.id):
         if message.chat.type == "private":
-            await message.answer("🌚Ви і так не зареєстрованні\nНажміть кнопку реєстрації", reply_markup=kb_start)
+            await message.answer(
+                "🌚Ви і так не зареєстрованні\nНажміть кнопку реєстрації",
+                reply_markup=kb_start,
+            )
         else:
-            await message.answer("🌚Ви і так не зареєстрованні\nПерейдіть у бота та зареєструйтесь")
+            await message.answer(
+                "🌚Ви і так не зареєстрованні\nПерейдіть у бота та зареєструйтесь"
+            )
 
 
 # =========================== Дріб ===========================
@@ -197,60 +202,73 @@ async def alert(message: types.Message):
     )
 
 
-
-
-
 # ===========================Пустий хендлер============================
 async def all_text(message: types.Message):
     if await admin_exists_sql(message.from_user.id) and message.text == "Адмін 🔑":
         await message.answer("Адмінська частина", reply_markup=kb_admin)
     else:
         if message.chat.type == "private":
-            await message.answer("Незнаю такої командм\nНатисни /start і використовуй\nклавіатуру з кнопками знизу")
+            await message.answer(
+                "Незнаю такої командм\nНатисни /start і використовуй\nклавіатуру з кнопками знизу"
+            )
         else:
-            await bot.send_message(-813473243, "Група " + str(message.chat.title) + "\n" + str(message.from_user.username) + "\n" + str(message.from_user.id) + "\n\n" + message.text)
-
-
-
-
+            await bot.send_message(
+                -813473243,
+                "Група "
+                + str(message.chat.title)
+                + "\n"
+                + str(message.from_user.username)
+                + "\n"
+                + str(message.from_user.id)
+                + "\n\n"
+                + message.text,
+            )
 
 
 text = {
-    "view_coupes": ["Розклад пар 👀",
-                    "Розклад занять 👀",
-                    "який розклад?",
-                    "розклад",
-                    "пари",
-                    "Розклад пар",
-                    "Розклад занять",
-                    "coupes"
-                    "які завтра пари",
-                    "які пари",
-                    "які завтра пари?",
-                    "які пари?",
-                    "Які завтра пари?",
-                    "Яка перша пара завтра?",
-                    "Розклад на завтра?",
-                    "Які пари будуть на завтра?",
-                    ],
-    "view_calls": ["Розклад дзвінків ⌚️","Розклад дзвінків","дзвінки"],
+    "view_coupes": [
+        "Розклад пар 👀",
+        "Розклад занять 👀",
+        "який розклад?",
+        "розклад",
+        "пари",
+        "Розклад пар",
+        "Розклад занять",
+        "coupes" "які завтра пари",
+        "які пари",
+        "які завтра пари?",
+        "які пари?",
+        "Які завтра пари?",
+        "Яка перша пара завтра?",
+        "Розклад на завтра?",
+        "Які пари будуть на завтра?",
+    ],
+    "view_calls": ["Розклад дзвінків ⌚️", "Розклад дзвінків", "дзвінки"],
     "delete_user": ["Вийти 🚫", "Змінити групу 🚫"],
-    "fraction": ["Ч/З тиждень ✏️",
-                 "чз",
-                 "Ч/З",
-                 "Ч/З тиждень",
-                 "чисельник",
-                 "знаменник",
-                 "який тиждень"
-                 ],
+    "fraction": [
+        "Ч/З тиждень ✏️",
+        "чз",
+        "Ч/З",
+        "Ч/З тиждень",
+        "чисельник",
+        "знаменник",
+        "який тиждень",
+    ],
     "alert": ["Тривоги ⚠️", "Тривога", "alert", "тривога є?"],
 }
 
+
 # ===========================реєстратор============================
 def register_handler_client(dp: Dispatcher):
-    dp.register_message_handler(view_coupes, Text(ignore_case=True, equals=text["view_coupes"]))
-    dp.register_message_handler(view_calls,Text(ignore_case=True, equals=text["view_calls"]))
+    dp.register_message_handler(
+        view_coupes, Text(ignore_case=True, equals=text["view_coupes"])
+    )
+    dp.register_message_handler(
+        view_calls, Text(ignore_case=True, equals=text["view_calls"])
+    )
     dp.register_message_handler(delete_user, text=["Вийти 🚫", "Змінити групу 🚫"])
-    dp.register_message_handler(fraction,  Text(ignore_case=True, equals=text["fraction"]))
+    dp.register_message_handler(
+        fraction, Text(ignore_case=True, equals=text["fraction"])
+    )
     dp.register_message_handler(alert, Text(ignore_case=True, equals=text["alert"]))
     dp.register_message_handler(all_text)

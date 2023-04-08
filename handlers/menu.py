@@ -175,7 +175,7 @@ text = {
     "about_bot": ["Про бота 🖇", "Про бота", "about bot"],
     "about_collasge": ["Про коледж 🛡", "Про коледж", "about collasge"],
     "introduction": ["Вступ 📗", "Вступ", "introduction"],
-    "time_work": ["Час роботи 📅","Час роботи","time work"],
+    "time_work": ["Час роботи 📅", "Час роботи", "time work"],
     "addres": ["Адреса 📫", "Адреса", "addres"],
     "others": ["Інше 📌", "Інше ", "others", "other"],
     "stick": ["Стікери 👨‍👩‍👧‍👦", "Стікери", "Stickers"],
@@ -184,61 +184,39 @@ text = {
 
 def register_handler_menu(dp: Dispatcher):
     dp.register_message_handler(
-        menu,
-        Text(ignore_case=True, equals=text["menu"]),
-        ChatTypeFilter("private")
-    )
-    
-    dp.register_message_handler(
-        about_bot,
-        Text(ignore_case=True, equals=text["about_bot"])
-    )
-    
-    dp.register_message_handler(
-        about_collasge,
-        Text(ignore_case=True, equals=text["about_collasge"])
-    )
-    
-    dp.register_message_handler(
-        introduction,
-        Text(ignore_case=True, equals=text["introduction"])
+        menu, Text(ignore_case=True, equals=text["menu"]), ChatTypeFilter("private")
     )
 
     dp.register_message_handler(
-        time_work,
-        Text(ignore_case=True, equals=text["time_work"])
+        about_bot, Text(ignore_case=True, equals=text["about_bot"])
     )
 
     dp.register_message_handler(
-        addres,
-        Text(ignore_case=True, equals=text["addres"])
+        about_collasge, Text(ignore_case=True, equals=text["about_collasge"])
     )
 
     dp.register_message_handler(
-        others,
-        Text(ignore_case=True, equals=text["others"])
+        introduction, Text(ignore_case=True, equals=text["introduction"])
     )
 
     dp.register_message_handler(
-        stick,
-        Text(ignore_case=True, equals=text["stick"])
+        time_work, Text(ignore_case=True, equals=text["time_work"])
     )
-    
+
+    dp.register_message_handler(addres, Text(ignore_case=True, equals=text["addres"]))
+
+    dp.register_message_handler(others, Text(ignore_case=True, equals=text["others"]))
+
+    dp.register_message_handler(stick, Text(ignore_case=True, equals=text["stick"]))
+
     dp.register_message_handler(
-        for_applicant,
-        ChatTypeFilter("private"),
-        text="Для абітурієнта 🧑‍💻"
+        for_applicant, ChatTypeFilter("private"), text="Для абітурієнта 🧑‍💻"
     )
 
     dp.register_message_handler(
-        specialty,
-        ChatTypeFilter("private"),
-        text="Спеціальності 📜",
-        state=None
+        specialty, ChatTypeFilter("private"), text="Спеціальності 📜", state=None
     )
 
     dp.register_message_handler(
-        specialty1,
-        ChatTypeFilter("private"),
-        state=FSMSpecialty.specialty
+        specialty1, ChatTypeFilter("private"), state=FSMSpecialty.specialty
     )
