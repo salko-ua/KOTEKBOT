@@ -27,8 +27,10 @@ kb3 = KeyboardButton("Ч/З тиждень ✏️")
 kb4 = KeyboardButton("Змінити групу 🚫")
 kb5 = KeyboardButton("Меню 👥")
 kb6 = KeyboardButton("Тривоги ⚠️")
+kb7 = KeyboardButton("Замітки 📝")
+kb8 = KeyboardButton("Щось буде 🤔")
 
 kb_client = (
-    ReplyKeyboardMarkup(resize_keyboard=True).row(kb1, kb2).row(kb6, kb3).row(kb5, kb4)
+    ReplyKeyboardMarkup(resize_keyboard=True).row(kb1, kb2).row(kb6, kb3).row(kb7, kb8).row(kb5, kb4)
 )
 # ======================================================================

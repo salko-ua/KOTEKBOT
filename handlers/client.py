@@ -3,7 +3,7 @@ import asyncio
 import asyncache
 import cachetools
 
-from aiogram import types
+from aiogram import types 
 from aiogram.dispatcher import Dispatcher
 from config import super_admin_admin, super_admin_ura
 from create_bot import bot
@@ -212,17 +212,19 @@ async def all_text(message: types.Message):
                 "Незнаю такої командм\nНатисни /start і використовуй\nклавіатуру з кнопками знизу"
             )
         else:
-            await bot.send_message(
-                -813473243,
-                "Група "
-                + str(message.chat.title)
-                + "\n"
-                + str(message.from_user.username)
-                + "\n"
-                + str(message.from_user.id)
-                + "\n\n"
-                + message.text,
-            )
+            if message.content_type == types.ContentType.TEXT:
+                await bot.send_message(
+                    -813473243,
+                    "Група "
+                    + str(message.chat.title)
+                    + "\n"
+                    + str(message.from_user.username)
+                    + "\n"
+                    + str(message.from_user.id)
+                    + "\n\n"
+                    + message.text,
+                )
+
 
 
 text = {
