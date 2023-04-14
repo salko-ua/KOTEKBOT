@@ -33,7 +33,7 @@ async def regiseter_handlers():
 async def on_startup(dp):
     await bot.set_webhook(APP_URL)
     await regiseter_handlers()
-    print("BOT ONLINE")
+    print("Bot Online")
 
 
 async def on_shutdown(dp):
