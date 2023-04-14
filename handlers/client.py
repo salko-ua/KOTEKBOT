@@ -3,36 +3,36 @@ import asyncio
 import asyncache
 import cachetools
 
-from aiogram import types 
+from aiogram import types
 from aiogram.dispatcher import Dispatcher
 from config import super_admin_admin, super_admin_ura
-from create_bot import bot
 from keyboards import *
-from data_base.controller_db import *
 from aiogram.dispatcher.filters import Text
 import random as r
 from create_bot import alerts_client
 from handlers.stats import stats_schedule_add
+from data_base import Database
 
 
 # ===========================Переглянути розклад============================
 async def view_coupes(message: types.Message):
+    db = await Database.setup()
     await stats_schedule_add("Розклад пар 👀", 1)
-    if await user_exists_sql(message.from_user.id):
-        boolen, photo, date = await see_rod_sql(message.from_user.id)
+    if await db.user_exists_sql(message.from_user.id):
+        boolen, photo, date = await db.see_rod_sql(message.from_user.id)
         if boolen:
             await message.answer_photo(photo, date)
         elif not boolen:
             await message.answer("☹️Розкладу для вашої групи ще немає...☹️")
-    elif await teachers_exists_sql(message.from_user.id):
-        boolen, photo, date = await see_rod_t_sql(message.from_user.id)
+    elif await db.teachers_exists_sql(message.from_user.id):
+        boolen, photo, date = await db.see_rod_t_sql(message.from_user.id)
         if boolen:
             await message.answer_photo(photo, date)
         elif not boolen:
             await message.answer("☹️Розкладу для ваc ще немає...☹️")
-    elif not await user_exists_sql(
+    elif not await db.user_exists_sql(
         message.from_user.id
-    ) and not await teachers_exists_sql(message.from_user.id):
+    ) and not await db.teachers_exists_sql(message.from_user.id):
         if message.chat.type == "private":
             await message.answer("❗️Нажміть кнопку реєстрації❗️", reply_markup=kb_start)
         else:
@@ -41,22 +41,23 @@ async def view_coupes(message: types.Message):
 
 # ===========================Змінити групу============================
 async def view_calls(message: types.Message):
+    db = await Database.setup()
     await stats_schedule_add("Розклад дзвінків ⌚️", 1)
     if (
-        await user_exists_sql(message.from_user.id)
+        await db.user_exists_sql(message.from_user.id)
         or message.from_user.id == super_admin_admin
         or super_admin_ura == message.from_user.id
-        or await teachers_exists_sql(message.from_user.id)
+        or await db.teachers_exists_sql(message.from_user.id)
     ):
-        check, value, date = await see_calls_sql()
+        check, value, date = await db.see_calls_sql()
         if not check:
             await message.answer("☹️Розклад дзвінків ще не додано☹️")
         elif check:
-            await see_calls_sql()
+            await db.see_calls_sql()
             await message.answer_photo(value, date)
-    elif not await user_exists_sql(
+    elif not await db.user_exists_sql(
         message.from_user.id
-    ) and not await teachers_exists_sql(message.from_user.id):
+    ) and not await db.teachers_exists_sql(message.from_user.id):
         if message.chat.type == "private":
             await message.answer("❗️Нажміть кнопку реєстрації❗️", reply_markup=kb_start)
         else:
@@ -65,23 +66,24 @@ async def view_calls(message: types.Message):
 
 # ===========================Змінити групу============================
 async def delete_user(message: types.Message):
-    if await user_exists_sql(message.from_user.id):
-        if await admin_exists_sql(message.from_user.id):
-            await delete_users_sql(message.from_user.id)
+    db = await Database.setup()
+    if await db.user_exists_sql(message.from_user.id):
+        if await db.admin_exists_sql(message.from_user.id):
+            await db.delete_users_sql(message.from_user.id)
             await message.answer("🙂Зареєструйтесь знову🙂", reply_markup=kb_start_admin)
         else:
-            await delete_users_sql(message.from_user.id)
+            await db.delete_users_sql(message.from_user.id)
             await message.answer("🙂Зареєструйтесь знову🙂", reply_markup=kb_start)
-    elif await teachers_exists_sql(message.from_user.id):
-        if await admin_exists_sql(message.from_user.id):
-            await delete_teachers_sql(message.from_user.id)
+    elif await db.teachers_exists_sql(message.from_user.id):
+        if await db.admin_exists_sql(message.from_user.id):
+            await db.delete_teachers_sql(message.from_user.id)
             await message.answer("🙂Зареєструйтесь знову🙂", reply_markup=kb_start_admin)
         else:
-            await delete_teachers_sql(message.from_user.id)
+            await db.delete_teachers_sql(message.from_user.id)
             await message.answer("🙂Зареєструйтесь знову🙂", reply_markup=kb_start)
-    elif not await user_exists_sql(
+    elif not await db.user_exists_sql(
         message.from_user.id
-    ) and not await teachers_exists_sql(message.from_user.id):
+    ) and not await db.teachers_exists_sql(message.from_user.id):
         if message.chat.type == "private":
             await message.answer(
                 "🌚Ви і так не зареєстрованні\nНажміть кнопку реєстрації",
@@ -165,30 +167,6 @@ async def alert_func():
             for alert in list_alerts_oblast_title:
                 all_alerts += " • " + alert + "\n"
     return all_alerts
-    """Приклад даних які надходять від API https://alerts.in.ua/
-    {'id': 8757,
-      'location_title': 'Луганська область', 
-      'location_type': 'oblast',
-      'started_at': datetime.datetime(2022, 4, 4, 19, 45, 39, tzinfo=<DstTzInfo 'Europe/Kyiv' EEST+3:00:00 DST>),
-      'finished_at': None, 'updated_at': datetime.datetime(2022, 4, 8, 11, 4, 26, 316000, tzinfo=<DstTzInfo 'Europe/Kyiv' EEST+3:00:00 DST>),
-      'alert_type': 'air_raid',
-      'location_uid': '16',
-      'location_oblast': 'Луганська область',
-      'location_raion': None,
-      'notes': None,
-      'calculated': None}, 
-
-    {'id': 28288, 
-     'location_title': 'Автономна Республіка Крим', 
-     'location_type': 'oblast', 
-     'started_at': datetime.datetime(2022, 12, 11, 0, 22, tzinfo=<DstTzInfo 'Europe/Kyiv' EET+2:00:00 STD>), 
-     'finished_at': None, 'updated_at': datetime.datetime(2022, 12, 12, 14, 20, 11, 900000, tzinfo=<DstTzInfo 'Europe/Kyiv' EET+2:00:00 STD>), 
-     'alert_type': 'air_raid', 
-     'location_uid': '29', 
-     'location_oblast': 'Автономна Республіка Крим', 
-     'location_raion': None, 
-     'notes': 'Згідно інформації з Офіційних карт тривог', 
-     'calculated': None}"""
 
 
 # =========================== Тривога ===========================
@@ -204,27 +182,14 @@ async def alert(message: types.Message):
 
 # ===========================Пустий хендлер============================
 async def all_text(message: types.Message):
-    if await admin_exists_sql(message.from_user.id) and message.text == "Адмін 🔑":
+    db = await Database.setup()
+    if await db.admin_exists_sql(message.from_user.id) and message.text == "Адмін 🔑":
         await message.answer("Адмінська частина", reply_markup=kb_admin)
     else:
         if message.chat.type == "private":
             await message.answer(
                 "Незнаю такої командм\nНатисни /start і використовуй\nклавіатуру з кнопками знизу"
             )
-        else:
-            if message.content_type == types.ContentType.TEXT:
-                await bot.send_message(
-                    -813473243,
-                    "Група "
-                    + str(message.chat.title)
-                    + "\n"
-                    + str(message.from_user.username)
-                    + "\n"
-                    + str(message.from_user.id)
-                    + "\n\n"
-                    + message.text,
-                )
-
 
 
 text = {

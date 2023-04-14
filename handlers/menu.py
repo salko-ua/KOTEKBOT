@@ -4,7 +4,7 @@ from aiogram.dispatcher import Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from keyboards import *
-from data_base.controller_db import *
+from data_base import Database
 from handlers.stats import stats_schedule_add
 from aiogram.dispatcher.filters import ChatTypeFilter, Text
 
@@ -16,11 +16,12 @@ class FSMSpecialty(StatesGroup):
 
 # ===========================Меню 👥============================
 async def menu(message: types.Message):
-    if await admin_exists_sql(message.from_user.id):
+    db = await Database.setup()
+    if await db.admin_exists_sql(message.from_user.id):
         await message.answer("⬇️Головне меню⬇️", reply_markup=kb_start_admin)
-    elif await user_exists_sql(message.from_user.id):
+    elif await db.user_exists_sql(message.from_user.id):
         await message.answer("⬇️Головне меню⬇️", reply_markup=kb_start_user)
-    elif await teachers_exists_sql(message.from_user.id):
+    elif await db.teachers_exists_sql(message.from_user.id):
         await message.answer("⬇️Головне меню⬇️", reply_markup=kb_start_user)
     else:
         await message.answer("⬇️Головне меню⬇️", reply_markup=kb_start)
@@ -80,13 +81,14 @@ async def specialty(message: types.Message):
 
 
 async def specialty1(m: types.Message, state=FSMContext):
+    db = await Database.setup()
     if m.chat.type == "private":
         if m.text == "🔙 Назад":
-            if await admin_exists_sql(m.from_user.id):
+            if await db.admin_exists_sql(m.from_user.id):
                 await m.answer("⬇️Головне меню⬇️", reply_markup=kb_for_applicant)
-            elif await user_exists_sql(m.from_user.id):
+            elif await db.user_exists_sql(m.from_user.id):
                 await m.answer("⬇️Головне меню⬇️", reply_markup=kb_for_applicant)
-            elif await teachers_exists_sql(m.from_user.id):
+            elif await db.teachers_exists_sql(m.from_user.id):
                 await m.answer("⬇️Головне меню⬇️", reply_markup=kb_for_applicant)
             else:
                 await m.answer("⬇️Головне меню⬇️", reply_markup=kb_for_applicant)
@@ -146,7 +148,7 @@ async def about_bot(message: types.Message):
     await stats_schedule_add("Про бота 🖇", 1)
     await message.answer(
         """БОТ ВПК ПЕДКІТ
-Версія : release 1.7
+Версія : release 1.8
 Розробник: <a href='https://t.me/salkooua'>Мусаєв Джаміль</a>
 Зробив аватарку: <a href='https://t.me/yurchh'>Коновалець Юра</a>
 

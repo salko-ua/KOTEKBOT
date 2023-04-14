@@ -14,9 +14,9 @@ from aiogram.utils.exceptions import (
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.dispatcher.filters import Text, ChatTypeFilter
 from keyboards import *
-from data_base.controller_db import *
 from random import randint as rd
 from handlers.stats import stats_schedule_add
+from data_base import Database
 
 passwords = (
     str(rd(1, 9))
@@ -30,11 +30,6 @@ passwords = (
 )
 
 
-# answer - повідомлення
-# reply - повідомлення відповідь
-# send_massage - повідомлення в лс
-
-
 # =========Класс машини стану=========
 class FSMReg(StatesGroup):
     course_groupe_reg = State()
@@ -45,12 +40,13 @@ class FSMReg(StatesGroup):
 
 # ===========================Реєстрація ⚙️============================
 async def registration(message: types.Message):
+    db = await Database.setup()
     if message.text == "Розклад ⚙️":
         await stats_schedule_add("Розклад ⚙️", 1)
     if (
-        (not await user_exists_sql(message.from_user.id))
-        and (not await admin_exists_sql(message.from_user.id))
-        and (not await teachers_exists_sql(message.from_user.id))
+        (not await db.user_exists_sql(message.from_user.id))
+        and (not await db.admin_exists_sql(message.from_user.id))
+        and (not await db.teachers_exists_sql(message.from_user.id))
     ):
         if message.chat.type == "private":
             await message.answer(
@@ -69,7 +65,7 @@ async def registration(message: types.Message):
                 await message.answer(
                     "Помилка, я не можу автовидалити своє повідомлення, мені потрібні права адміна"
                 )
-    elif await user_exists_sql(message.from_user.id):
+    elif await db.user_exists_sql(message.from_user.id):
         if message.chat.type == "private":
             await message.answer("Ваша клавіатура ⌨️", reply_markup=kb_client)
         else:
@@ -82,7 +78,7 @@ async def registration(message: types.Message):
                 await message.answer(
                     "Помилка, я не можу автовидалити своє повідомлення, мені потрібні права адміна"
                 )
-    elif await teachers_exists_sql(message.from_user.id):
+    elif await db.teachers_exists_sql(message.from_user.id):
         if message.chat.type == "private":
             await message.answer("Ваша клавіатура ⌨️", reply_markup=kb_teachers)
         else:
@@ -95,7 +91,7 @@ async def registration(message: types.Message):
                 await message.answer(
                     "Помилка, я не можу автовидалити своє повідомлення, мені потрібні права адміна"
                 )
-    elif await admin_exists_sql(message.from_user.id):
+    elif await db.admin_exists_sql(message.from_user.id):
         if message.chat.type == "private":
             await message.answer(
                 "🤔 Реєстрація 🤔\nВиберіть тип акаунту ⬇️", reply_markup=kb_choice
@@ -116,13 +112,14 @@ async def registration(message: types.Message):
 
 
 async def reg(message: types.Message, state: FSMContext):
+    db = await Database.setup()
     if message.text == "Назад":
         await state.finish()
-        if await admin_exists_sql(message.from_user.id):
+        if await db.admin_exists_sql(message.from_user.id):
             await message.answer("⬇️Головне меню⬇️", reply_markup=kb_start_admin)
-        elif await user_exists_sql(message.from_user.id):
+        elif await db.user_exists_sql(message.from_user.id):
             await message.answer("⬇️Головне меню⬇️", reply_markup=kb_start_user)
-        elif await teachers_exists_sql(message.from_user.id):
+        elif await db.teachers_exists_sql(message.from_user.id):
             await message.answer("⬇️Головне меню⬇️", reply_markup=kb_start_user)
         else:
             await message.answer("⬇️Головне меню⬇️", reply_markup=kb_start)
@@ -145,24 +142,25 @@ async def reg(message: types.Message, state: FSMContext):
 
 
 async def regAdmin(message: types.Message, state: FSMContext):
+    db = await Database.setup()
     if message.text == "Назад":
         await state.finish()
-        if await admin_exists_sql(message.from_user.id):
+        if await db.admin_exists_sql(message.from_user.id):
             await message.answer("⬇️Головне меню⬇️", reply_markup=kb_start_admin)
-        elif await user_exists_sql(message.from_user.id):
+        elif await db.user_exists_sql(message.from_user.id):
             await message.answer("⬇️Головне меню⬇️", reply_markup=kb_start_user)
-        elif await teachers_exists_sql(message.from_user.id):
+        elif await db.teachers_exists_sql(message.from_user.id):
             await message.answer("⬇️Головне меню⬇️", reply_markup=kb_start_user)
         else:
             await message.answer("⬇️Головне меню⬇️", reply_markup=kb_start)
     elif message.text == passwords:
-        if await admin_exists_sql(message.from_user.id):
+        if await db.admin_exists_sql(message.from_user.id):
             await message.answer("Ви вже адмін", reply_markup=kb_start_admin)
             await state.finish()
         else:
             first_name = message.from_user.first_name
             username = message.from_user.username
-            await add_admin_sql(message.from_user.id, first_name, username)
+            await db.add_admin_sql(message.from_user.id, first_name, username)
             await message.answer("✅ Реєстрація завершена ✅", reply_markup=kb_admin)
             await state.finish()
     else:
@@ -171,21 +169,22 @@ async def regAdmin(message: types.Message, state: FSMContext):
 
 
 async def regUser(message: types.Message, state: FSMContext):
+    db = await Database.setup()
     first_name = message.from_user.first_name
     username = message.from_user.username
     groupe = message.text
     if message.text == "Назад":
         await state.finish()
-        if await admin_exists_sql(message.from_user.id):
+        if await db.admin_exists_sql(message.from_user.id):
             await message.answer("⬇️Головне меню⬇️", reply_markup=kb_start_admin)
-        elif await user_exists_sql(message.from_user.id):
+        elif await db.user_exists_sql(message.from_user.id):
             await message.answer("⬇️Головне меню⬇️", reply_markup=kb_start_user)
-        elif await teachers_exists_sql(message.from_user.id):
+        elif await db.teachers_exists_sql(message.from_user.id):
             await message.answer("⬇️Головне меню⬇️", reply_markup=kb_start_user)
         else:
             await message.answer("⬇️Головне меню⬇️", reply_markup=kb_start)
-    elif await group_exists_sql(message.text):
-        await add_user_sql(message.from_user.id, first_name, username, groupe)
+    elif await db.group_exists_sql(message.text):
+        await db.add_user_sql(message.from_user.id, first_name, username, groupe)
         await state.finish()
         await message.answer("✅ Реєстрація завершена ✅", reply_markup=kb_client)
     else:
@@ -197,21 +196,22 @@ async def regUser(message: types.Message, state: FSMContext):
 
 
 async def regTeachers(message: types.Message, state: FSMContext):
+    db = await Database.setup()
     first_name = message.from_user.first_name
     username = message.from_user.username
     teachers_name = message.text
     if message.text == "Назад":
         await state.finish()
-        if await admin_exists_sql(message.from_user.id):
+        if await db.admin_exists_sql(message.from_user.id):
             await message.answer("⬇️Головне меню⬇️", reply_markup=kb_start_admin)
-        elif await user_exists_sql(message.from_user.id):
+        elif await db.user_exists_sql(message.from_user.id):
             await message.answer("⬇️Головне меню⬇️", reply_markup=kb_start_user)
-        elif await teachers_exists_sql(message.from_user.id):
+        elif await db.teachers_exists_sql(message.from_user.id):
             await message.answer("⬇️Головне меню⬇️", reply_markup=kb_start_user)
         else:
             await message.answer("⬇️Головне меню⬇️", reply_markup=kb_start)
-    elif await teachers_name_exists_sql(message.text):
-        await add_teachers_sql(
+    elif await db.teachers_name_exists_sql(message.text):
+        await db.add_teachers_sql(
             message.from_user.id, first_name, username, teachers_name
         )
         await state.finish()

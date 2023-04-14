@@ -7,9 +7,7 @@ import logging
 from create_bot import bot, dp
 from config import TOKEN_SENTRY
 from aiogram.utils.executor import start_webhook
-from data_base.controller_db import bd_Start
 from handlers import admin, client, reg, super_admin, menu, stats, commands, prime
-
 
 APP_URL = os.getenv("APP_URL")
 
@@ -36,7 +34,6 @@ async def on_startup(dp):
     await bot.set_webhook(APP_URL)
     await regiseter_handlers()
     print("BOT ONLINE")
-    await bd_Start()
 
 
 async def on_shutdown(dp):

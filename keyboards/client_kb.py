@@ -1,6 +1,5 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
-from data_base.controller_db import *
-from data_base.controller_db import group_list_sql
+from data_base import Database
 
 
 # KeyboardButton - створює одну кнопку
@@ -10,7 +9,8 @@ from data_base.controller_db import group_list_sql
 
 # ===========================1 Keyboards================================
 async def get_kb():
-    h = await group_list_sql()
+    db = await Database.setup()
+    h = await db.group_list_sql()
     kb_course = ReplyKeyboardMarkup(resize_keyboard=True)
     for i in range(0, len(h)):
         kb_course.insert(h[i])
@@ -28,9 +28,13 @@ kb4 = KeyboardButton("Змінити групу 🚫")
 kb5 = KeyboardButton("Меню 👥")
 kb6 = KeyboardButton("Тривоги ⚠️")
 kb7 = KeyboardButton("Замітки 📝")
-kb8 = KeyboardButton("Щось буде 🤔")
+kb8 = KeyboardButton("Написати ✉️")
 
 kb_client = (
-    ReplyKeyboardMarkup(resize_keyboard=True).row(kb1, kb2).row(kb6, kb3).row(kb7, kb8).row(kb5, kb4)
+    ReplyKeyboardMarkup(resize_keyboard=True)
+    .row(kb1, kb2)
+    .row(kb6, kb3)
+    .row(kb7, kb8)
+    .row(kb5, kb4)
 )
 # ======================================================================

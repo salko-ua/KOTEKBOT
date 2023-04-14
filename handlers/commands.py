@@ -12,18 +12,19 @@ from aiogram.utils.exceptions import (
 )
 from aiogram.dispatcher.filters import Text
 from keyboards import *
-from data_base.controller_db import *
 from handlers.stats import stats_schedule_add, stats_all
+from data_base import Database
 
 
 #                            СТАРТ
 async def start(message: types.Message):
+    db = await Database.setup()
     if message.chat.type == "private":
-        if await admin_exists_sql(message.from_user.id):
+        if await db.admin_exists_sql(message.from_user.id):
             await message.answer("Ви адмін", reply_markup=kb_start_admin)
-        elif await user_exists_sql(message.from_user.id):
+        elif await db.user_exists_sql(message.from_user.id):
             await message.answer("⬇️ Клавіатура ⬇️", reply_markup=kb_start_user)
-        elif await teachers_exists_sql(message.from_user.id):
+        elif await db.teachers_exists_sql(message.from_user.id):
             await message.answer("⬇️ Клавіатура ⬇️", reply_markup=kb_start_user)
         else:
             await message.answer("⬇️ Клавіатура ⬇️", reply_markup=kb_start)
@@ -44,8 +45,9 @@ async def start(message: types.Message):
 
 # @dp.message_handler(commands=["coupes"])
 async def view_coupes_comm(message: types.Message):
-    if await user_exists_sql(message.from_user.id):
-        boolen, photo, date = await see_rod_sql(message.from_user.id)
+    db = await Database.setup()
+    if await db.user_exists_sql(message.from_user.id):
+        boolen, photo, date = await db.see_rod_sql(message.from_user.id)
         if boolen:
             try:
                 await message.answer_photo(photo, date)
@@ -100,7 +102,7 @@ async def delete_keyboard(message: types.Message):
 async def versions(message: types.Message):
     try:
         version = (
-            "Версія бота : release 1.7 \nВерсія Python : 3.11.1\nВерсія Aiogram : 2.24"
+            "Версія бота : release 1.8 \nВерсія Python : 3.11.1\nВерсія Aiogram : 2.24"
         )
         await message.answer(version)
     except (MessageToDeleteNotFound, MessageCantBeDeleted, BadRequest):
