@@ -11,7 +11,6 @@ asyncache==0.3.1
 attrs==22.2.0
 auto-py-to-exe==2.29.0
 Babel==2.9.1
-black @ git+https://github.com/psf/black@d9b8a6407e2f46304a8d36b18e4a73d8e0613519
 bottle==0.12.23
 bottle-websocket==0.2.9
 cachetools==5.3.0
