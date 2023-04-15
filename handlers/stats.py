@@ -12,7 +12,7 @@ async def stats_schedule_add(name, count):
 
 # ===========================Статистика 🧮============================
 async def stats_all(message: types.Message):
-    await stats_schedule_add("Статистика 🧮")
+    await stats_schedule_add("Статистика 🧮", 1)
     db = await Database.setup()
     always, month, week = await db.see_all_stats_sql()
     value_stud = await db.count_user_sql()

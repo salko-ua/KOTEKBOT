@@ -101,7 +101,6 @@ class STATSDB(BaseDBPart):
             """
         )
         await self.base.commit()
-        print(new_list_all_user)
         for i in range(0, len(new_list_all_user)):
             await self.cur.execute(
                 "INSERT INTO `stats` (`stats_name`, `count`, count_month, count_week) VALUES (?,?,?,?)",
