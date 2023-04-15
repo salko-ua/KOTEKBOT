@@ -88,7 +88,9 @@ class Database(
             CREATE TABLE IF NOT EXISTS stats(
                 id           INTEGER PRIMARY KEY NOT NULL,
                 stats_name   TEXT NOT NULL,
-                count        TEXT
+                count        INTEGER
+                count_month  INTEGER
+                count_week   INTEGER
             )
             """
         )

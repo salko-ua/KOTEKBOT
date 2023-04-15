@@ -13,7 +13,7 @@ from config import super_admin_admin, super_admin_ura
 from create_bot import bot
 from handlers.reg import passwords
 from aiogram.types import InputFile
-
+from aiogram.dispatcher.filters import Text
 
 class FSMSuperA(StatesGroup):
     group = State()
@@ -309,11 +309,31 @@ async def password(msg: types.Message):
         await msg.delete()
         await dels.delete()
 
-
 async def send_file_db(msg: types.Message):
     if msg.from_user.id == super_admin_admin:
         s = InputFile("data/database.db")
         await bot.send_document(msg.from_user.id, s)
+
+async def delete_stats(msg: types.Message):
+    if msg.from_user.id == super_admin_admin:
+        name = msg.text[2:]
+        db = await Database.setup()
+        await db.delete_stats_sql(name)
+
+async def delete_month(message: types.Message):
+    if message.from_user.id == super_admin_admin:
+        db = await Database.setup()
+        await db.delete_month_sql()
+
+async def delete_week(message: types.Message):
+    if message.from_user.id == super_admin_admin:
+        db = await Database.setup()
+        await db.delete_week_sql()
+
+async def create_table(message: types.Message):
+    if message.from_user.id == super_admin_admin:
+        db = await Database.setup()
+        await db.rcreate()
 
 
 # ===========================реєстратор============================
@@ -326,6 +346,11 @@ def register_handler_sadmin(dp: Dispatcher):
     dp.register_message_handler(super_admin_teach, text="таблиця викладачів")
     dp.register_message_handler(super_admin_admins, text="таблиця адмінів")
     dp.register_message_handler(send_file_db, text="db")
+    dp.register_message_handler(delete_stats, Text(startswith="d"))
+    dp.register_message_handler(delete_month, commands=["mouth"])
+    dp.register_message_handler(delete_week, commands=["week"])
+    dp.register_message_handler(create_table, commands=["update"])
+
 
     dp.register_message_handler(
         super_admin_user_for_group, text="таблиця за групою", state=None

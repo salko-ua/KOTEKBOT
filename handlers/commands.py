@@ -136,6 +136,7 @@ async def help(message: types.Message):
         pass
 
 
+
 text = {
     "help": ["Допомога 🛠", "Допомога", "help"],
     "donate": ["Донат 🫡", "Донат", "donate"],

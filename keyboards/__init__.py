@@ -11,3 +11,4 @@ from keyboards.main_kb import (
     kb_for_applicant,
 )
 from keyboards.teachers_kb import get_t_kb, kb_teachers
+from keyboards.inline_kb import inline_stats_kb_always, inline_stats_kb_month, inline_stats_kb_week
