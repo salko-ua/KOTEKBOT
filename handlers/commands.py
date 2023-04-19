@@ -122,18 +122,8 @@ async def donate(message: types.Message):
 # @dp.message_handler(commands=["help"])
 async def help(message: types.Message):
     await stats_schedule_add("Команди 🛠", 1)
-    try:
-        help = """❗️Команди з префіксом '/'
-зручно використовувати в групах.
-
-❓Щоб використовувати бота в групах:
-1.Додайте його у свою групу.
-2.Дайте права адміністратора.
-3.Напишіть / і бот покаже всі доступні команди.
-"""
-        await message.answer(help)
-    except (MessageToDeleteNotFound, MessageCantBeDeleted, BadRequest):
-        pass
+    help = "Пишіть сюди : @botadmincat"
+    await message.answer(help)
 
 
 

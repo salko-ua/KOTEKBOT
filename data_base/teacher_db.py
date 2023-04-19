@@ -78,6 +78,23 @@ class TEACHERDB(BaseDBPart):
             return 0
         else:
             return len(row_counts)
+        
+    # Переглянути всіх користувачів
+    # Повертає user_id всіх користувачів list
+    async def all_teach_id_for_group_sql(self, group):
+        rest = await self.cur.execute(
+            "SELECT `user_id` FROM `teachers` WHERE teacher_name = ?", (group,)
+        )
+        return await rest.fetchall()
+
+    # Переглянути групу користувача за його user_id              Треба покращити
+    # Повертає назву групи str
+    async def group_for_teach_id(self, user_id):
+        groups = await self.cur.execute(
+            "SELECT `teacher_name` FROM `teachers` WHERE `user_id` = ?", (user_id,)
+        )
+        result = await groups.fetchall()
+        return result[0][0]
 
     # Перегляд таблиці teachers за групою в бд
     # Повертає True or false and str or None , str = викладачів присутніх у бд за певною групою

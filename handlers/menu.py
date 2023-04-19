@@ -7,6 +7,7 @@ from keyboards import *
 from data_base import Database
 from handlers.stats import stats_schedule_add
 from aiogram.dispatcher.filters import ChatTypeFilter, Text
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 
 # =========Класс машини стану=========
@@ -65,9 +66,22 @@ async def addres(message: types.Message):
         """•Земля 🌍
 •Україна 🇺🇦
 •Волинська область 🌉
-•Володимир 🌆
+•Володимир 44700 🌆
 •Вул. Устилузька 42 🛣"""
     )
+
+
+# ===========================Контакти ============================
+async def contact(message: types.Message):
+    await stats_schedule_add("Адреса 📫", 1)
+    await message.answer("""
+📱 Контактні телефони: 
+(03342)35555 (факс), 
+20950 (приймальна комісія),
+📨 Почта :
+E-mail: post@vvpc.com.ua,
+"""
+)
 
 
 # ===========================Спеціальності 📜============================
@@ -169,8 +183,44 @@ async def about_bot(message: types.Message):
 # ===========================Інформація для абітурієнта============================
 async def for_applicant(message: types.Message):
     await stats_schedule_add("Для абітурієнта 🧑‍💻", 1)
-    await message.answer("Інформація для абітурієнта", reply_markup=kb_for_applicant)
+    await message.answer("Інформація для абітурієнта 😵‍💫", reply_markup=kb_for_applicant)
 
+async def score(message: types.Message):
+    button = InlineKeyboardButton("Перевірити актуальність", url = 'https://vvpc.com.ua/node/980')
+    kb = InlineKeyboardMarkup(row_width=1).add(button)
+    await message.answer(
+"""
+❗️ Перевірте чи інформація актуальна ❗️
+Це можна зробити кнопкою під повідомленням
+
+<b>Реквізити оплати за навчання (станом на 15.05.22)</b>
+Банк ГУДКСУ Волинської області
+
+Код ЄДРПОУ 02125941
+
+Рахунок: <code>UA368201720314241003201023033</code>
+
+Призначення платежу: плата за навчання
+
+Вказати прізвище студента, курс та групу
+
+ 
+<b>Реквізити оплати за гуртожиток (станом на 15.05.22)</b>
+Банк ГУДКСУ Волинської області
+
+Код ЄДРПОУ 02125941
+
+Рахунок: <code>UA378201720314211003202023033</code>
+
+Призначення платежу: плата за гуртожиток
+
+Вказати прізвище студента, курс та групу
+""", parse_mode="HTML",reply_markup=kb)
+
+async def official_site(message: types.Message):
+    link = InlineKeyboardButton("Посилання на сайт", url = 'https://vvpc.com.ua/')
+    link_kb = InlineKeyboardMarkup(row_width=1).add(link)
+    await message.answer("Офіційний сайт ВПК 📰", reply_markup=link_kb)
 
 text = {
     "menu": ["Меню 👥", "Меню", "Menu"],
@@ -179,8 +229,11 @@ text = {
     "introduction": ["Вступ 📗", "Вступ", "introduction"],
     "time_work": ["Час роботи 📅", "Час роботи", "time work"],
     "addres": ["Адреса 📫", "Адреса", "addres"],
+    "contact": ["Контакти 📘", "Контакти", "contact"],
     "others": ["Інше 📌", "Інше ", "others", "other"],
     "stick": ["Стікери 👨‍👩‍👧‍👦", "Стікери", "Stickers"],
+    "score": ["score", "Реквізити 💳", "Реквізити"],
+    "official_site": ["official site", "Офіційний сайт 🌎", "Офіційний сайт"]
 }
 
 
@@ -205,7 +258,18 @@ def register_handler_menu(dp: Dispatcher):
         time_work, Text(ignore_case=True, equals=text["time_work"])
     )
 
+    dp.register_message_handler(
+        score, Text(ignore_case=True, equals=text["score"])
+    )
+
+    dp.register_message_handler(
+        official_site, Text(ignore_case=True, equals=text["official_site"])
+    )
+
+
     dp.register_message_handler(addres, Text(ignore_case=True, equals=text["addres"]))
+
+    dp.register_message_handler(contact, Text(ignore_case=True, equals=text["contact"]))
 
     dp.register_message_handler(others, Text(ignore_case=True, equals=text["others"]))
 
