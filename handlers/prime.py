@@ -21,6 +21,9 @@ class FSMWrite(StatesGroup):
 text_inline = InlineKeyboardButton("Змінити замітку", callback_data = "edit_text")
 text_inline_kb = InlineKeyboardMarkup(row_width=1).add(text_inline)
 
+cancle_inline = InlineKeyboardButton("Відмінити ❌", callback_data = "cancel")
+cancle_inline_kb = InlineKeyboardMarkup(row_width=1).add(cancle_inline)
+
 async def text_save(query: types.CallbackQuery, state: FSMContext):
     await query.message.edit_text("""
 Тепер введіть текст який буде міститися
@@ -31,13 +34,19 @@ async def text_save(query: types.CallbackQuery, state: FSMContext):
 
 Чергування : посилання на сайт
 
-Ви ж можете написати будь-що це лише приклад."""
-)
+Ви ж можете написати будь-що це лише приклад.""", reply_markup=cancle_inline_kb)
     await FSMWrite.text.set()
+    
+
+async def cancel(query: types.CallbackQuery, state: FSMContext):
+    await query.message.edit_text("Редагування тексту успішно відмінено✅", reply_markup=text_inline_kb)
+    await state.finish()
+
 
 async def text_save1(message: types.Message, state: FSMContext):
     db = await Database.setup()
     await stats_schedule_add("Додати замітку 📝", 1)
+
     if await db.user_exists_sql(message.from_user.id):
         if len(message.text) <= 1:
             await message.answer("Текст надто короткий спробуй ще раз", reply_markup=text_inline_kb)
@@ -46,7 +55,7 @@ async def text_save1(message: types.Message, state: FSMContext):
             text = message.text
             groups = await db.group_for_user_id(message.from_user.id)
             await db.add_text_sql(text, groups)
-            await message.answer("Замітку успішно додано!")
+            await message.answer("Замітку успішно додано ✅", reply_markup=text_inline_kb)
             await state.finish()
     elif await db.teachers_exists_sql(message.from_user.id):
         if len(message.text) <= 1:
@@ -56,7 +65,7 @@ async def text_save1(message: types.Message, state: FSMContext):
             text = message.text
             groups = await db.see_group_for_teach_id(message.from_user.id)
             await db.add_text_sql(text, groups)
-            await message.answer("Замітку успішно додано!")
+            await message.answer("Замітку успішно додано ✅", reply_markup=text_inline_kb)
             await state.finish()
     else:
         await message.answer("Ви не зареєстровані у групах")
@@ -219,6 +228,7 @@ async def write_teach_message(message: types.Message, state: FSMContext):
 
 def register_handler_stats(dp: Dispatcher):
     dp.register_callback_query_handler(text_save, text = "edit_text", state=None)
+    dp.register_callback_query_handler(cancel, text = "cancel", state=FSMWrite.text)
     dp.register_message_handler(text_save1, state=FSMWrite.text)
     dp.register_message_handler(see_text, commands=["text"])
     dp.register_message_handler(see_text, Text(ignore_case=True, equals="Замітки 📝"))
