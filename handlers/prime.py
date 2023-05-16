@@ -24,6 +24,8 @@ text_inline_kb = InlineKeyboardMarkup(row_width=1).add(text_inline)
 cancle_inline = InlineKeyboardButton("Відмінити ❌", callback_data = "cancel")
 cancle_inline_kb = InlineKeyboardMarkup(row_width=1).add(cancle_inline)
 
+
+
 async def text_save(query: types.CallbackQuery, state: FSMContext):
     await query.message.edit_text("""
 Тепер введіть текст який буде міститися
@@ -86,7 +88,7 @@ async def see_text(message: types.Message):
             )
         elif not boolean:
             await message.answer(
-                "У вашої групи не додано ніякого тексту\nЩоб це зробити напишіть \nнатисніть кнопку нижче", 
+                "У вашої групи не додано ніякого тексту\nЩоб це зробити\nнатисніть кнопку нижче", 
                 reply_markup=text_inline_kb
             )
     elif await db.teachers_exists_sql(message.from_user.id):
@@ -101,7 +103,7 @@ async def see_text(message: types.Message):
             )
         elif not boolean:
             await message.answer(
-                "У вас не додано ніякого тексту\nЩоб це зробити напишіть \nнатисніть кнопку нижче", 
+                "У вас не додано ніякого тексту\nЩоб це зробити\nнатисніть кнопку нижче", 
                 reply_markup=text_inline_kb
             )
     else:

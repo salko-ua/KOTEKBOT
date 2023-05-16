@@ -112,7 +112,7 @@ async def fraction(message: types.Message):
 
 
 # =========================== Тривога ===========================
-@asyncache.cached(cachetools.TTLCache(1, 23))
+@asyncache.cached(cachetools.TTLCache(1, 17))
 async def alert_func():
     # Достаю список областей у яких повітряна тривога типу air_raid
     active_alerts = await alerts_client.get_active_alerts()
@@ -128,6 +128,12 @@ async def alert_func():
         list_alerts_oblast_title.append(title.location_title)
     list_alerts_oblast_title.sort()
 
+    #Перевірка чи є у Волинській області тривога?
+    if "Волинська область" in list_alerts_oblast_title:
+        our_oblast = True
+    else:
+        our_oblast = False
+
     # Області які будуть на першому місці
     need_oblast_title = [
         "Тернопільська область",
@@ -139,9 +145,9 @@ async def alert_func():
         "Рівненська область",
         "Волинська область",
     ]
-    # список у якому будуть області які нам підходять за списоки вище і у них тривога
+    # список у якому будуть області які нам підходять за списком вище і у них тривога
     need_oblast_title_list_new = []
-    # Цикл пеоевірки черещ помилку
+    # Цикл пеоевірки через помилку
     for j in range(0, len(need_oblast_title)):
         try:
             list_alerts_oblast_title.index(need_oblast_title[j])
@@ -166,13 +172,13 @@ async def alert_func():
             all_alerts += f"Інші області :\n"
             for alert in list_alerts_oblast_title:
                 all_alerts += " • " + alert + "\n"
-    return all_alerts
+    return all_alerts, our_oblast
 
 
 # =========================== Тривога ===========================
 async def alert(message: types.Message):
     await stats_schedule_add("Тривоги ⚠️", 1)
-    all_alerts = await alert_func()
+    all_alerts, check = await alert_func()
     await message.answer(
         all_alerts + "\n" + "<a href='https://alerts.in.ua/'>Дані з сайту</a>",
         parse_mode="HTML",

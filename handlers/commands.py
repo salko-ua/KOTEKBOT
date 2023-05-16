@@ -5,11 +5,7 @@ import asyncio
 from aiogram import types
 from aiogram.dispatcher import Dispatcher
 from aiogram.types import ReplyKeyboardRemove
-from aiogram.utils.exceptions import (
-    MessageToDeleteNotFound,
-    MessageCantBeDeleted,
-    BadRequest,
-)
+from aiogram.utils.exceptions import MessageToDeleteNotFound, MessageCantBeDeleted, BadRequest
 from aiogram.dispatcher.filters import Text
 from keyboards import *
 from handlers.stats import stats_schedule_add, stats_all
@@ -102,7 +98,7 @@ async def delete_keyboard(message: types.Message):
 async def versions(message: types.Message):
     try:
         version = (
-            "Версія бота : release 1.8 \nВерсія Python : 3.11.1\nВерсія Aiogram : 2.24"
+            "Версія бота : release 1.11 \nВерсія Python : 3.11.1\nВерсія Aiogram : 2.25"
         )
         await message.answer(version)
     except (MessageToDeleteNotFound, MessageCantBeDeleted, BadRequest):
