@@ -24,7 +24,7 @@ async def register_handlers():
     menu.register_handler_menu(dp)
     stats.register_handler_stats(dp)
     commands.register_handler_commands(dp)
-    prime.register_handler_stats(dp)
+    await prime.register_handler_stats(dp)
     client.register_handler_client(dp)
 
 async def register_task():
@@ -47,5 +47,5 @@ def start_bot():
         dispatcher=dp,
         on_startup=on_startup,
         on_shutdown=on_shutdown,
-        skip_updates=False
+        skip_updates=True
     )

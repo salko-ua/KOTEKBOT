@@ -231,6 +231,10 @@ text = {
 }
 
 
+
+
+
+
 # ===========================реєстратор============================
 def register_handler_client(dp: Dispatcher):
     dp.register_message_handler(
