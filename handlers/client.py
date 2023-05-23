@@ -1,17 +1,18 @@
 import datetime
-import asyncio
-import asyncache
-import cachetools
 
-from aiogram import types
-from aiogram.dispatcher import Dispatcher
-from config import super_admin_admin, super_admin_ura
 from keyboards import *
-from aiogram.dispatcher.filters import Text
-import random as r
-from create_bot import alerts_client
-from handlers.stats import stats_schedule_add
+from aiogram import types
 from data_base import Database
+from config import super_admin_admin, super_admin_ura
+
+from aiogram.dispatcher import Dispatcher
+from aiogram.dispatcher.filters import Text
+from schedulers.alarm import alert_func
+from handlers.stats import stats_schedule_add
+
+
+
+
 
 
 # ===========================Переглянути розклад============================
@@ -112,70 +113,6 @@ async def fraction(message: types.Message):
 
 
 # =========================== Тривога ===========================
-@asyncache.cached(cachetools.TTLCache(1, 17))
-async def alert_func():
-    # Достаю список областей у яких повітряна тривога типу air_raid
-    active_alerts = await alerts_client.get_active_alerts()
-    filtered_alerts = active_alerts.filter(
-        "location_type", "oblast", "alert_type", "air_raid"
-    )
-
-    # Достаю список назв областей у яких повітряна тривога
-    count = len(filtered_alerts)
-    all_alerts = f"🌍 Області з тривогою({count} з 26):\n\n"
-    list_alerts_oblast_title = []
-    for title in filtered_alerts:
-        list_alerts_oblast_title.append(title.location_title)
-    list_alerts_oblast_title.sort()
-
-    #Перевірка чи є у Волинській області тривога?
-    if "Волинська область" in list_alerts_oblast_title:
-        our_oblast = True
-    else:
-        our_oblast = False
-
-    # Області які будуть на першому місці
-    need_oblast_title = [
-        "Тернопільська область",
-        "Івано-Франківська область",
-        "Хмельницька область",
-        "Чернівецька область",
-        "Закарпатська область",
-        "Львівська область",
-        "Рівненська область",
-        "Волинська область",
-    ]
-    # список у якому будуть області які нам підходять за списком вище і у них тривога
-    need_oblast_title_list_new = []
-    # Цикл пеоевірки через помилку
-    for j in range(0, len(need_oblast_title)):
-        try:
-            list_alerts_oblast_title.index(need_oblast_title[j])
-            list_alerts_oblast_title.remove(need_oblast_title[j])
-            need_oblast_title_list_new.insert(0, need_oblast_title[j])
-        except ValueError:
-            await asyncio.sleep(0.05)
-    # Роблю гарне повідомлення
-    if len(need_oblast_title_list_new) == 0 and len(list_alerts_oblast_title) == 0:
-        all_alerts += f" - Тривоги відсутні 🟢\n"
-    else:
-        if len(need_oblast_title_list_new) == 0:
-            all_alerts += f"Західні області :\n • Немає\n\n"
-        else:
-            all_alerts += f"Західні області :\n"
-            for alert in need_oblast_title_list_new:
-                all_alerts += " • " + alert + "\n"
-            all_alerts += "\n"
-        if len(list_alerts_oblast_title) == 0:
-            all_alerts += f"Інші області :\n • Немає"
-        else:
-            all_alerts += f"Інші області :\n"
-            for alert in list_alerts_oblast_title:
-                all_alerts += " • " + alert + "\n"
-    return all_alerts, our_oblast
-
-
-# =========================== Тривога ===========================
 async def alert(message: types.Message):
     await stats_schedule_add("Тривоги ⚠️", 1)
     all_alerts, check = await alert_func()
@@ -194,7 +131,7 @@ async def all_text(message: types.Message):
     else:
         if message.chat.type == "private":
             await message.answer(
-                "Незнаю такої командм\nНатисни /start і використовуй\nклавіатуру з кнопками знизу"
+                "Незнаю такої команди\nНатисни /start і використовуй\nклавіатуру з кнопками знизу"
             )
 
 
@@ -229,10 +166,6 @@ text = {
     ],
     "alert": ["Тривоги ⚠️", "Тривога", "alert", "тривога є?"],
 }
-
-
-
-
 
 
 # ===========================реєстратор============================

@@ -1,6 +1,6 @@
 from create_bot import scheduler
 
-async def loop_25():
+async def loop_1_m():
     #Функції які виконуються кожні 25 секунд
     pass
 

@@ -1,11 +1,75 @@
-from create_bot import scheduler
-from handlers.client import alert_func
-from create_bot import bot
-from  data_base import Database
-from aiogram.utils.exceptions import BotBlocked, RetryAfter
-from datetime import datetime
 import asyncio
-import time
+import asyncache
+import cachetools
+
+from data_base import Database
+from create_bot import bot, alerts_client, scheduler
+
+from aiogram.utils.exceptions import RetryAfter
+
+# =========================== Тривога ===========================
+@asyncache.cached(cachetools.TTLCache(1, 17))
+async def alert_func():
+    # Достаю список областей у яких повітряна тривога типу air_raid
+    active_alerts = await alerts_client.get_active_alerts()
+    filtered_alerts = active_alerts.filter(
+        "location_type", "oblast", "alert_type", "air_raid"
+    )
+
+    # Достаю список назв областей у яких повітряна тривога
+    count = len(filtered_alerts)
+    all_alerts = f"🌍 Області з тривогою({count} з 26):\n\n"
+    list_alerts_oblast_title = []
+    for title in filtered_alerts:
+        list_alerts_oblast_title.append(title.location_title)
+    list_alerts_oblast_title.sort()
+
+    #Перевірка чи є у Волинській області тривога?
+    if "Волинська область" in list_alerts_oblast_title:
+        our_oblast = True
+    else:
+        our_oblast = False
+
+    # Області які будуть на першому місці
+    need_oblast_title = [
+        "Тернопільська область",
+        "Івано-Франківська область",
+        "Хмельницька область",
+        "Чернівецька область",
+        "Закарпатська область",
+        "Львівська область",
+        "Рівненська область",
+        "Волинська область",
+    ]
+    # список у якому будуть області які нам підходять за списком вище і у них тривога
+    need_oblast_title_list_new = []
+    # Цикл пеоевірки через помилку
+    for j in range(0, len(need_oblast_title)):
+        try:
+            list_alerts_oblast_title.index(need_oblast_title[j])
+            list_alerts_oblast_title.remove(need_oblast_title[j])
+            need_oblast_title_list_new.insert(0, need_oblast_title[j])
+        except ValueError:
+            await asyncio.sleep(0.05)
+    # Роблю гарне повідомлення
+    if len(need_oblast_title_list_new) == 0 and len(list_alerts_oblast_title) == 0:
+        all_alerts += f" - Тривоги відсутні 🟢\n"
+    else:
+        if len(need_oblast_title_list_new) == 0:
+            all_alerts += f"Західні області :\n • Немає\n\n"
+        else:
+            all_alerts += f"Західні області :\n"
+            for alert in need_oblast_title_list_new:
+                all_alerts += " • " + alert + "\n"
+            all_alerts += "\n"
+        if len(list_alerts_oblast_title) == 0:
+            all_alerts += f"Інші області :\n • Немає"
+        else:
+            all_alerts += f"Інші області :\n"
+            for alert in list_alerts_oblast_title:
+                all_alerts += " • " + alert + "\n"
+    return all_alerts, our_oblast
+
 
 async def wait_start_alarm():
     db = await Database.setup()
@@ -35,17 +99,16 @@ async def wait_finish_alarm():
     await asyncio.gather(*map(send_notification(is_active), all_user_ids))
 
 
-
 def send_notification(is_active: bool):
     async def wrapped(user_id: int):
         db = await Database.setup()
         try:
             try:
-                await bot.send_sticker(user_id, "CAACAgIAAxkBAAEI_1hkY5y8yh_-0cKFPQ5Sv2SWlYQaCwACLCUAAvF3IUhe2e30dH6RaC8E" if is_active else "CAACAgIAAxkBAAEI_1xkY5zsKG4_LdSX-d2oMY994WAHjQACQisAAssEIUhdsPeRZOOUMC8E")
+                await bot.send_sticker(user_id, r"CAACAgIAAxkBAAEI_1hkY5y8yh_-0cKFPQ5Sv2SWlYQaCwACLCUAAvF3IUhe2e30dH6RaC8E" if is_active else "CAACAgIAAxkBAAEI_1xkY5zsKG4_LdSX-d2oMY994WAHjQACQisAAssEIUhdsPeRZOOUMC8E")
                 await bot.send_message(user_id, "Тривога! 🔴" if is_active else "Відбій! 🟢")
             except RetryAfter as ra:
                 await asyncio.sleep(ra.timeout)
-        except BotBlocked:
+        except:
             pass
     
     return wrapped

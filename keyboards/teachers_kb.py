@@ -17,7 +17,7 @@ async def get_t_kb():
             kb_name.add(list_teachers[i]).insert(list_teachers[i + 1])
     except IndexError:
         pass
-    return kb_name.add(KeyboardButton("Назад"))
+    return kb_name.add(KeyboardButton("Меню 👥"))
 
 
 # ======================================================================

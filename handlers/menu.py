@@ -1,13 +1,16 @@
 # from import
-from aiogram import types
-from aiogram.dispatcher import Dispatcher
-from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters.state import State, StatesGroup
 from keyboards import *
+from aiogram import types
 from data_base import Database
+
 from handlers.stats import stats_schedule_add
-from aiogram.dispatcher.filters import ChatTypeFilter, Text
+from aiogram.dispatcher import Dispatcher, FSMContext
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+
+from aiogram.dispatcher.filters import ChatTypeFilter, Text
+
+from aiogram.dispatcher.filters.state import State, StatesGroup
+
 
 
 # =========Класс машини стану=========
@@ -162,9 +165,9 @@ async def about_bot(message: types.Message):
     await stats_schedule_add("Про бота 🖇", 1)
     await message.answer(
         """БОТ ВПК ПЕДКІТ
-Версія : release 1.8
+Версія : release 1.11
 Розробник: <a href='https://t.me/salkooua'>Мусаєв Джаміль</a>
-Зробив аватарку: <a href='https://t.me/yurchh'>Коновалець Юра</a>
+Зробив аватарку: <a href='https://t.me/rchpsd'>Коновалець Юра</a>
 
 Бот створено для спрощення
 виконання будь - яких речей
@@ -218,11 +221,20 @@ async def score(message: types.Message):
 Вказати прізвище студента, курс та групу
 """, parse_mode="HTML",reply_markup=kb)
 
+
 async def official_site(message: types.Message):
     await stats_schedule_add("Офіційний сайт 🌎", 1)
     link = InlineKeyboardButton("Посилання на сайт", url = 'https://vvpc.com.ua/')
     link_kb = InlineKeyboardMarkup(row_width=1).add(link)
     await message.answer("Офіційний сайт ВПК 📰", reply_markup=link_kb)
+
+
+
+async def func(message: types.Message):
+    await message.answer("хуй")
+
+
+
 
 text = {
     "menu": ["Меню 👥", "Меню", "Menu"],

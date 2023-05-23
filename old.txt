@@ -1,0 +1,64 @@
+
+=========================================Написати ==================================================
+async def write_teach(message: types.Message, state: FSMContext):
+    db = await Database.setup()
+    teach = await db.teacher_name_exists_sql(message.text)
+    if message.text == "Назад":
+        await state.finish()
+        await message.answer(
+            "Надсилання повідомлення відміненно ✅", reply_markup=kb_client
+        )
+    else:
+        if teach:
+            async with state.proxy() as data:
+                data["group"] = message.text
+            await FSMWrite.message_teach.set()
+            await message.answer(
+                f"Напишіть повідомлення 📝", reply_markup=types.ReplyKeyboardRemove()
+            )
+        elif not teach:
+            await message.answer(
+                f"Немає викладача {message.text} ❌", reply_markup=kb_client
+            )
+            await state.finish()
+
+async def write_teach_message(message: types.Message, state: FSMContext):
+    db = await Database.setup()
+    async with state.proxy() as data:
+        group = data["group"]
+        all_user = await db.all_teach_id_for_group_sql(group)
+        group_user_writer = await db.group_for_teach_id(message.from_user.id)
+        if bool(len(all_user)):
+            for number in range(0, len(all_user)):
+                try:
+                    await bot.send_message(
+                        all_user[number][0],
+                        f"Повідомлення від {group_user_writer}\n" + message.text)
+                except:
+                    pass
+            await message.answer("Повідомлення надісланно ✅", reply_markup=kb_client)
+        elif bool(len(all_user)) == False:
+            await message.answer(
+                f"Немає зареєстрованого викладача за цим ім'ям {group} ❌", reply_markup=kb_client
+            )
+    await state.finish()
+
+
+dp.register_message_handler(write_teach, state=FSMWrite.teach)
+dp.register_message_handler(write_teach_message, state=FSMWrite.message_teach)
+
+
+async def write(message: types.Message):
+    db = await Database.setup()
+    
+    elif await db.teachers_exists_sql(message.from_user.id):
+        await message.answer(
+            "Щоб написати повідомлення іншій групі\nспочатку виберіть її ім'я нижче ⬇️",
+            reply_markup = await get_t_kb(),
+        )
+        await FSMWrite.teach.set()
+
+================================================================================================================
+
+
+

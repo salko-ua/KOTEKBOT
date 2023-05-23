@@ -1,8 +1,11 @@
-from aiogram import types
-from aiogram.dispatcher import Dispatcher
 from keyboards import *
-from aiogram.dispatcher.filters import Text
+from aiogram import types
 from data_base import Database
+
+from aiogram.dispatcher import Dispatcher
+
+from aiogram.dispatcher.filters import Text
+
 
 
 async def stats_schedule_add(name, count):
@@ -81,9 +84,7 @@ text = {
 
 
 def register_handler_stats(dp: Dispatcher):
-    dp.register_message_handler(
-        stats_all, Text(ignore_case=True, equals=text["stats_all"])
-    )
+    dp.register_message_handler(stats_all, Text(ignore_case=True, equals=text["stats_all"]))
     dp.register_callback_query_handler(stats_month, text = "2")
     dp.register_callback_query_handler(stats_all_inline, text = "1")
     dp.register_callback_query_handler(stats_week, text = "3")

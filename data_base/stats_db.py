@@ -4,10 +4,9 @@ from data_base.create_db import BaseDBPart
 class STATSDB(BaseDBPart):
     async def add_or_update_stats_sql(self, name, count):
         name_exits = await (await self.cur.execute(
-            "SELECT `id` FROM `stats` WHERE `stats_name` = ?", (name,)
+            "SELECT COUNT(`id`) FROM `stats` WHERE `stats_name` = ?", (name,)
         )).fetchall()
-
-        if len(name_exits) == 0:
+        if name_exits[0][0] == 0:
             await self.cur.execute(
                 "INSERT INTO `stats` (`stats_name`) VALUES(?)", (name,)
             )
@@ -20,7 +19,7 @@ class STATSDB(BaseDBPart):
                     name,
                 ),
             )
-        elif len(name_exits) == 1:
+        elif name_exits[0][0] == 1:
             count_db = await (await self.cur.execute(
                 "SELECT `count` FROM `stats` WHERE `stats_name` = ?", (name,)
             )).fetchall()
@@ -44,7 +43,7 @@ class STATSDB(BaseDBPart):
                     name,
                 ),
             )
-        elif len(name_exits) > 1:
+        elif name_exits[0][0] > 1:
             id = await self.cur.execute(
                 "SELECT `id` FROM `stats` WHERE `stats_name` = ?", (name,)
             )

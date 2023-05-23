@@ -12,7 +12,7 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemo
 student = KeyboardButton("Студент 👩‍🎓")
 teacher = KeyboardButton("Викладач 👨‍🏫")
 admin = KeyboardButton("Адміністратор 🔐")
-back = KeyboardButton("Назад")
+back = KeyboardButton("Меню 👥")
 
 kb_choice = (
     ReplyKeyboardMarkup(resize_keyboard=True).row(student, teacher).add(admin).add(back)

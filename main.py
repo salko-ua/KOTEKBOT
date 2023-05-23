@@ -47,5 +47,5 @@ def start_bot():
         dispatcher=dp,
         on_startup=on_startup,
         on_shutdown=on_shutdown,
-        skip_updates=True
+        skip_updates=False
     )

@@ -1,22 +1,24 @@
 # import
 import asyncio
+import datetime
 
 # from import
-from aiogram import types
-from aiogram.dispatcher import Dispatcher
-from aiogram.utils.exceptions import MessageIsTooLong
-from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters.state import State, StatesGroup
 from keyboards import *
+from aiogram import types
 from data_base import Database
-from config import super_admin_admin, super_admin_ura
-from create_bot import bot
-from handlers.reg import passwords
-from aiogram.types import InputFile
-from aiogram.dispatcher.filters import Text
-from aiogram.types import ReplyKeyboardRemove
-import datetime
 from translate import Translator
+from create_bot import bot
+from config import super_admin_admin, super_admin_ura
+
+from handlers.reg import password_for_admin
+from aiogram.types import InputFile, ReplyKeyboardRemove
+from aiogram.dispatcher import Dispatcher, FSMContext
+
+from aiogram.utils.exceptions import MessageIsTooLong
+from aiogram.dispatcher.filters import Text
+
+from aiogram.dispatcher.filters.state import State, StatesGroup
+
 
 class FSMSuperA(StatesGroup):
     group = State()
@@ -310,7 +312,7 @@ async def super_admin_delete_teach1(msg: types.Message, state: FSMContext):
 
 async def password(msg: types.Message):
     if msg.from_user.id == super_admin_admin or msg.from_user.id == super_admin_ura:
-        await msg.answer(f"PASSWORD : {passwords}")
+        await msg.answer(f"PASSWORD : {await password_for_admin()}")
     else:
         dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
         await asyncio.sleep(4)

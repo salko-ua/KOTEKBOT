@@ -10,7 +10,7 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemo
 
 # ===========================1 Keyboards============================
 reg = KeyboardButton("Реєстрація ⚙️")
-stikers = KeyboardButton("Стікери 👨‍👩‍👧‍👦")
+stikers = KeyboardButton("Фото кота 🖼")
 applicant = KeyboardButton("Для абітурієнта 🧑‍💻")
 others = KeyboardButton("Інше 📌")
 
@@ -18,7 +18,7 @@ kb_start = ReplyKeyboardMarkup(resize_keyboard=True)
 kb_start.row(reg, stikers).row(others, applicant)
 # ===========================2 Keyboards============================
 reg = KeyboardButton("Розклад ⚙️")
-stikers = KeyboardButton("Стікери 👨‍👩‍👧‍👦")
+stikers = KeyboardButton("Фото кота 🖼")
 applicant = KeyboardButton("Для абітурієнта 🧑‍💻")
 others = KeyboardButton("Інше 📌")
 
@@ -28,7 +28,7 @@ kb_start_user.row(reg, stikers).row(others, applicant)
 # ADMIN 1 reg
 reg = KeyboardButton("Розклад ⚙️")
 admin = KeyboardButton("Адмін 🔑")
-stikers = KeyboardButton("Стікери 👨‍👩‍👧‍👦")
+stikers = KeyboardButton("Фото кота 🖼")
 others = KeyboardButton("Інше 📌")
 applicant = KeyboardButton("Для абітурієнта 🧑‍💻")
 

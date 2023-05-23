@@ -14,7 +14,7 @@ async def get_kb():
     kb_course = ReplyKeyboardMarkup(resize_keyboard=True)
     for i in range(0, len(h)):
         kb_course.insert(h[i])
-    return kb_course.add(KeyboardButton("Назад"))
+    return kb_course.add(KeyboardButton("Меню 👥"))
 
 
 # ======================================================================

@@ -11,6 +11,13 @@ class TEACHERDB(BaseDBPart):
         result = await result.fetchall()
         return bool(result[0][0])
 
+    # Переглянути всіх викладачів
+    # Повертає user_id всіх користувачів list
+    async def all_teachers_id_sql(self):
+        rest = await self.cur.execute("SELECT `user_id` FROM `teachers`")
+        return await rest.fetchall()
+
+
     # Перевірка чи є у групі викладачі якщо немає False якщо є 1 або більше True
     # Повертає True or False
     async def teacher_name_exists_sql(self, group):
