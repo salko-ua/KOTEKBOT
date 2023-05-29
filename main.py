@@ -2,19 +2,32 @@
 import os
 #import sentry_sdk
 import logging
+import sentry_sdk
+import asyncio
+import datetime
 
 # from import
 from create_bot import dp
-#from config import TOKEN_SENTRY
-from aiogram.utils.executor import start_polling
+from aiogram import types
 from handlers import admin, client, reg, super_admin, menu, stats, commands, prime
 from create_bot import scheduler
 from schedulers import task, alarm
+
+from aiogram.utils.executor import start_polling
+
 APP_URL = os.getenv("APP_URL")
 
+sentry_sdk.init(
+    dsn="https://53565fef30db43dc9498abf76cf91604@o4504669478780928.ingest.sentry.io/4505244319088640",
+    traces_sample_rate=1.0
+)
 
-#logging.basicConfig(level=logging.INFO)
+async def logs():
+    # Формування назви файлу з датою
+    filename = f'E:\KOTEKBOT\logs\Аpp_Error.log'
 
+    # Налаштування об'єкта логування
+    logging.basicConfig(level=logging.ERROR, filename=filename, filemode='w', format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 async def register_handlers():
@@ -32,6 +45,7 @@ async def register_task():
     await alarm.create_task_alarm()
 
 async def on_startup(dp):
+    await logs()
     await register_task()
     await register_handlers()
     scheduler.start()

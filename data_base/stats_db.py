@@ -6,50 +6,53 @@ class STATSDB(BaseDBPart):
         name_exits = await (await self.cur.execute(
             "SELECT COUNT(`id`) FROM `stats` WHERE `stats_name` = ?", (name,)
         )).fetchall()
-        if name_exits[0][0] == 0:
-            await self.cur.execute(
-                "INSERT INTO `stats` (`stats_name`) VALUES(?)", (name,)
-            )
-            await self.cur.execute(
-                "UPDATE `stats` SET `count` = ?, `count_month` = ?, `count_week` = ? WHERE `stats_name` = ?",
-                (
-                    count,
-                    count,
-                    count,
-                    name,
-                ),
-            )
-        elif name_exits[0][0] == 1:
-            count_db = await (await self.cur.execute(
-                "SELECT `count` FROM `stats` WHERE `stats_name` = ?", (name,)
-            )).fetchall()
-            count_week = await (await self.cur.execute(
-                "SELECT `count_week` FROM `stats` WHERE `stats_name` = ?", (name,)
-            )).fetchall()
-            count_month = await (await self.cur.execute(
-                "SELECT `count_month` FROM `stats` WHERE `stats_name` = ?", (name,)
-            )).fetchall()
+        try:
+            if name_exits[0][0] == 0:
+                await self.cur.execute(
+                    "INSERT INTO `stats` (`stats_name`) VALUES(?)", (name,)
+                )
+                await self.cur.execute(
+                    "UPDATE `stats` SET `count` = ?, `count_month` = ?, `count_week` = ? WHERE `stats_name` = ?",
+                    (
+                        count,
+                        count,
+                        count,
+                        name,
+                    ),
+                )
+            elif name_exits[0][0] == 1:
+                count_db = await (await self.cur.execute(
+                    "SELECT `count` FROM `stats` WHERE `stats_name` = ?", (name,)
+                )).fetchall()
+                count_week = await (await self.cur.execute(
+                    "SELECT `count_week` FROM `stats` WHERE `stats_name` = ?", (name,)
+                )).fetchall()
+                count_month = await (await self.cur.execute(
+                    "SELECT `count_month` FROM `stats` WHERE `stats_name` = ?", (name,)
+                )).fetchall()
 
-            count_db = count_db[0][0] + count
-            count_week = count_week[0][0] + count
-            count_month = count_month[0][0] + count
+                count_db = count_db[0][0] + count
+                count_week = count_week[0][0] + count
+                count_month = count_month[0][0] + count
 
-            await self.cur.execute(
-                "UPDATE `stats` SET `count` = ?, `count_month` = ?, `count_week` = ? WHERE `stats_name` = ?",
-                (
-                    count_db,
-                    count_month,
-                    count_week,
-                    name,
-                ),
-            )
-        elif name_exits[0][0] > 1:
-            id = await self.cur.execute(
-                "SELECT `id` FROM `stats` WHERE `stats_name` = ?", (name,)
-            )
-            id = await id.fetchone()
-            await self.cur.execute("DELETE FROM `stats` WHERE `id` = ?", (id[0],))
-        return await self.base.commit()
+                await self.cur.execute(
+                    "UPDATE `stats` SET `count` = ?, `count_month` = ?, `count_week` = ? WHERE `stats_name` = ?",
+                    (
+                        count_db,
+                        count_month,
+                        count_week,
+                        name,
+                    ),
+                )
+            elif name_exits[0][0] > 1:
+                id = await self.cur.execute(
+                    "SELECT `id` FROM `stats` WHERE `stats_name` = ?", (name,)
+                )
+                id = await id.fetchone()
+                await self.cur.execute("DELETE FROM `stats` WHERE `id` = ?", (id[0],))
+            return await self.base.commit()
+        except IndexError:
+            pass
 
     # other
     async def see_all_stats_sql(self):

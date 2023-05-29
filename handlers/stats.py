@@ -15,7 +15,9 @@ async def stats_schedule_add(name, count):
 
 # ===========================Статистика 🧮============================
 async def stats_all(message: types.Message):
-    await stats_schedule_add("Статистика 🧮", 1)
+    await message.answer('Функція тимчасово закрита')
+
+    '''await stats_schedule_add("Статистика 🧮", 1)
     db = await Database.setup()
     always, month, week = await db.see_all_stats_sql()
     value_stud = await db.count_user_sql()
@@ -28,7 +30,7 @@ f"""📊 <b>Статистика користувачів :</b>
 🧮<b>Загальна статистика активності :</b>
 {always}
 (Натискання цих кнопок)
-""", reply_markup = inline_stats_kb_month, parse_mode="HTML")
+""", reply_markup = inline_stats_kb_month, parse_mode="HTML")'''
 
 async def stats_month(Query: types.CallbackQuery):
     db = await Database.setup()

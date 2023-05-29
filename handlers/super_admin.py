@@ -702,7 +702,7 @@ async def add_schedule_to_teacher2(message: types.Message, state: FSMContext):
 
 # ===========================реєстратор============================
 def register_handler_sadmin(dp: Dispatcher):
-    dp.register_message_handler(password, text="p")
+    dp.register_message_handler(password, text="password")
     dp.register_message_handler(admin_kb, text="Адмін 🔑")
     dp.register_message_handler(super_admin_kb, text="власник")
     dp.register_message_handler(super_admin_user, text="таблиця студентів")

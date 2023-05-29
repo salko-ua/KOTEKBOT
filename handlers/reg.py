@@ -26,17 +26,6 @@ class FSMReg(StatesGroup):
     password_reg = State()
     reply_reg = State()
 
-
-#user is nobody
-async def dont_exist(user_id: int):
-    db = await Database.setup()
-    if (not await db.user_exists_sql(user_id) and 
-        not await db.admin_exists_sql(user_id) and 
-        not await db.teachers_exists_sql(user_id)
-    ):
-        return True
-
-
 @asyncache.cached(cachetools.TTLCache(1, 120))
 async def password_for_admin():
     password = ""
@@ -50,12 +39,8 @@ async def registration(message: types.Message):
     db = await Database.setup()
     if message.text == "Розклад ⚙️":
         await stats_schedule_add("Розклад ⚙️", 1)
-    
-    if await dont_exist(message.from_user.id):
-        await message.answer("Виберіть тип акаунту ⬇️", reply_markup=kb_choice)
-        await FSMReg.reply_reg.set()
 
-    elif await db.user_exists_sql(message.from_user.id):
+    if await db.user_exists_sql(message.from_user.id):
         await message.answer("Ваша клавіатура ⌨️", reply_markup=kb_client)
 
     elif await db.teachers_exists_sql(message.from_user.id):
@@ -65,6 +50,9 @@ async def registration(message: types.Message):
         await message.answer("Виберіть тип акаунту ⬇️", reply_markup=kb_choice)
         await FSMReg.reply_reg.set()
 
+    else:
+        await message.answer("Виберіть тип акаунту ⬇️", reply_markup=kb_choice)
+        await FSMReg.reply_reg.set()
 
 async def reg(message: types.Message, state: FSMContext):
     db = await Database.setup()

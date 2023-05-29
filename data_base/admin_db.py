@@ -1,10 +1,12 @@
 from data_base.create_db import BaseDBPart
-
+import asyncache
+import cachetools
 
 class ADMINDB(BaseDBPart):
     # Функція перевірки чи є адмін з данним user_id у db
     # Повертає True or False
-    async def admin_exists_sql(self, user_id):
+    @asyncache.cached(cachetools.TTLCache(1, 60))
+    async def admin_exists_sql(self, user_id: int):
         result = await self.cur.execute(
             "SELECT COUNT(`id`) FROM `admin` WHERE `user_id` = ?", (user_id,)
         )

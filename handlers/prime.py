@@ -186,7 +186,6 @@ async def write_group_message_text(message: types.Message, state: FSMContext):
         all_user_us_ids = map(lambda e: e[0], all_user_us)
         groups = None
         await asyncio.gather(*map(send_notification(1, text, data, groups), all_user_us_ids))
-        await bot.send_message(5963046063, f"{message.from_user.id} {group_user_writer} надіслав до {group}:\n{message.text}\n ")
         await message.answer("Надісланно ✅", reply_markup=kb_client)
 
     else:
@@ -198,7 +197,6 @@ async def write_group_message_text(message: types.Message, state: FSMContext):
             await asyncio.gather(*map(send_notification(2, text, data, groups), all_user_us_id))
             await asyncio.gather(*map(send_notification(3, text, data, groups), all_user_their_id))
 
-            await bot.send_message(5963046063, f"{message.from_user.id} {group_user_writer} надіслав до {group}:\n{message.text}\n ")
             await message.answer("Надісланно ✅", reply_markup=kb_client)
 
         elif bool(len(all_user_their)) == False:
