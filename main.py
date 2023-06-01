@@ -24,7 +24,7 @@ sentry_sdk.init(
 
 async def logs():
     # Формування назви файлу з датою
-    filename = f'E:\KOTEKBOT\logs\Аpp_Error.log'
+    filename = f'logs\Аpp_Error.log'
 
     # Налаштування об'єкта логування
     logging.basicConfig(level=logging.ERROR, filename=filename, filemode='w', format='%(asctime)s - %(levelname)s - %(message)s')

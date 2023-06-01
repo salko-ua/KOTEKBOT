@@ -388,7 +388,7 @@ async def back_write_group_message(query: types.CallbackQuery, state: FSMContext
 
 # ===========================Фото кота 🖼============================
 async def choose_random_photo():
-    folder_path = 'E:\KOTEKBOT\photo'
+    folder_path = 'photo/'
     file_list = os.listdir(folder_path)
     random_file = random.choice(file_list)
     file_path = os.path.join(folder_path, random_file)

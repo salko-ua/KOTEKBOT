@@ -9,7 +9,6 @@ from aiogram.types import Message
 from handlers.menu import menu
 from aiogram.dispatcher import Dispatcher
 from aiogram.dispatcher import FSMContext
-from aiogram.types import ReplyKeyboardRemove
 
 from aiogram.utils.exceptions import RetryAfter
 
