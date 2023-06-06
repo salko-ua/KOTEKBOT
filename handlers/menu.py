@@ -3,14 +3,13 @@ from keyboards import *
 from aiogram import types
 from data_base import Database
 
-from handlers.stats import stats_schedule_add
+
 from aiogram.dispatcher import Dispatcher, FSMContext
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from aiogram.dispatcher.filters import ChatTypeFilter, Text
 
 from aiogram.dispatcher.filters.state import State, StatesGroup
-
 
 
 # =========Класс машини стану=========
@@ -36,7 +35,6 @@ async def menu(message: types.Message):
 
 # ===========================Вступ 📗============================
 async def introduction(message: types.Message):
-    await stats_schedule_add("Вступ 📗", 1)
     await message.answer(
         "Інформація про <a href='https://telegra.ph/%D0%86nformac%D1%96ya-dlya-vstupnika-2023-02-21'>вступ</a> на 2023 рік\nвсе скопійовано з офіційного\nсайту.У 2023 році - актуально",
         parse_mode="HTML",
@@ -45,7 +43,6 @@ async def introduction(message: types.Message):
 
 # ===========================Про коледж 🛡============================
 async def about_collasge(message: types.Message):
-    await stats_schedule_add("Про коледж 🛡", 1)
     await message.answer(
         "<a href='https://telegra.ph/Pro-koledzh-02-21'>Про коледж</a>",
         parse_mode="HTML",
@@ -54,7 +51,6 @@ async def about_collasge(message: types.Message):
 
 # ===========================Час роботи 📅============================
 async def time_work(message: types.Message):
-    await stats_schedule_add("Час роботи 📅", 1)
     await message.answer(
         """Час роботи ⌚️
 Понеділок - П'ятниця: 8:00–17:00.
@@ -64,7 +60,6 @@ async def time_work(message: types.Message):
 
 # ===========================Адреса 📫============================
 async def addres(message: types.Message):
-    await stats_schedule_add("Адреса 📫", 1)
     await message.answer(
         """•Земля 🌍
 •Україна 🇺🇦
@@ -76,20 +71,18 @@ async def addres(message: types.Message):
 
 # ===========================Контакти ============================
 async def contact(message: types.Message):
-    await stats_schedule_add("Контакти 📘", 1)
-    await message.answer("""
+    await message.answer(
+        """
 📱 Контактні телефони: 
-(03342)35555 (факс), 
-20950 (приймальна комісія),
+    - (03342)35555 (факс), 
+    - 20950 (приймальна комісія),
 📨 Почта :
-E-mail: post@vvpc.com.ua,
-"""
-)
+    - E-mail: post@vvpc.com.ua
+""", reply_markup=site_contacts_url)
 
 
 # ===========================Спеціальності 📜============================
 async def specialty(message: types.Message):
-    await stats_schedule_add("Спеціальності 📜", 1)
     if message.chat.type == "private":
         await message.answer("Cпеціальності 📜 ВВПФК", reply_markup=kb_speciality)
         await FSMSpecialty.specialty.set()
@@ -148,13 +141,11 @@ async def specialty1(m: types.Message, state=FSMContext):
 
 # ===========================Інше 📌============================
 async def others(message: types.Message):
-    await stats_schedule_add("Інше 📌", 1)
     await message.answer("Інше 🫤", reply_markup=kb_infs)
 
 
 # ===========================Стікери 👨‍👩‍👧‍👦============================
 async def stick(message: types.Message):
-    await stats_schedule_add("Стікери 👨‍👩‍👧‍👦", 1)
     await message.answer_sticker(
         r"CAACAgIAAxkBAAEH15Nj9O7fae-x_g7MdX6tus4wAh8SngACLQAD3jyHIuJ7Rhz4aJKDLgQ"
     )
@@ -162,7 +153,6 @@ async def stick(message: types.Message):
 
 # ===========================Про бота 🖇============================
 async def about_bot(message: types.Message):
-    await stats_schedule_add("Про бота 🖇", 1)
     await message.answer(
         """БОТ ВПК ПЕДКІТ
 Версія : release 1.11
@@ -185,15 +175,18 @@ async def about_bot(message: types.Message):
 
 # ===========================Інформація для абітурієнта============================
 async def for_applicant(message: types.Message):
-    await stats_schedule_add("Для абітурієнта 🧑‍💻", 1)
-    await message.answer("Інформація для абітурієнта 😵‍💫", reply_markup=kb_for_applicant)
+    await message.answer(
+        "Інформація для абітурієнта 😵‍💫", reply_markup=kb_for_applicant
+    )
+
 
 async def score(message: types.Message):
-    await stats_schedule_add("Реквізити 💳", 1)
-    button = InlineKeyboardButton("Перевірити актуальність", url = 'https://vvpc.com.ua/node/980')
+    button = InlineKeyboardButton(
+        "Перевірити актуальність 🌐", url="https://vvpc.com.ua/node/980"
+    )
     kb = InlineKeyboardMarkup(row_width=1).add(button)
     await message.answer(
-"""
+        """
 ❗️ Перевірте чи інформація актуальна ❗️
 Це можна зробити кнопкою під повідомленням
 
@@ -219,21 +212,20 @@ async def score(message: types.Message):
 Призначення платежу: плата за гуртожиток
 
 Вказати прізвище студента, курс та групу
-""", parse_mode="HTML",reply_markup=kb)
+""",
+        parse_mode="HTML",
+        reply_markup=kb,
+    )
 
 
 async def official_site(message: types.Message):
-    await stats_schedule_add("Офіційний сайт 🌎", 1)
-    link = InlineKeyboardButton("Посилання на сайт", url = 'https://vvpc.com.ua/')
+    link = InlineKeyboardButton("Посилання на сайт 🌐", url="https://vvpc.com.ua/")
     link_kb = InlineKeyboardMarkup(row_width=1).add(link)
     await message.answer("Офіційний сайт ВПК 📰", reply_markup=link_kb)
 
 
-
 async def func(message: types.Message):
     await message.answer("хуй")
-
-
 
 
 text = {
@@ -247,7 +239,7 @@ text = {
     "others": ["Інше 📌", "Інше ", "others", "other"],
     "stick": ["Стікери 👨‍👩‍👧‍👦", "Стікери", "Stickers"],
     "score": ["score", "Реквізити 💳", "Реквізити"],
-    "official_site": ["official site", "Офіційний сайт 🌎", "Офіційний сайт"]
+    "official_site": ["official site", "Офіційний сайт 🌎", "Офіційний сайт"],
 }
 
 
@@ -272,14 +264,11 @@ def register_handler_menu(dp: Dispatcher):
         time_work, Text(ignore_case=True, equals=text["time_work"])
     )
 
-    dp.register_message_handler(
-        score, Text(ignore_case=True, equals=text["score"])
-    )
+    dp.register_message_handler(score, Text(ignore_case=True, equals=text["score"]))
 
     dp.register_message_handler(
         official_site, Text(ignore_case=True, equals=text["official_site"])
     )
-
 
     dp.register_message_handler(addres, Text(ignore_case=True, equals=text["addres"]))
 

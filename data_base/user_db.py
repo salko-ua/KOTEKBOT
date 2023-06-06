@@ -1,11 +1,15 @@
 from data_base.create_db import BaseDBPart
 
 
-class USERDB(BaseDBPart):
+class UserDB(BaseDBPart):
     # Функція перевірки чи є користувач з данним user_id у db
     # Повертає True or False
     async def user_exists_sql(self, user_id):
-        result = await (await self.cur.execute("SELECT COUNT(`user_id`) FROM `user` WHERE `user_id` = ?", (user_id,))).fetchall()
+        result = await (
+            await self.cur.execute(
+                "SELECT COUNT(`user_id`) FROM `user` WHERE `user_id` = ?", (user_id,)
+            )
+        ).fetchall()
         return bool(result[0][0])
 
     # Перевірка чи є у групі користувачі якщо немає False якщо є 1 або більше True

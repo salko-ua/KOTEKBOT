@@ -41,21 +41,27 @@ help = KeyboardButton("Допомога 🛠")
 menu = KeyboardButton("Меню 👥")
 stats = KeyboardButton("Статистика 🧮")
 time_work = KeyboardButton("Час роботи 📅")
+join = KeyboardButton("Розробка 🧩")
+sticker = KeyboardButton("Стікери 👨‍👩‍👧‍👦")
 
 kb_infs = ReplyKeyboardMarkup(resize_keyboard=True)
-kb_infs.row(about_author, stats).add(help, time_work).row(menu, commandsk)
+kb_infs.row(about_author, stats).add(help, time_work).add(join, sticker).row(
+    menu, commandsk
+)
 # ===========================5 Keyboards============================
 introduction = KeyboardButton("Вступ 📗")
 specialty = KeyboardButton("Спеціальності 📜")
 about_collage = KeyboardButton("Про коледж 🛡")
 score = KeyboardButton("Реквізити 💳")
-site =  KeyboardButton("Офіційний сайт 🌎")
+site = KeyboardButton("Офіційний сайт 🌎")
 contacts = KeyboardButton("Контакти 📘")
 addres = KeyboardButton("Адреса 📫")
 menu1 = KeyboardButton("Меню 👥")
 
 kb_for_applicant = ReplyKeyboardMarkup(resize_keyboard=True)
-kb_for_applicant.row(introduction, about_collage).row(addres, contacts).row(score, site).row(menu1, specialty)
+kb_for_applicant.row(introduction, about_collage).row(addres, contacts).row(
+    score, site
+).row(menu1, specialty)
 # ===========================6 Keyboards============================
 spec012 = KeyboardButton("Дошкільна освіта")
 spec013 = KeyboardButton("Початкова освіта")

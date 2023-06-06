@@ -1,7 +1,7 @@
 from data_base.create_db import BaseDBPart
 
 
-class TEXTDB(BaseDBPart):
+class TextDB(BaseDBPart):
     async def add_text_sql(self, text_user, group_name):
         exits = await (
             await self.cur.execute(

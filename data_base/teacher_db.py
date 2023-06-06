@@ -1,7 +1,7 @@
 from data_base.create_db import BaseDBPart
 
 
-class TEACHERDB(BaseDBPart):
+class TeacherDB(BaseDBPart):
     # Функція перевірки чи є викладач з данним user_id у db
     # Повертає True or False
     async def teachers_exists_sql(self, user_id):
@@ -16,7 +16,6 @@ class TEACHERDB(BaseDBPart):
     async def all_teachers_id_sql(self):
         rest = await self.cur.execute("SELECT `user_id` FROM `teachers`")
         return await rest.fetchall()
-
 
     # Перевірка чи є у групі викладачі якщо немає False якщо є 1 або більше True
     # Повертає True or False
@@ -85,7 +84,7 @@ class TEACHERDB(BaseDBPart):
             return 0
         else:
             return len(row_counts)
-        
+
     # Переглянути всіх користувачів
     # Повертає user_id всіх користувачів list
     async def all_teach_id_for_group_sql(self, group):

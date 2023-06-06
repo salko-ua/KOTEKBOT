@@ -1,7 +1,7 @@
 from data_base.create_db import BaseDBPart
 
 
-class ALLPHOTOTDB(BaseDBPart):
+class AllPhotoDB(BaseDBPart):
     async def add_calls_sql(self, types, id_photo, date_photo):
         id = 1
         ress = await self.cur.execute("SELECT `id` FROM all_photo WHERE id = ?", (id,))

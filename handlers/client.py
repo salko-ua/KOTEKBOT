@@ -7,18 +7,13 @@ from config import super_admin_admin, super_admin_ura
 
 from aiogram.dispatcher import Dispatcher
 from aiogram.dispatcher.filters import Text
-from schedulers.alarm import alert_func
-from handlers.stats import stats_schedule_add
-
-
-
+from task.alarm import alert_func
 
 
 
 # ===========================Переглянути розклад============================
 async def view_coupes(message: types.Message):
     db = await Database.setup()
-    await stats_schedule_add("Розклад пар 👀", 1)
     if await db.user_exists_sql(message.from_user.id):
         boolen, photo, date = await db.see_rod_sql(message.from_user.id)
         if boolen:
@@ -43,7 +38,6 @@ async def view_coupes(message: types.Message):
 # ===========================Змінити групу============================
 async def view_calls(message: types.Message):
     db = await Database.setup()
-    await stats_schedule_add("Розклад дзвінків ⌚️", 1)
     if (
         await db.user_exists_sql(message.from_user.id)
         or message.from_user.id == super_admin_admin
@@ -98,7 +92,6 @@ async def delete_user(message: types.Message):
 
 # =========================== Дріб ===========================
 async def fraction(message: types.Message):
-    await stats_schedule_add("Ч/З тиждень ✏️", 1)
     delta = datetime.timedelta(hours=2, minutes=0)
     todays = datetime.datetime.now(datetime.timezone.utc) + delta
     days = int(todays.strftime("%d"))
@@ -114,7 +107,6 @@ async def fraction(message: types.Message):
 
 # =========================== Тривога ===========================
 async def alert(message: types.Message):
-    await stats_schedule_add("Тривоги ⚠️", 1)
     all_alerts, check = await alert_func()
     await message.answer(
         all_alerts + "\n" + "<a href='https://alerts.in.ua/'>Дані з сайту</a>",
@@ -133,6 +125,8 @@ async def all_text(message: types.Message):
             await message.answer(
                 "Незнаю такої команди\nНатисни /start і використовуй\nклавіатуру з кнопками знизу"
             )
+        else:
+            print(message.message_thread_id)
 
 
 text = {

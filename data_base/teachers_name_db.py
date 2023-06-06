@@ -1,7 +1,7 @@
 from data_base.create_db import BaseDBPart
 
 
-class TEACHERGROUPDB(BaseDBPart):
+class TeacherGroupDB(BaseDBPart):
     # Функція перевірки чи є розклад викладача з данним name_teacher у db
     # Повертає True or False
     async def teachers_name_exists_sql(self, name_teacher):

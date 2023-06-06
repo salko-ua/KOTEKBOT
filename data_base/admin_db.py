@@ -2,7 +2,8 @@ from data_base.create_db import BaseDBPart
 import asyncache
 import cachetools
 
-class ADMINDB(BaseDBPart):
+
+class AdminDB(BaseDBPart):
     # Функція перевірки чи є адмін з данним user_id у db
     # Повертає True or False
     @asyncache.cached(cachetools.TTLCache(1, 60))

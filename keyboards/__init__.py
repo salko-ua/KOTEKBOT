@@ -8,15 +8,20 @@ from keyboards.main_kb import (
     kb_speciality,
     kb_infs,
     kb_start_admin,
-    kb_for_applicant
+    kb_for_applicant,
 )
 from keyboards.teachers_kb import get_t_kb, kb_teachers
 from keyboards.inline_kb import (
-    inline_stats_kb_always, 
-    inline_stats_kb_month, 
-    inline_stats_kb_week, 
-    inline_kb_group, 
-    inline_back, 
-    cancle_inline_kb, 
-    text_inline_kb
+    update_kb,
+    inline_kb_group,
+    inline_back,
+    cancle_inline_kb,
+    text_inline_kb,
+    url_card_kb,
+    site_contacts_url,
+)
+from keyboards.dev_inline_kb import (
+    dev_inline_kb,
+    dev_back_inline_kb,
+    dev_request_inline_kb,
 )

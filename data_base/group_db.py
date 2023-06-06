@@ -1,7 +1,7 @@
 from data_base.create_db import BaseDBPart
 
 
-class GROUPDB(BaseDBPart):
+class GroupDB(BaseDBPart):
     # Функція перевірки чи є гурпа з данним groupname у db
     # Повертає True or False
     async def group_exists_sql(self, groupname):

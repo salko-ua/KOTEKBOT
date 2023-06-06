@@ -61,7 +61,6 @@ async def super_admin_kb(msg: types.Message):
         await msg.answer("Клавіатура власника", reply_markup=sadmin)
 
 
-
 # Показати таблицю користувачів
 async def super_admin_user(msg: types.Message):
     db = await Database.setup()
@@ -319,37 +318,19 @@ async def password(msg: types.Message):
         await msg.delete()
         await dels.delete()
 
+
 async def send_file_db(msg: types.Message):
     if msg.from_user.id == super_admin_admin:
         s = InputFile("data/database.db")
         await bot.send_document(msg.from_user.id, s)
 
-async def delete_stats(msg: types.Message):
-    if msg.from_user.id == super_admin_admin:
-        name = msg.text[2:]
-        db = await Database.setup()
-        await db.delete_stats_sql(name)
-
-async def delete_month(message: types.Message):
-    if message.from_user.id == super_admin_admin:
-        db = await Database.setup()
-        await db.delete_month_sql()
-
-async def delete_week(message: types.Message):
-    if message.from_user.id == super_admin_admin:
-        db = await Database.setup()
-        await db.delete_week_sql()
-
-async def create_table(message: types.Message):
-    if message.from_user.id == super_admin_admin:
-        db = await Database.setup()
-        await db.rcreate()
 
 
 # ===========================Додавання викладача============================
 async def add_teachers(message: types.Message):
     db = await Database.setup()
-    if (message.from_user.id == super_admin_admin
+    if (
+        message.from_user.id == super_admin_admin
         or message.from_user.id == super_admin_ura
     ):
         await FSMSuperA.teachers_name.set()
@@ -363,7 +344,10 @@ async def add_teachers(message: types.Message):
 
 async def add_teachers1(message: types.Message, state: FSMContext):
     db = await Database.setup()
-    if (message.from_user.id == super_admin_admin or message.from_user.id == super_admin_ura):
+    if (
+        message.from_user.id == super_admin_admin
+        or message.from_user.id == super_admin_ura
+    ):
         if message.text == "Назад":
             await message.answer("Меню", reply_markup=sadmin)
             await state.finish()
@@ -395,7 +379,10 @@ async def add_teachers1(message: types.Message, state: FSMContext):
 # ===========================Видалити викладача============================
 async def delete_teachers(message: types.Message):
     db = await Database.setup()
-    if (message.from_user.id == super_admin_admin or message.from_user.id == super_admin_ura):
+    if (
+        message.from_user.id == super_admin_admin
+        or message.from_user.id == super_admin_ura
+    ):
         await FSMSuperA.teachers_delete.set()
         await message.answer(
             "Виберіть вчителя з наведених нижче", reply_markup=await get_t_kb()
@@ -407,7 +394,10 @@ async def delete_teachers(message: types.Message):
 
 async def delete_teachers1(message: types.Message, state: FSMContext):
     db = await Database.setup()
-    if (message.from_user.id == super_admin_admin or message.from_user.id == super_admin_ura):
+    if (
+        message.from_user.id == super_admin_admin
+        or message.from_user.id == super_admin_ura
+    ):
         if message.text == "Назад":
             await message.answer("Меню", reply_markup=sadmin)
             await state.finish()
@@ -426,9 +416,7 @@ async def delete_teachers1(message: types.Message, state: FSMContext):
                         )
                     elif not await db.teacher_name_exists_sql(fullname):
                         await db.delete_name_techers_sql(fullname)
-                        await message.answer(
-                            "викладача видалено", reply_markup=sadmin
-                        )
+                        await message.answer("викладача видалено", reply_markup=sadmin)
                     await state.finish()
                 else:
                     await message.answer(
@@ -437,19 +425,21 @@ async def delete_teachers1(message: types.Message, state: FSMContext):
                     )
                     await state.finish()
             elif not await db.teachers_name_exists_sql(fullname):
-                await message.answer(
-                    "Група з такою назвою немає", reply_markup=sadmin
-                )
+                await message.answer("Група з такою назвою немає", reply_markup=sadmin)
                 await state.finish()
     else:
         await message.answer("Ви не адмін :D", reply_markup=kb_start)
         await state.finish()
 
+
 # ===========================Додати розклад дзвінків============================
 # @dp.message_handler(text ="Додати розклад дзвінків", state=None)
 async def add_calls(message: types.Message):
     db = await Database.setup()
-    if (message.from_user.id == super_admin_admin or message.from_user.id == super_admin_ura):
+    if (
+        message.from_user.id == super_admin_admin
+        or message.from_user.id == super_admin_ura
+    ):
         await message.answer("Завантажте фото", reply_markup=ReplyKeyboardRemove())
         await FSMSuperA.id_photo.set()
     elif message.text == "Назад":
@@ -461,7 +451,10 @@ async def add_calls(message: types.Message):
 # @dp.message_handler(content_types=['photo'],state=FSMSuperA.id_photo)
 async def add_calls1(message: types.Message, state: FSMContext):
     db = await Database.setup()
-    if (message.from_user.id == super_admin_admin or message.from_user.id == super_admin_ura):
+    if (
+        message.from_user.id == super_admin_admin
+        or message.from_user.id == super_admin_ura
+    ):
         async with state.proxy() as data:
             data["id_photo"] = message.photo[0].file_id
             data["type"] = "calls"
@@ -485,12 +478,13 @@ async def add_calls1(message: types.Message, state: FSMContext):
 # @dp.message_handler(text ="Видалити розклад дзвінків")
 async def delete_calls(message: types.Message):
     db = await Database.setup()
-    if (message.from_user.id == super_admin_admin or message.from_user.id == super_admin_ura):
+    if (
+        message.from_user.id == super_admin_admin
+        or message.from_user.id == super_admin_ura
+    ):
         check = await db.delete_calls_sql()
         if not check:
-            await message.answer(
-                "Розкладу дзвінків ще не додано", reply_markup=sadmin
-            )
+            await message.answer("Розкладу дзвінків ще не додано", reply_markup=sadmin)
         elif check:
             await message.answer(
                 "Розклад дзвінків успішно видалено", reply_markup=sadmin
@@ -500,11 +494,15 @@ async def delete_calls(message: types.Message):
     else:
         await message.answer("Ви не адмін :D", reply_markup=kb_start)
 
+
 # ===========================Видалити групу============================
 # @dp.message_handler(text ="Видалити групу", state=None)
 async def delete_group(message: types.Message):
     db = await Database.setup()
-    if (message.from_user.id == super_admin_admin or message.from_user.id == super_admin_ura):
+    if (
+        message.from_user.id == super_admin_admin
+        or message.from_user.id == super_admin_ura
+    ):
         await FSMSuperA.curse_group_delete.set()
         await message.answer(
             "Виберіть групу з наведених нижче", reply_markup=await get_kb()
@@ -517,7 +515,10 @@ async def delete_group(message: types.Message):
 # @dp.message_handler(state=FSMSuperA.curse_group_delete)
 async def load_group(message: types.Message, state: FSMContext):
     db = await Database.setup()
-    if (message.from_user.id == super_admin_admin or message.from_user.id == super_admin_ura):
+    if (
+        message.from_user.id == super_admin_admin
+        or message.from_user.id == super_admin_ura
+    ):
         if message.text == "Назад":
             await message.answer("Меню", reply_markup=sadmin)
             await state.finish()
@@ -546,21 +547,21 @@ async def load_group(message: types.Message, state: FSMContext):
                     )
                     await state.finish()
             else:
-                await message.answer(
-                    "Група з такою назвою немає", reply_markup=sadmin
-                )
+                await message.answer("Група з такою назвою немає", reply_markup=sadmin)
                 await state.finish()
     else:
         await message.answer("Ви не адмін :D", reply_markup=kb_start)
         await state.finish()
 
 
-
 # ===========================Додавання групи============================
 # @dp.message_handler(text="Додати групу", state=None)
 async def add_group(message: types.Message):
     db = await Database.setup()
-    if (message.from_user.id == super_admin_admin or message.from_user.id == super_admin_ura):
+    if (
+        message.from_user.id == super_admin_admin
+        or message.from_user.id == super_admin_ura
+    ):
         await FSMSuperA.curse_group.set()
         await message.answer(
             "Введіть назву\nПриклад : 2Ц", reply_markup=ReplyKeyboardRemove()
@@ -573,7 +574,10 @@ async def add_group(message: types.Message):
 # @dp.message_handler(state=FSMSuperA.curse_group)
 async def add_group1(message: types.Message, state: FSMContext):
     db = await Database.setup()
-    if (message.from_user.id == super_admin_admin or message.from_user.id == super_admin_ura):
+    if (
+        message.from_user.id == super_admin_admin
+        or message.from_user.id == super_admin_ura
+    ):
         if message.text == "Назад":
             await message.answer("Меню", reply_markup=sadmin)
             await state.finish()
@@ -593,9 +597,7 @@ async def add_group1(message: types.Message, state: FSMContext):
                     )
                     await state.finish()
             else:
-                await message.answer(
-                    "Група з такою назвою вже є", reply_markup=sadmin
-                )
+                await message.answer("Група з такою назвою вже є", reply_markup=sadmin)
                 await state.finish()
     else:
         await message.answer("Ви не адмін :D", reply_markup=kb_start)
@@ -606,7 +608,10 @@ async def add_group1(message: types.Message, state: FSMContext):
 # @dp.message_handler(text="Додати розклад до групи", state=None)
 async def add_schedule_to_group(message: types.Message):
     db = await Database.setup()
-    if (message.from_user.id == super_admin_admin or message.from_user.id == super_admin_ura):
+    if (
+        message.from_user.id == super_admin_admin
+        or message.from_user.id == super_admin_ura
+    ):
         await FSMSuperA.curse_group_rad_photo.set()
         await message.answer("Киньте фото розкладу", reply_markup=ReplyKeyboardRemove())
 
@@ -617,7 +622,10 @@ async def add_schedule_to_group(message: types.Message):
 # @dp.message_handler(content_types=['photo'],state=FSMSuperA.curse_group_rad_photo)
 async def add_schedule_to_group1(message: types.Message, state: FSMContext):
     db = await Database.setup()
-    if (message.from_user.id == super_admin_admin or message.from_user.id == super_admin_ura):
+    if (
+        message.from_user.id == super_admin_admin
+        or message.from_user.id == super_admin_ura
+    ):
         async with state.proxy() as data:
             data["curse_group_rad_photo"] = message.photo[0].file_id
         await FSMSuperA.curse_group_rad.set()
@@ -631,7 +639,10 @@ async def add_schedule_to_group1(message: types.Message, state: FSMContext):
 # @dp.message_handler(state=FSMSuperA.curse_group_rad)
 async def add_schedule_to_group2(message: types.Message, state: FSMContext):
     db = await Database.setup()
-    if (message.from_user.id == super_admin_admin or message.from_user.id == super_admin_ura):
+    if (
+        message.from_user.id == super_admin_admin
+        or message.from_user.id == super_admin_ura
+    ):
         async with state.proxy() as data:
             data["curse_group_rad"] = message.text
         now = datetime.datetime.now()
@@ -652,7 +663,10 @@ async def add_schedule_to_group2(message: types.Message, state: FSMContext):
 # ===========================Додати розклад викладачу============================
 async def add_schedule_to_teacher(message: types.Message):
     db = await Database.setup()
-    if (message.from_user.id == super_admin_admin or message.from_user.id == super_admin_ura):
+    if (
+        message.from_user.id == super_admin_admin
+        or message.from_user.id == super_admin_ura
+    ):
         await FSMSuperA.teachers_rad_photo.set()
         await message.answer("Киньте фото розкладу", reply_markup=ReplyKeyboardRemove())
 
@@ -662,7 +676,10 @@ async def add_schedule_to_teacher(message: types.Message):
 
 async def add_schedule_to_teacher1(message: types.Message, state: FSMContext):
     db = await Database.setup()
-    if (message.from_user.id == super_admin_admin or message.from_user.id == super_admin_ura):
+    if (
+        message.from_user.id == super_admin_admin
+        or message.from_user.id == super_admin_ura
+    ):
         async with state.proxy() as data:
             data["teachers_rad_photo"] = message.photo[0].file_id
         await FSMSuperA.teachers_rad.set()
@@ -675,7 +692,10 @@ async def add_schedule_to_teacher1(message: types.Message, state: FSMContext):
 
 async def add_schedule_to_teacher2(message: types.Message, state: FSMContext):
     db = await Database.setup()
-    if (message.from_user.id == super_admin_admin or message.from_user.id == super_admin_ura):
+    if (
+        message.from_user.id == super_admin_admin
+        or message.from_user.id == super_admin_ura
+    ):
         async with state.proxy() as data:
             data["teachers_rad"] = message.text
         now = datetime.datetime.now()
@@ -691,15 +711,6 @@ async def add_schedule_to_teacher2(message: types.Message, state: FSMContext):
         await state.finish()
 
 
-
-
-
-
-
-
-
-
-
 # ===========================реєстратор============================
 def register_handler_sadmin(dp: Dispatcher):
     dp.register_message_handler(password, text="password")
@@ -709,12 +720,6 @@ def register_handler_sadmin(dp: Dispatcher):
     dp.register_message_handler(super_admin_teach, text="таблиця викладачів")
     dp.register_message_handler(super_admin_admins, text="таблиця адмінів")
     dp.register_message_handler(send_file_db, text="db")
-    dp.register_message_handler(delete_stats, Text(startswith="d"))
-    dp.register_message_handler(delete_month, commands=["mouth"])
-    dp.register_message_handler(delete_week, commands=["week"])
-    dp.register_message_handler(create_table, commands=["update"])
-
-
     dp.register_message_handler(
         super_admin_user_for_group, text="таблиця за групою", state=None
     )

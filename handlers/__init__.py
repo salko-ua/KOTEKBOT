@@ -5,4 +5,5 @@ from handlers import stats
 from handlers import menu
 from handlers import commands
 from handlers import prime
+from handlers import dev
 from handlers import client

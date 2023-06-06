@@ -1,17 +1,17 @@
 import asyncache
 import aiosqlite
-from data_base.user_db import USERDB
-from data_base.teacher_db import TEACHERDB
-from data_base.admin_db import ADMINDB
-from data_base.group_db import GROUPDB
-from data_base.teachers_name_db import TEACHERGROUPDB
-from data_base.all_photo_db import ALLPHOTOTDB
-from data_base.text_db import TEXTDB
-from data_base.stats_db import STATSDB
+from data_base.user_db import UserDB
+from data_base.teacher_db import TeacherDB
+from data_base.admin_db import AdminDB
+from data_base.group_db import GroupDB
+from data_base.teachers_name_db import TeacherGroupDB
+from data_base.all_photo_db import AllPhotoDB
+from data_base.text_db import TextDB
+from data_base.stats_db import StatsDB
 
 
 class Database(
-    USERDB, TEACHERDB, ADMINDB, GROUPDB, TEACHERGROUPDB, ALLPHOTOTDB, TEXTDB, STATSDB
+    UserDB, TeacherDB, AdminDB, GroupDB, TeacherGroupDB, AllPhotoDB, TextDB, StatsDB
 ):
     @classmethod
     @asyncache.cached({})
