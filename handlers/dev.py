@@ -10,9 +10,10 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 class FSMSDev(StatesGroup):
     text_error = State()
     text_response = State()
+    text_request = State()
 
 
-async def get_text(type: str, query: types.CallbackQuery = None):
+async def get_text(type: str, message: types.Message = None):
     # Основний текст
     main_text = f"""
 Це панель розробки бота 🤝
@@ -61,6 +62,9 @@ async def get_text(type: str, query: types.CallbackQuery = None):
  тексті. Для цього знати
  те що вище не треба.
  • Не бути малоросом 😃
+
+ Після натискання "Підтвердити 🫡"
+ ви повинні трошки розказати про себе.
     """
     # Структура запиту для адміна
 
@@ -71,7 +75,7 @@ async def get_text(type: str, query: types.CallbackQuery = None):
     elif type == 'request_t':
         return request_text
     elif type == "request_admin":
-        request_text_for_admin = f"запит\n{query.from_user.first_name}\n@{query.from_user.username}\n{query.from_user.id}"
+        request_text_for_admin = f"запит\n{message.from_user.first_name}\n@{message.from_user.username}\n{message.from_user.id}"
         return request_text_for_admin
 
 
@@ -131,10 +135,24 @@ async def request(query: types.CallbackQuery):
     await query.message.edit_reply_markup(reply_markup=dev_request_inline_kb)
 
 
-async def confirm(query: types.CallbackQuery):
-    await bot.send_message(chat_id=-1001873448980, message_thread_id=8, text = await get_text('request_admin', query=query))
+async def confirm_request(query: types.CallbackQuery, state: FSMContext):
+    await query.message.edit_text("Тепер напишіть трішки про себе 🥳")
+    await query.message.edit_reply_markup(reply_markup=dev_back_inline_kb)
+    await FSMSDev.text_request.set()
+    async with state.proxy() as data:
+        data["message_id"] = query
+
+
+
+
+async def send_request(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        query: types.CallbackQuery = data["message_id"]
+    await bot.send_message(chat_id=-1001873448980, message_thread_id=8, text = f"{await get_text('request_admin', message)}\n{message.text}")
     await query.message.edit_text(await get_text('main'))
     await query.message.edit_reply_markup(reply_markup=dev_inline_kb)
+    await message.delete()
+    await state.finish()
 
 
 # ===========================реєстратор============================
@@ -144,11 +162,13 @@ def register_handler_dev(dp: Dispatcher):
     dp.register_callback_query_handler(join_development_query, text="back_dev")
     dp.register_callback_query_handler(join_development_query, text="back_dev", state=FSMSDev.text_error)
     dp.register_callback_query_handler(join_development_query, text="back_dev", state=FSMSDev.text_response)
+    dp.register_callback_query_handler(join_development_query, text="back_dev", state=FSMSDev.text_request)
     # всі callback
     dp.register_callback_query_handler(request, text="request")
-    dp.register_callback_query_handler(confirm, text="okay")
+    dp.register_callback_query_handler(confirm_request, text="okay", state=None)
     dp.register_callback_query_handler(error, text="error", state=None)
     dp.register_callback_query_handler(response, text="response", state=None)
     # повідомлення про помилку і відгук
     dp.register_message_handler(error_text, state=FSMSDev.text_error)
     dp.register_message_handler(response_text, state=FSMSDev.text_response)
+    dp.register_message_handler(send_request, state=FSMSDev.text_request)

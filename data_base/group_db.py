@@ -23,7 +23,7 @@ class GroupDB(BaseDBPart):
         keys.sort()
         return keys
 
-    # Додає розклад для певного вчителя -> name_teacher
+    # Додає розклад для певної групи -> groupname
     # Повертає збереження бази данних
     async def add_group_sql(self, user_id, group):
         await self.cur.execute(
@@ -31,13 +31,21 @@ class GroupDB(BaseDBPart):
             (user_id, group),
         )
         return await self.base.commit()
-
-    # Оновлює розклад для певного вчителя -> name_teacher
+    
+    # Видаляє розклад для певної групи -> groupname
     # Повертає збереження бази данних
-    async def group_photo_update_sql(self, photo, groupname, transl):
+    async def delete_group_photo_sql(self, group):
         await self.cur.execute(
-            "UPDATE `groupa` SET photos = ?, date = ? WHERE groupname = ?",
+            "UPDATE `groupa` SET user_id = 0, photos = NULL, date = NULL WHERE groupname = ?", (group,))
+        return await self.base.commit()
+
+    # Оновлює розклад для певної групи  -> groupname
+    # Повертає збереження бази данних
+    async def group_photo_update_sql(self, user_id, photo, groupname, transl):
+        await self.cur.execute(
+            "UPDATE `groupa` SET user_id = ?, photos = ?, date = ? WHERE groupname = ?",
             (
+                user_id,
                 photo,
                 transl,
                 groupname,
@@ -45,7 +53,7 @@ class GroupDB(BaseDBPart):
         )
         return await self.base.commit()
 
-    # Видаляє розклад для певного вчителя -> name_teacher
+    # Видаляє певну групу
     # Повертає збереження бази данних
     async def delete_groups_sql(self, group):
         await self.cur.execute("DELETE FROM groupa WHERE groupname = ?", (group,))
