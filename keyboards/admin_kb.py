@@ -1,5 +1,5 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
-
+from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 # KeyboardButton - створює одну кнопку
 # ReplyKeyboardMarkup - створює клавіатуру
@@ -9,23 +9,32 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 
 # ===========================1 Keyboards==============================
+async def admin_kb() -> ReplyKeyboardBuilder:
+    builder = ReplyKeyboardBuilder()
 
-photo_news = KeyboardButton("Викласти 🖼")
-message_news = KeyboardButton("Викласти 📝")
-mixed_news = KeyboardButton("Викласти 🖼📝")
-menu = KeyboardButton("Меню 👥")
+    keyboard = [
+        "Викласти 🖼",
+        "Викласти 📝",
+        "Викласти 🖼📝",
+        "Меню 👥",
+    ]
+
+    for button in keyboard:
+        builder.add(KeyboardButton(text=button))
+
+    return builder.adjust(2).as_markup(resize_keyboard=True)
 
 
-kb_admin = ReplyKeyboardMarkup(resize_keyboard=True)
-
-kb_admin.row(photo_news, message_news).row(mixed_news, menu)
 # ======================================================================
 
+
 # ===========================2 Keyboards==============================
+async def back_kb() -> ReplyKeyboardBuilder:
+    builder = ReplyKeyboardBuilder()
 
-back = KeyboardButton("Назад")
+    builder.add(KeyboardButton(text="Назад"))
 
-kb_back = ReplyKeyboardMarkup(resize_keyboard=True)
+    return builder.adjust(2).as_markup(resize_keyboard=True)
 
-kb_back.add(back)
+
 # ======================================================================

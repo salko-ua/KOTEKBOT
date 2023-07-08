@@ -1,47 +1,72 @@
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from aiogram.utils.keyboard import ReplyKeyboardBuilder
+from data_base import Database
 
 
 # ===========================all func Keyboards============================
-text = KeyboardButton("Клавіатури ⌨️")
-admin = KeyboardButton("Адмін 🔑")
-menu = KeyboardButton("Меню 👥")
-text1 = KeyboardButton("Перегляд бази данних 👀")
-button1 = KeyboardButton("таблиця студентів")
-button2 = KeyboardButton("таблиця за групою")
-button3 = KeyboardButton("таблиця адмінів")
-button4 = KeyboardButton("таблиця викладачів")
-text2 = KeyboardButton("Користувачі 👥")
-button5 = KeyboardButton("Студент за ID")
-button6 = KeyboardButton("Видалити студента")
-button7 = KeyboardButton("Викладач за ID")
-button8 = KeyboardButton("Видалити викладача")
-neactive = KeyboardButton("Система груп")
-but_add_teachers = KeyboardButton("викладача ❇️")
-but_delete_teachers = KeyboardButton("викладача 🗑")
-but_add_group = KeyboardButton("групу ❇️")
-but_delete_group = KeyboardButton("групу 🗑")
-but_delete_photo_group = KeyboardButton("групу 🗑🖼")
-neactive1 = KeyboardButton("Розклад для груп")
-but_couples = KeyboardButton("групі ❇️")
-but_couples_t = KeyboardButton("викладачу ❇️")
-but_add_calls = KeyboardButton("дзвінків ❇️")
-but_delete_calls = KeyboardButton("дзвінків 🗑")
+async def super_admin_kb() -> ReplyKeyboardMarkup:
+    builder = ReplyKeyboardBuilder()
 
-sadmin = (
-    ReplyKeyboardMarkup(resize_keyboard=True)
-    .add(text)
-    .row(admin, menu)
-    .add(text1)
-    .row(button1, button4)
-    .row(button2, button3)
-    .add(text2)
-    .row(button5, button7)
-    .row(button6, button8)
-    .add(neactive)
-    .row(but_add_teachers, but_delete_teachers)
-    .row(but_add_group, but_delete_group)
-    .row(but_delete_photo_group)
-    .add(neactive1)
-    .row(but_couples, but_couples_t)
-    .row(but_add_calls, but_delete_calls)
-)
+    keyboard = [
+        "Адмін 🔑",
+        "Меню 👥",
+        "-------",
+        "-------",
+        "Видалити студента",
+        "Видалити викладача",
+        "-------",
+        "-------",
+        "викладача ❇️",
+        "викладача 🗑",
+        "групу ❇️",
+        "групу 🗑",
+        "-------",
+        "-------",
+        "групу 🗑🖼",
+        "групі ❇️",
+        "викладачу ❇️",
+        "дзвінків ❇️",
+        "дзвінків 🗑",
+    ]
+
+    for button in keyboard:
+        builder.add(KeyboardButton(text=button))
+
+    return builder.adjust(2).as_markup(resize_keyboard=True)
+
+
+# ========================================================================
+
+
+# ===========================1 Keyboards================================
+async def group_selection_student_kb() -> ReplyKeyboardMarkup:
+    db = await Database.setup()
+    list_group = await db.student_group_list_sql()
+    builder = ReplyKeyboardBuilder()
+
+    for group in list_group:
+        builder.add(KeyboardButton(text=group))
+
+    builder.add(KeyboardButton(text="Назад"))
+
+    return builder.adjust(4).as_markup(resize_keyboard=True)
+
+
+# ======================================================================
+
+
+# ===========================1 Keyboards================================
+async def group_selection_teacher_kb() -> ReplyKeyboardMarkup:
+    db = await Database.setup()
+    list_teachers = await db.teacher_group_list_sql()
+    builder = ReplyKeyboardBuilder()
+
+    for teacher in list_teachers:
+        builder.add(KeyboardButton(text=teacher))
+
+    builder.add(KeyboardButton(text="Назад"))
+
+    return builder.adjust(2).as_markup(resize_keyboard=True)
+
+
+# ======================================================================

@@ -1,20 +1,22 @@
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
-
-
-# KeyboardButton - створює одну кнопку
-# ReplyKeyboardMarkup - створює клавіатуру
-# ReplyKeyboardRemove - видаляє клавіатуру
-# ReplyKeyboardMarkup створення клавіатури + адаптування resize_keyboard=True
-# one_time_keyboard = True
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from aiogram.utils.keyboard import ReplyKeyboardBuilder
 
 
 # ===========================1 Keyboards============================
-student = KeyboardButton("Студент 👩‍🎓")
-teacher = KeyboardButton("Викладач 👨‍🏫")
-admin = KeyboardButton("Адміністратор 🔐")
-back = KeyboardButton("Меню 👥")
+async def reg_choice_kb() -> ReplyKeyboardMarkup:
+    builder = ReplyKeyboardBuilder()
 
-kb_choice = (
-    ReplyKeyboardMarkup(resize_keyboard=True).row(student, teacher).add(admin).add(back)
-)
-# ===========================2 Keyboards============================
+    keyboard = [
+        "Студент 👩‍🎓",
+        "Викладач 👨‍🏫",
+        "Адміністратор 🔐",
+        "Меню 👥",
+    ]
+
+    for button in keyboard:
+        builder.add(KeyboardButton(text=button))
+
+    return builder.adjust(2).as_markup(resize_keyboard=True)
+
+
+# ==================================================================

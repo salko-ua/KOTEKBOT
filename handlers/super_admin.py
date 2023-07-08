@@ -4,29 +4,27 @@ import datetime
 
 # from import
 from keyboards import *
-from aiogram import types
+from aiogram import types, Router, F
 from data_base import Database
 from create_bot import bot, translator
-from config import super_admin_admin, super_admin_ura
+from config import SUPER_ADMIN
 
 from handlers.reg import password_for_admin
-from aiogram.types import InputFile, ReplyKeyboardRemove
-from aiogram.dispatcher import Dispatcher, FSMContext
+from aiogram.types import ReplyKeyboardRemove
+from aiogram.fsm.context import FSMContext
 
-from aiogram.utils.exceptions import MessageIsTooLong
-from aiogram.dispatcher.filters import Text
+from aiogram.filters import Text, Command
 
-from aiogram.dispatcher.filters.state import State, StatesGroup
+from aiogram.filters.state import State, StatesGroup
+
+router = Router()
 
 
-class FSMSuperA(StatesGroup):
-    group = State()
-    id_student = State()
-    id_teachers = State()
+class FSMSuperAdmin(StatesGroup):
     id_student_delete = State()
     id_teachers_delete = State()
     # TEACHERS MANAGMENT
-    teachers_name = State()
+    teachers_add = State()
     teachers_delete = State()
     # GROP MANAGMENT
     curse_group = State()
@@ -40,767 +38,471 @@ class FSMSuperA(StatesGroup):
     teachers_rad_photo = State()
     # Розклад дзвінків
     id_photo = State()
-    type = State()
 
-async def is_sadmin(message: types.Message):
+
+async def is_super_admin(message: types.Message):
     user_id = message.from_user.id
-    if user_id == super_admin_admin or user_id == super_admin_ura:
+    if user_id in SUPER_ADMIN:
         return True
     else:
         return False
 
 
-
-
-
-
-
-# ===========================Список груп============================
+# ===========================Список груп============================ss
 # Клавіаура адміна
-async def admin_kb(msg: types.Message):
+@router.message(Text(text="Адмін 🔑", ignore_case=True))
+async def admin(message: types.Message):
     db = await Database.setup()
-    if (
-        await db.admin_exists_sql(msg.from_user.id)
-        or msg.from_user.id == super_admin_admin
-        or msg.from_user.id == super_admin_ura
-    ):
-        await msg.answer("Клавіатура адміна", reply_markup=kb_admin)
+    if await is_super_admin(message) or await db.admin_exists_sql(message.from_user.id):
+        await message.answer("Клавіатура адміна", reply_markup=await admin_kb())
 
 
 # Клавіаура власника
-async def super_admin_kb(msg: types.Message):
-    if await is_sadmin(msg):
-        await msg.answer("Клавіатура власника", reply_markup=sadmin)
+@router.message(Command("sadmin"))
+async def super_admin(message: types.Message):
+    if not await is_super_admin(message):
+        return
+
+    await message.answer("Клавіатура власника", reply_markup=await super_admin_kb())
 
 
-# Показати таблицю користувачів
-async def super_admin_user(msg: types.Message):
+# Видалити студента за id
+@router.message(F.text == "Видалити студента")
+async def super_admin_delete_user(message: types.Message, state: FSMContext):
+    if not await is_super_admin(message):
+        return
+
+    await message.answer("Введіть ID студента")
+    await state.set_state(FSMSuperAdmin.id_student_delete)
+
+
+@router.message(FSMSuperAdmin.id_student_delete)
+async def super_admin_delete_user1(message: types.Message, state: FSMContext):
     db = await Database.setup()
-    if await is_sadmin(msg):
-        try:
-            booled, data = await db.user_all_sql()
-            if booled:
-                await msg.answer("Немає користувачів")
-            elif not booled:
-                await msg.answer(data)
-        except MessageIsTooLong:
-            for x in range(0, len(data), 4096):
-                await bot.send_message(msg.chat.id, data[x : x + 4096])
-    else:
-        dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
-        await asyncio.sleep(4)
-        await msg.delete()
-        await dels.delete()
+    if not await is_super_admin(message):
+        return
 
-
-# Показати таблицю викладачів
-async def super_admin_teach(msg: types.Message):
-    db = await Database.setup()
-    if await is_sadmin(msg):
-        try:
-            booled, data = await db.teach_all_sql()
-            if booled:
-                await msg.answer("Немає користувачів")
-            elif not booled:
-                await msg.answer(data)
-        except MessageIsTooLong:
-            for x in range(0, len(data), 4096):
-                await bot.send_message(msg.chat.id, data[x : x + 4096])
-    else:
-        dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
-        await asyncio.sleep(4)
-        await msg.delete()
-        await dels.delete()
-
-
-# Показати користувачів за групою
-async def super_admin_user_for_group(msg: types.Message, state: FSMContext):
-    if await is_sadmin(msg):
-        await msg.answer(
-            "Введіть групу для перегляду таблиці за цією групою",
-            reply_markup=await get_kb(),
-        )
-        await FSMSuperA.group.set()
-    else:
-        dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
-        await asyncio.sleep(4)
-        await msg.delete()
-        await dels.delete()
-
-
-async def super_admin_user_for_group1(msg: types.Message, state: FSMContext):
-    db = await Database.setup()
-    if await is_sadmin(msg):
-        if msg.text == "Назад":
-            await msg.answer("Меню", reply_markup=sadmin)
-            await state.finish()
-        else:
-            if await db.group_exists_sql(msg.text):
-                try:
-                    booled, data = await db.user_for_group_sql(msg.text)
-                    if booled:
-                        await msg.answer("Немає користувачів", reply_markup=sadmin)
-                        await state.finish()
-                    elif not booled:
-                        await msg.answer(data)
-                        await msg.answer("Done!", reply_markup=sadmin)
-                        await state.finish()
-                except MessageIsTooLong:
-                    for x in range(0, len(data), 4096):
-                        await bot.send_message(msg.chat.id, data[x : x + 4096])
-                        await msg.answer("Done!", reply_markup=sadmin)
-                        await state.finish()
-            else:
-                await state.finish()
-                dels = await msg.answer(
-                    "☹️ Немає такої групи, звяжіться з адміністратором",
-                    reply_markup=sadmin,
-                )
-                await asyncio.sleep(4)
-                await msg.delete()
-                await dels.delete()
-    else:
-        dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
-        await asyncio.sleep(4)
-        await msg.delete()
-        await dels.delete()
-
-
-# ====================================
-
-
-# Показати таблицю адмінів
-async def super_admin_admins(msg: types.Message):
-    db = await Database.setup()
-    if await is_sadmin(msg):
-        booled, data = await db.admin_all_sql()
-        if booled:
-            await msg.answer("Немає адмінів")
-        elif not booled:
-            await msg.answer(data)
-    else:
-        dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
-        await asyncio.sleep(4)
-        await msg.delete()
-        await dels.delete()
-
-
-# ========================================================================================
-
-
-# Показати студента за id
-async def super_admin_user_for_id(msg: types.Message, state: FSMContext):
-    if await is_sadmin(msg):
-        await msg.answer("Введіть ID студента")
-        await FSMSuperA.id_student.set()
-    else:
-        dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
-        await asyncio.sleep(4)
-        await msg.delete()
-        await dels.delete()
-
-
-async def super_admin_user_for_id1(msg: types.Message, state: FSMContext):
-    db = await Database.setup()
-    if await is_sadmin(msg):
-        try:
-            booled, text = await db.studen_for_id_sql(msg.text)
-            if booled:
-                await msg.answer("Немає студента")
-                await state.finish()
-            elif not booled:
-                await msg.answer(text)
-                await msg.answer("Done!")
-                await state.finish()
-        except MessageIsTooLong:
-            for x in range(0, len(text), 4096):
-                await bot.send_message(msg.chat.id, text[x : x + 4096])
-                await msg.answer("Done!")
-                await state.finish()
-    else:
-        dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
-        await asyncio.sleep(4)
-        await msg.delete()
-        await dels.delete()
-
-
-# Показати викладача за id
-async def super_admin_teach_for_id(msg: types.Message):
-    db = await Database.setup()
-    if await is_sadmin(msg):
-        await msg.answer("Введіть ID викладача")
-        await FSMSuperA.id_teachers.set()
-    else:
-        dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
-        await asyncio.sleep(4)
-        await msg.delete()
-        await dels.delete()
-
-
-async def super_admin_teach_for_id1(msg: types.Message, state: FSMContext):
-    db = await Database.setup()
-    if await is_sadmin(msg):
-        try:
-            booled, text = await db.teach_for_id_sql(msg.text)
-            if booled:
-                await msg.answer("Немає викладача")
-                await state.finish()
-            elif not booled:
-                await msg.answer(text)
-                await msg.answer("Done!")
-                await state.finish()
-        except MessageIsTooLong:
-            for x in range(0, len(text), 4096):
-                await bot.send_message(msg.chat.id, text[x : x + 4096])
-                await msg.answer("Done!")
-                await state.finish()
-    else:
-        dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
-        await asyncio.sleep(4)
-        await msg.delete()
-        await dels.delete()
-
-
-# Видалити користувача за id
-async def super_admin_delete_user(msg: types.Message):
-    if await is_sadmin(msg):
-        await msg.answer("Введіть ID студента")
-        await FSMSuperA.id_student_delete.set()
-    else:
-        dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
-        await asyncio.sleep(4)
-        await msg.delete()
-        await dels.delete()
-
-
-async def super_admin_delete_user1(msg: types.Message, state: FSMContext):
-    db = await Database.setup()
-    if await is_sadmin(msg):
-        exits = await db.user_exists_sql(msg.text)
-        if exits:
-            await db.delete_users_sql(msg.text)
-            await msg.answer("Студента видаленно")
-            await state.finish()
-        elif not exits:
-            await msg.answer("Немає користувача з таким ID")
-            await state.finish()
-    else:
-        dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
-        await asyncio.sleep(4)
-        await msg.delete()
-        await dels.delete()
+    exits = await db.student_exists_sql(message.text)
+    if exits:
+        await db.delete_student_sql(message.text)
+        await message.answer("Студента видаленно")
+        await state.clear()
+    elif not exits:
+        await message.answer("Немає користувача з таким ID")
+        await state.clear()
 
 
 # Видалити викладача за id
-async def super_admin_delete_teach(msg: types.Message, state: FSMContext):
-    if await is_sadmin(msg):
-        await msg.answer("Введіть ID викладача")
-        await FSMSuperA.id_teachers_delete.set()
-    else:
-        dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
-        await asyncio.sleep(4)
-        await msg.delete()
-        await dels.delete()
+@router.message(F.text == "Видалити викладача")
+async def super_admin_delete_teach(message: types.Message, state: FSMContext):
+    if not await is_super_admin(message):
+        return
+
+    await message.answer("Введіть ID викладача")
+    await state.set_state(FSMSuperAdmin.id_teachers_delete)
 
 
-async def super_admin_delete_teach1(msg: types.Message, state: FSMContext):
+@router.message(FSMSuperAdmin.id_teachers_delete)
+async def super_admin_delete_teach1(message: types.Message, state: FSMContext):
     db = await Database.setup()
-    if await is_sadmin(msg):
-        exits = await db.teachers_exists_sql(msg.text)
-        if exits:
-            await db.delete_teach_for_id_sql(msg.text)
-            await msg.answer("Викладача видаленно")
-            await state.finish()
-        elif not exits:
-            await msg.answer("Немає викладача з таким ID")
-            await state.finish()
-    else:
-        dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
-        await asyncio.sleep(4)
-        await msg.delete()
-        await dels.delete()
+    if not await is_super_admin(message):
+        return
+
+    exits = await db.teacher_exists_sql(message.text)
+    if exits:
+        await db.delete_teacher_sql(message.text)
+        await message.answer("Викладача видаленно")
+        await state.clear()
+    elif not exits:
+        await message.answer("Немає викладача з таким ID")
+        await state.clear()
 
 
-async def password(msg: types.Message):
-    if await is_sadmin(msg):
-        await msg.answer(f"PASSWORD : {await password_for_admin()}")
-    else:
-        dels = await msg.answer("У тебе немає прав, для перегляду бази данних")
-        await asyncio.sleep(4)
-        await msg.delete()
-        await dels.delete()
+@router.message(F.text == "password")
+async def password(message: types.Message):
+    if not await is_super_admin(message):
+        return
+
+    await message.answer(f"PASSWORD : {await password_for_admin()}")
 
 
-async def send_file_db(msg: types.Message):
-    if msg.from_user.id == super_admin_admin:
-        s = InputFile("data/database.db")
-        await bot.send_document(msg.from_user.id, s)
+@router.message(F.text == "db")
+async def send_file_db(message: types.Message):
+    if not await is_super_admin(message):
+        return
 
+    file_path = types.FSInputFile("data/database.db")
+    await bot.send_document(message.from_user.id, file_path)
 
 
 # ===========================Додавання викладача============================
-async def add_teachers(message: types.Message):
-    db = await Database.setup()
-    if await is_sadmin(message):
-        await FSMSuperA.teachers_name.set()
-        await message.answer(
-            "Введіть ініціали Викладача\nПриклад : Назаров А.М",
-            reply_markup=ReplyKeyboardRemove(),
-        )
-    else:
-        await message.answer("Ви не адмін :D", reply_markup=kb_start)
+@router.message(F.text == "викладача ❇️")
+async def add_teachers(message: types.Message, state: FSMContext):
+    if not await is_super_admin(message):
+        return
+
+    await state.set_state(FSMSuperAdmin.teachers_add)
+    await message.answer(
+        "Введіть ініціали Викладача\nПриклад : Назаров А.М",
+        reply_markup=ReplyKeyboardRemove(),
+    )
 
 
+@router.message(FSMSuperAdmin.teachers_add)
 async def add_teachers1(message: types.Message, state: FSMContext):
     db = await Database.setup()
-    if await is_sadmin(message):
-        if message.text == "Назад":
-            await message.answer("Меню", reply_markup=sadmin)
-            await state.finish()
-        else:
-            async with state.proxy() as data:
-                data["teachers_name"] = message.text
-            fullname = data["teachers_name"]
-            if not await db.teachers_name_exists_sql(fullname):
-                if len(fullname) <= 15:
-                    await db.add_teachers_name_sql(message.from_user.id, fullname)
-                    await message.answer("Вчителя додано", reply_markup=sadmin)
-                    await state.finish()
-                else:
-                    await message.answer(
-                        "Ініціали вчителя не можуть перевищувати 15 символів",
-                        reply_markup=sadmin,
-                    )
-                    await state.finish()
-            else:
-                await message.answer(
-                    "Вчитель з такою назвою вже є", reply_markup=sadmin
-                )
-                await state.finish()
-    else:
-        await message.answer("Ви не адмін :D", reply_markup=kb_start)
-        await state.finish()
+    if not await is_super_admin(message):
+        return
+
+    if message.text == "Назад":
+        await message.answer("Меню", reply_markup=await super_admin_kb())
+        await state.clear()
+        return
+
+    name = message.text
+    if await db.teacher_group_exists_sql(message.text):
+        await message.answer("Вчитель вже існує ❌", reply_markup=await super_admin_kb())
+        await state.clear()
+        return
+
+    if len(name) >= 15:
+        await message.answer(
+            "Ліміт 15 символів ❌",
+            reply_markup=await super_admin_kb(),
+        )
+        await state.clear()
+        return
+
+    await db.add_teacher_group_sql(name)
+    await message.answer(
+        "Групу для вчителя створено ✅", reply_markup=await super_admin_kb()
+    )
+    await state.clear()
 
 
 # ===========================Видалити викладача============================
-async def delete_teachers(message: types.Message):
+@router.message(F.text == "викладача 🗑")
+async def delete_teachers(message: types.Message, state: FSMContext):
     db = await Database.setup()
-    if await is_sadmin(message):
-        await FSMSuperA.teachers_delete.set()
-        await message.answer(
-            "Виберіть вчителя з наведених нижче", reply_markup=await get_t_kb()
-        )
+    if not await is_super_admin(message):
+        return
 
-    else:
-        await message.answer("Ви не адмін :D", reply_markup=kb_start)
+    await state.set_state(FSMSuperAdmin.teachers_delete)
+    await message.answer(
+        "Виберіть вчителя ⬇️", reply_markup=await group_selection_teacher_kb()
+    )
 
 
+@router.message(FSMSuperAdmin.teachers_delete)
 async def delete_teachers1(message: types.Message, state: FSMContext):
     db = await Database.setup()
-    if await is_sadmin(message):
-        if message.text == "Назад":
-            await message.answer("Меню", reply_markup=sadmin)
-            await state.finish()
-        elif message.text != "Назад":
-            async with state.proxy() as data:
-                data["teachers_delete"] = message.text
-            fullname = data["teachers_delete"]
-            if await db.teachers_name_exists_sql(fullname):
-                if len(fullname) <= 15:
-                    if await db.teacher_name_exists_sql(fullname):
-                        await db.delete_name_techers_sql(fullname)
-                        await db.delete_teachers_name_sql(fullname)
-                        await message.answer(
-                            "Групу видалено і всіх користувачів які були до неї підключенні",
-                            reply_markup=sadmin,
-                        )
-                    elif not await db.teacher_name_exists_sql(fullname):
-                        await db.delete_name_techers_sql(fullname)
-                        await message.answer("викладача видалено", reply_markup=sadmin)
-                    await state.finish()
-                else:
-                    await message.answer(
-                        "Назва групи не може перевищувати три символи",
-                        reply_markup=sadmin,
-                    )
-                    await state.finish()
-            elif not await db.teachers_name_exists_sql(fullname):
-                await message.answer("Група з такою назвою немає", reply_markup=sadmin)
-                await state.finish()
-    else:
-        await message.answer("Ви не адмін :D", reply_markup=kb_start)
-        await state.finish()
+    if not await is_super_admin(message):
+        return
+
+    if message.text == "Назад":
+        await message.answer("Меню", reply_markup=await super_admin_kb())
+        await state.clear()
+        return
+
+    name = message.text
+    if not await db.teacher_group_exists_sql(name):
+        await message.answer("Немає викладача  ❌", reply_markup=await super_admin_kb())
+        await state.clear()
+        return
+
+    if len(name) >= 15:
+        await message.answer("Ім'я < 15 букв", reply_markup=await super_admin_kb())
+        await state.clear()
+        return
+
+    if not await db.teacher_for_group_exists_sql(name):
+        await db.delete_name_techers_sql(name)
+        await message.answer("Успішно видалено ✅", reply_markup=await super_admin_kb())
+        await state.clear()
+        return
+
+    await db.delete_name_techers_sql(name)
+    await db.delete_teacher_name_sql(name)
+    await message.answer("Успішно видалено ✅", reply_markup=await super_admin_kb())
+    await state.clear()
 
 
 # ===========================Додати розклад дзвінків============================
-# @dp.message_handler(text ="Додати розклад дзвінків", state=None)
-async def add_calls(message: types.Message):
-    db = await Database.setup()
-    if await is_sadmin(message):
-        await message.answer("Завантажте фото", reply_markup=ReplyKeyboardRemove())
-        await FSMSuperA.id_photo.set()
-    elif message.text == "Назад":
-        await message.answer("Ваша клавіатура : ", reply_markup=sadmin)
-    else:
-        await message.answer("Ви не адмін :D", reply_markup=kb_start)
+@router.message(F.text == "дзвінків ❇️")
+async def add_calls(message: types.Message, state: FSMContext):
+    if not await is_super_admin(message):
+        return
+
+    await message.answer("Завантажте фото", reply_markup=ReplyKeyboardRemove())
+    await state.set_state(FSMSuperAdmin.id_photo)
 
 
-# @dp.message_handler(content_types=['photo'],state=FSMSuperA.id_photo)
+@router.message(F.photo, FSMSuperAdmin.id_photo)
 async def add_calls1(message: types.Message, state: FSMContext):
     db = await Database.setup()
-    if await is_sadmin(message):
-        async with state.proxy() as data:
-            data["id_photo"] = message.photo[0].file_id
-            data["type"] = "calls"
-        now = datetime.datetime.now()
-        now = now.strftime("%d - %B, %A")
-        translation = translator.translate(now)
-        await db.add_calls_sql(
-            data["type"], data["id_photo"], "Зміненно: " + translation
-        )
-        await state.finish()
-        await message.answer("Розклад дзвінків успішно оновлено", reply_markup=sadmin)
+    now = datetime.datetime.now()
+    now = now.strftime("%d - %B, %A")
+    translation = translator.translate(now)
 
-    elif message.text == "Назад":
-        await message.answer("Ваша клавіатура : ", reply_markup=sadmin)
+    if not await is_super_admin(message):
+        return
 
-    else:
-        await message.answer("Ви не адмін :D", reply_markup=kb_start)
+    await db.add_photo_sql(
+        "calls", message.photo[0].file_id, "Зміненно: " + translation
+    )
+    await message.answer(
+        "Розклад дзвінків оновлено ✅", reply_markup=await super_admin_kb()
+    )
+    await state.clear()
 
 
 # ===========================Видалити розклад дзвінків============================
-# @dp.message_handler(text ="Видалити розклад дзвінків")
+@router.message(F.text == "дзвінків 🗑")
 async def delete_calls(message: types.Message):
     db = await Database.setup()
-    if await is_sadmin(message):
-        check = await db.delete_calls_sql()
-        if not check:
-            await message.answer("Розкладу дзвінків ще не додано", reply_markup=sadmin)
-        elif check:
-            await message.answer(
-                "Розклад дзвінків успішно видалено", reply_markup=sadmin
-            )
-    elif message.text == "Назад":
-        await message.answer("Ваша клавіатура : ", reply_markup=sadmin)
-    else:
-        await message.answer("Ви не адмін :D", reply_markup=kb_start)
+    check = await db.delete_photo_sql("calls")
+
+    if not await is_super_admin(message):
+        return
+
+    if not check:
+        await message.answer(
+            "Розкладу дзвінків ще немає 🔴", reply_markup=await super_admin_kb()
+        )
+        return
+
+    await message.answer(
+        "Розклад дзвінків видалено 🗑", reply_markup=await super_admin_kb()
+    )
 
 
 # ===========================Видалити групу============================
-# @dp.message_handler(text ="Видалити групу", state=None)
-async def delete_group(message: types.Message):
+@router.message(F.text == "групу 🗑")
+async def delete_group(message: types.Message, state: FSMContext):
+    if not await is_super_admin(message):
+        return
+
+    await state.set_state(FSMSuperAdmin.curse_group_delete)
+    await message.answer(
+        "Виберіть групу ⬇️", reply_markup=await group_selection_student_kb()
+    )
+
+
+@router.message(FSMSuperAdmin.curse_group_delete)
+async def delete_group1(message: types.Message, state: FSMContext):
     db = await Database.setup()
-    if await is_sadmin(message):
-        await FSMSuperA.curse_group_delete.set()
+    if not await is_super_admin(message):
+        return
+
+    if message.text == "Назад":
+        await message.answer("Меню", reply_markup=await super_admin_kb())
+        await state.clear()
+        return
+
+    fullname = message.text
+    if not await db.student_exists_sql(fullname):
         await message.answer(
-            "Виберіть групу з наведених нижче", reply_markup=await get_kb()
+            "Група з такою назвою немає", reply_markup=await super_admin_kb()
         )
+        await state.clear()
+        return
 
-    else:
-        await message.answer("Ви не адмін :D", reply_markup=kb_start)
+    if len(fullname) >= 3:
+        await message.answer("❌ Ліміт 3 символи ", reply_markup=await super_admin_kb())
+        await state.clear()
+        return
 
+    if not await db.student_in_group_exists_sql(fullname):
+        await db.delete_student_group_sql(fullname)
+        await message.answer("Групу видалено ✅", reply_markup=await super_admin_kb())
+        await state.clear()
+        return
 
-# @dp.message_handler(state=FSMSuperA.curse_group_delete)
-async def load_group(message: types.Message, state: FSMContext):
-    db = await Database.setup()
-    if await is_sadmin(message):
-        if message.text == "Назад":
-            await message.answer("Меню", reply_markup=sadmin)
-            await state.finish()
-        elif message.text != "Назад":
-            fullname = message.text
-            if await db.group_exists_sql(fullname):
-                if len(fullname) <= 3:
-                    if await db.user_group_exists_sql(fullname):
-                        await db.delete_groups_sql(fullname)
-                        await db.delete_user_groups_sql(fullname)
-                        await message.answer(
-                            "Групу видалено і всіх користувачів які були до неї підключенні",
-                            reply_markup=sadmin,
-                        )
-
-                    elif not await db.user_group_exists_sql(fullname):
-                        await db.delete_groups_sql(fullname)
-                        await message.answer("Групу видалено", reply_markup=sadmin)
-                    await state.finish()
-                else:
-                    await message.answer(
-                        "Назва групи не може перевищувати три символи",
-                        reply_markup=sadmin,
-                    )
-                    await state.finish()
-            else:
-                await message.answer("Група з такою назвою немає", reply_markup=sadmin)
-                await state.finish()
-    else:
-        await message.answer("Ви не адмін :D", reply_markup=kb_start)
-        await state.finish()
+    await db.delete_student_group_sql(fullname)
+    await db.delete_student_for_group_sql(fullname)
+    await message.answer("Групу видалено ✅", reply_markup=await super_admin_kb())
+    await state.clear()
 
 
 # ===========================Додавання групи============================
-# @dp.message_handler(text="Додати групу", state=None)
-async def add_group(message: types.Message):
-    db = await Database.setup()
-    if await is_sadmin(message):
-        await FSMSuperA.curse_group.set()
-        await message.answer(
-            "Введіть назву\nПриклад : 2Ц", reply_markup=ReplyKeyboardRemove()
-        )
+@router.message(F.text == "групу ❇️")
+async def add_group(message: types.Message, state: FSMContext):
+    if not await is_super_admin(message):
+        return
 
-    else:
-        await message.answer("Ви не адмін :D", reply_markup=kb_start)
+    await state.set_state(FSMSuperAdmin.curse_group)
+    await message.answer(
+        "Введіть назву\nПриклад : 2Ц", reply_markup=ReplyKeyboardRemove()
+    )
 
 
-# @dp.message_handler(state=FSMSuperA.curse_group)
+@router.message(FSMSuperAdmin.curse_group)
 async def add_group1(message: types.Message, state: FSMContext):
     db = await Database.setup()
-    if await is_sadmin(message):
-        if message.text == "Назад":
-            await message.answer("Меню", reply_markup=sadmin)
-            await state.finish()
-        else:
-            async with state.proxy() as data:
-                data["curse_group"] = message.text
-            fullname = data["curse_group"]
-            if not await db.group_exists_sql(fullname):
-                if len(fullname) <= 3:
-                    await db.add_group_sql(message.from_user.id, fullname)
-                    await message.answer("Групу додано", reply_markup=sadmin)
-                    await state.finish()
-                else:
-                    await message.answer(
-                        "Назва групи не може перевищувати три символи",
-                        reply_markup=sadmin,
-                    )
-                    await state.finish()
-            else:
-                await message.answer("Група з такою назвою вже є", reply_markup=sadmin)
-                await state.finish()
-    else:
-        await message.answer("Ви не адмін :D", reply_markup=kb_start)
-        await state.finish()
+    if not await is_super_admin(message):
+        return
+
+    if message.text == "Назад":
+        await message.answer("Меню", reply_markup=await super_admin_kb())
+        await state.clear()
+        return
+
+    name = message.text
+    if await db.student_group_exists_sql(name):
+        await message.answer(
+            "Група з такою назвою вже є", reply_markup=await super_admin_kb()
+        )
+        await state.clear()
+        return
+
+    if len(name) >= 3:
+        await message.answer(
+            "❌ Ліміт 3 символи",
+            reply_markup=await super_admin_kb(),
+        )
+        await state.clear()
+        return
+
+    await db.add_student_group_sql(name)
+    await message.answer("Групу створено ✅", reply_markup=await super_admin_kb())
+    await state.clear()
 
 
-# ===========================Додати розклад до курсу============================
-# @dp.message_handler(text="Додати розклад до групи", state=None)
-async def add_schedule_to_group(message: types.Message):
-    db = await Database.setup()
-    if await is_sadmin(message):
-        await FSMSuperA.curse_group_rad_photo.set()
-        await message.answer("Киньте фото розкладу", reply_markup=ReplyKeyboardRemove())
+# ===========================Додати розклад студентам============================
+@router.message(F.text == "групі ❇️")
+async def add_schedule_to_group(message: types.Message, state: FSMContext):
+    if not await is_super_admin(message):
+        return
 
-    else:
-        await message.answer("Ви не адмін :D", reply_markup=kb_start)
+    await state.set_state(FSMSuperAdmin.curse_group_rad_photo)
+    await message.answer("Киньте фото розкладу", reply_markup=ReplyKeyboardRemove())
 
 
-# @dp.message_handler(content_types=['photo'],state=FSMSuperA.curse_group_rad_photo)
+@router.message(F.photo, FSMSuperAdmin.curse_group_rad_photo)
 async def add_schedule_to_group1(message: types.Message, state: FSMContext):
-    db = await Database.setup()
-    if await is_sadmin(message):
-        async with state.proxy() as data:
-            data["curse_group_rad_photo"] = message.photo[0].file_id
-        await FSMSuperA.curse_group_rad.set()
-        await message.answer("До якої групи привязати", reply_markup=await get_kb())
+    if not await is_super_admin(message):
+        return
 
-    else:
-        await message.answer("Ви не адмін :D", reply_markup=kb_start)
-        await state.finish()
+    await state.update_data(curse_group_rad_photo=message.photo[0].file_id)
+    await state.set_state(FSMSuperAdmin.curse_group_rad)
+    await message.answer(
+        "До якої групи привязати", reply_markup=await group_selection_student_kb()
+    )
 
 
-# @dp.message_handler(state=FSMSuperA.curse_group_rad)
+@router.message(FSMSuperAdmin.curse_group_rad)
 async def add_schedule_to_group2(message: types.Message, state: FSMContext):
     db = await Database.setup()
-    if await is_sadmin(message):
-        if message.text == "Меню 👥":
-            await message.answer("Клавіатура", reply_markup=sadmin)
-            await state.finish()
-            return
+    data = await state.get_data()
+    now = datetime.datetime.now()
+    now = now.strftime("%d - %B, %A")
+    translation = translator.translate(now)
 
-        if not await db.group_exists_sql(message.text):
-            await message.answer("Немає такої групи ❌", reply_markup=sadmin)
-            await state.finish()
-            return
-        
-        async with state.proxy() as data:
-            data["curse_group_rad"] = message.text
-        now = datetime.datetime.now()
-        now = now.strftime("%d - %B, %A")
-        translation = translator.translate(now)
-        await db.group_photo_update_sql(
-            message.from_user.id,
-            data["curse_group_rad_photo"],
-            data["curse_group_rad"],
-            "Зміненно: " + translation,
-        )
-        await message.answer("Розклад успішно добавлено", reply_markup=sadmin)
-        await state.finish()
+    if not await is_super_admin(message):
+        return
 
-    else:
-        await message.answer("Ви не адмін :D", reply_markup=kb_start)
-        await state.finish()
+    if message.text == "Назад":
+        await message.answer("Клавіатура", reply_markup=await super_admin_kb())
+        await state.clear()
+        return
+
+    if not await db.student_group_exists_sql(message.text):
+        await message.answer("Немає такої групи ❌", reply_markup=await super_admin_kb())
+        await state.clear()
+        return
+
+    await db.student_group_photo_update_sql(
+        data["curse_group_rad_photo"],
+        message.text,
+        "Зміненно: " + translation,
+    )
+    await message.answer(
+        "Розклад успішно додано ✅", reply_markup=await super_admin_kb()
+    )
+    await state.clear()
 
 
 # ===========================Додати розклад викладачу============================
-async def add_schedule_to_teacher(message: types.Message):
-    db = await Database.setup()
-    if await is_sadmin(message):
-        await FSMSuperA.teachers_rad_photo.set()
-        await message.answer("Киньте фото розкладу", reply_markup=ReplyKeyboardRemove())
+@router.message(F.text == "викладачу ❇️")
+async def add_schedule_to_teacher(message: types.Message, state: FSMContext):
+    if not await is_super_admin(message):
+        return
 
-    else:
-        await message.answer("Ви не адмін :D", reply_markup=kb_start)
+    await state.set_state(FSMSuperAdmin.teachers_rad_photo)
+    await message.answer("Киньте фото розкладу", reply_markup=ReplyKeyboardRemove())
 
 
+@router.message(F.photo, FSMSuperAdmin.teachers_rad_photo)
 async def add_schedule_to_teacher1(message: types.Message, state: FSMContext):
-    db = await Database.setup()
-    if await is_sadmin(message):
-        async with state.proxy() as data:
-            data["teachers_rad_photo"] = message.photo[0].file_id
-        await FSMSuperA.teachers_rad.set()
-        await message.answer("До якої групи привязати", reply_markup=await get_t_kb())
+    if not await is_super_admin(message):
+        return
 
-    else:
-        await message.answer("Ви не адмін :D", reply_markup=kb_start)
-        await state.finish()
+    await state.update_data(teachers_rad_photo=message.photo[0].file_id)
+    await state.set_state(FSMSuperAdmin.teachers_rad)
+    await message.answer(
+        "До якої групи привязати", reply_markup=await group_selection_teacher_kb()
+    )
 
 
+@router.message(FSMSuperAdmin.teachers_rad)
 async def add_schedule_to_teacher2(message: types.Message, state: FSMContext):
     db = await Database.setup()
-    if await is_sadmin(message):
-        async with state.proxy() as data:
-            data["teachers_rad"] = message.text
-        now = datetime.datetime.now()
-        now = now.strftime("%d - %B, %A")
-        translation = translator.translate(now)
-        await db.teacher_photo_update_sql(
-            data["teachers_rad_photo"], data["teachers_rad"], "Зміненно: " + translation
-        )
-        await message.answer("Розклад успішно добавлено", reply_markup=sadmin)
-        await state.finish()
-    else:
-        await message.answer("Ви не адмін :D", reply_markup=kb_start)
-        await state.finish()
+    data = await state.get_data()
+    now = datetime.datetime.now().strftime("%d - %B, %A")
+    translation = translator.translate(now)
+
+    if not await is_super_admin(message):
+        return
+
+    if message.text == "Назад":
+        await message.answer("Клавіатура", reply_markup=await super_admin_kb())
+        await state.clear()
+        return
+
+    if not await db.teacher_group_exists_sql(message.text):
+        await message.answer("Немає такої групи ❌", reply_markup=await super_admin_kb())
+        await state.clear()
+        return
+
+    await db.teacher_group_photo_update_sql(
+        data["teachers_rad_photo"], message.text, "Зміненно: " + translation
+    )
+    await message.answer(
+        "Розклад успішно додано ✅", reply_markup=await super_admin_kb()
+    )
+    await state.clear()
 
 
-async def delete_photo_group(message: types.Message):
-    db = await Database.setup()
-    if await is_sadmin(message):
-        await FSMSuperA.curse_group_photo_delete.set()
-        await message.answer(
-            "Виберіть групу з наведених нижче", reply_markup=await get_kb())
-    else:
-        await message.answer("Ви не адмін :D", reply_markup=kb_start)
+@router.message(F.text == "групу 🗑🖼")
+async def delete_photo_group(message: types.Message, state: FSMContext):
+    if not await is_super_admin(message):
+        return
 
+    await state.set_state(FSMSuperAdmin.curse_group_photo_delete)
+    await message.answer(
+        "Виберіть групу ⬇️", reply_markup=await group_selection_student_kb()
+    )
+
+
+@router.message(FSMSuperAdmin.curse_group_photo_delete)
 async def delete_photo_group1(message: types.Message, state: FSMContext):
     db = await Database.setup()
-    if await is_sadmin(message):
-        if message.text == "Назад":
-            await message.answer("Меню", reply_markup=sadmin)
-            await state.finish()
-        elif message.text != "Назад":
-            if await db.group_exists_sql(message.text):
-                await db.delete_group_photo_sql(message.text)
-                await message.answer("Розклад групі успішно видалено", reply_markup=sadmin)
-            else:
-                await message.answer("Група з такою назвою немає", reply_markup=sadmin)
-                await state.finish()
-    else:
-        await message.answer("Ви не адмін :D", reply_markup=kb_start)
-        await state.finish()
+    if not await is_super_admin(message):
+        return
 
+    if message.text == "Назад":
+        await message.answer("Меню", reply_markup=await super_admin_kb())
+        await state.clear()
+        return
 
+    if not await db.student_group_exists_sql(message.text):
+        await message.answer(
+            "Групи з такою назвою немає", reply_markup=await super_admin_kb()
+        )
+        await state.clear()
+        return
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-# ===========================реєстратор============================
-def register_handler_sadmin(dp: Dispatcher):
-    dp.register_message_handler(password, text="password")
-    dp.register_message_handler(admin_kb, text="Адмін 🔑")
-    dp.register_message_handler(super_admin_kb, text="власник")
-    dp.register_message_handler(super_admin_user, text="таблиця студентів")
-    dp.register_message_handler(super_admin_teach, text="таблиця викладачів")
-    dp.register_message_handler(super_admin_admins, text="таблиця адмінів")
-    dp.register_message_handler(send_file_db, text="db")
-    dp.register_message_handler(
-        super_admin_user_for_group, text="таблиця за групою", state=None
+    await db.delete_student_group_photo_sql(message.text)
+    await message.answer(
+        "Розклад групі успішно видалено", reply_markup=await super_admin_kb()
     )
-    dp.register_message_handler(super_admin_user_for_group1, state=FSMSuperA.group)
-
-    dp.register_message_handler(
-        super_admin_user_for_id, text="Студент за ID", state=None
-    )
-    dp.register_message_handler(super_admin_user_for_id1, state=FSMSuperA.id_student)
-
-    dp.register_message_handler(
-        super_admin_teach_for_id, text="Викладач за ID", state=None
-    )
-    dp.register_message_handler(super_admin_teach_for_id1, state=FSMSuperA.id_teachers)
-
-    dp.register_message_handler(
-        super_admin_delete_user, text="Видалити студента", state=None
-    )
-    dp.register_message_handler(
-        super_admin_delete_user1, state=FSMSuperA.id_student_delete
-    )
-
-    dp.register_message_handler(
-        super_admin_delete_teach, text="Видалити викладача", state=None
-    )
-    dp.register_message_handler(
-        super_admin_delete_teach1, state=FSMSuperA.id_teachers_delete
-    )
-
-    # ===========================Додати викладача=============================
-    dp.register_message_handler(add_teachers, text="викладача ❇️", state=None)
-    dp.register_message_handler(add_teachers1, state=FSMSuperA.teachers_name)
-
-    # ===========================Видалити викладача==============================
-    dp.register_message_handler(delete_teachers, text="викладача 🗑", state=None)
-    dp.register_message_handler(delete_teachers1, state=FSMSuperA.teachers_delete)
-
-    # ===========================Додавання групи=============================
-    dp.register_message_handler(add_group, text="групу ❇️", state=None)
-    dp.register_message_handler(add_group1, state=FSMSuperA.curse_group)
-    # ===========================Видалити групу==============================
-    dp.register_message_handler(delete_group, text="групу 🗑", state=None)
-    dp.register_message_handler(load_group, state=FSMSuperA.curse_group_delete)
-    # ===========================Видалити розклад групи==============================
-    dp.register_message_handler(delete_photo_group, text="групу 🗑🖼", state=None)
-    dp.register_message_handler(delete_photo_group1, state=FSMSuperA.curse_group_photo_delete)
-    # ===========================Додати розклад до курсу=====================
-    dp.register_message_handler(add_schedule_to_group, text="групі ❇️", state=None)
-    dp.register_message_handler(
-        add_schedule_to_group1,
-        content_types=["photo"],
-        state=FSMSuperA.curse_group_rad_photo,
-    )
-    dp.register_message_handler(add_schedule_to_group2, state=FSMSuperA.curse_group_rad)
-    # ===========================Додати розклад викладачу=====================
-    dp.register_message_handler(
-        add_schedule_to_teacher, text="викладачу ❇️", state=None
-    )
-    dp.register_message_handler(
-        add_schedule_to_teacher1,
-        content_types=["photo"],
-        state=FSMSuperA.teachers_rad_photo,
-    )
-    dp.register_message_handler(add_schedule_to_teacher2, state=FSMSuperA.teachers_rad)
-
-    # ===========================Додати розклад дзвінків======================
-    dp.register_message_handler(add_calls, text="дзвінків ❇️", state=None)
-    dp.register_message_handler(
-        add_calls1, content_types=["photo"], state=FSMSuperA.id_photo
-    )
-    # ===========================Видалити розклад дзвінків============================
-    dp.register_message_handler(delete_calls, text="дзвінків 🗑")

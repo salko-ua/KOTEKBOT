@@ -1,17 +1,28 @@
 import asyncache
 import aiosqlite
-from data_base.user_db import UserDB
-from data_base.teacher_db import TeacherDB
 from data_base.admin_db import AdminDB
-from data_base.group_db import GroupDB
-from data_base.teachers_name_db import TeacherGroupDB
-from data_base.all_photo_db import AllPhotoDB
-from data_base.text_db import TextDB
+from data_base.photo_db import PhotoDB
 from data_base.stats_db import StatsDB
+from data_base.text_db import TextDB
+from data_base.user_db import UserDB
+
+from data_base.student_db import StudentDB
+from data_base.teacher_db import TeacherDB
+
+from data_base.student_group_db import StudentGroupDB
+from data_base.teacher_group_db import TeacherGroupDB
 
 
 class Database(
-    UserDB, TeacherDB, AdminDB, GroupDB, TeacherGroupDB, AllPhotoDB, TextDB, StatsDB
+    AdminDB,
+    PhotoDB,
+    StatsDB,
+    StudentDB,
+    TeacherDB,
+    StudentGroupDB,
+    TeacherGroupDB,
+    TextDB,
+    UserDB,
 ):
     @classmethod
     @asyncache.cached({})
@@ -23,63 +34,75 @@ class Database(
         await base.execute(
             """
             CREATE TABLE IF NOT EXISTS user(
-                user_id    INTEGER UNIQUE,
-                Name       TEXT,
-                Nickname   TEXT,
-                group_user TEXT
-            )
-            """
-        )
-        await base.execute(
-            """
-            CREATE TABLE IF NOT EXISTS groupa(
-                id        INTEGER PRIMARY KEY,
-                user_id   INTEGER NOT NULL,
-                groupname TEXT NOT NULL,
-                photos    TEXT,
-                date      TEXT
-            )
-            """
-        )
-        await base.execute(
-            """
-            CREATE TABLE IF NOT EXISTS all_photo(
-                id         INTEGER PRIMARY KEY,
-                id_photo   TEXT,
-                type       TEXT,
-                date_photo TEXT
+                user_id       INTEGER NOT NULL, -- ід користувача (int)
+                first_name    TEXT,             -- Ім'я користувача (str)
+                last_name     TEXT,             -- Призвіще користувача (str)
+                username      TEXT,             -- нікнейм користувача @ (str)
+                date_join     TEXT,             -- дата приєднання (дати від 1 вересня 2023) (str)
+                count_message INTEGER DEFAULT 0,-- кількість надісланих повідомлень боту (int)
+                last_message  TEXT,             -- дата останнього повідомлення (str)
+                admin         BOOLEAN,          -- якщо адмін True в іншому разі False
+                student_group TEXT,             -- якщо є ім'я(str) немає absent(str)
+                teacher_group TEXT              -- якщо є ім'я(str) немає absent(str)
             )
             """
         )
         await base.execute(
             """
             CREATE TABLE IF NOT EXISTS admin(
-                id       INTEGER PRIMARY KEY NOT NULL,
                 user_id  INTEGER UNIQUE NOT NULL,
-                Name     TEXT,
-                Nickname TEXT
+                username TEXT
             )
             """
         )
         await base.execute(
             """
-            CREATE TABLE IF NOT EXISTS teachers(
-                id       INTEGER PRIMARY KEY NOT NULL,
-                user_id  INTEGER UNIQUE NOT NULL,
-                Name     TEXT,
-                Nickname TEXT,
-                teacher_name TEXT
+            CREATE TABLE IF NOT EXISTS student(
+                user_id       INTEGER UNIQUE,
+                group_student TEXT,
+                send_news     BOOLEAN DEFAULT 1,
+                send_write    BOOLEAN DEFAULT 1,
+                send_alert    BOOLEAN DEFAULT 1
             )
             """
         )
         await base.execute(
             """
-            CREATE TABLE IF NOT EXISTS teachers_name(
-                id        INTEGER PRIMARY KEY,
-                user_id   INTEGER NOT NULL,
-                name_teacher TEXT NOT NULL,
-                photos    TEXT,
-                date      TEXT
+            CREATE TABLE IF NOT EXISTS teacher(
+                user_id       INTEGER UNIQUE,
+                group_teacher TEXT,
+                send_news     BOOLEAN DEFAULT 1,
+                send_write    BOOLEAN DEFAULT 1,
+                send_alert    BOOLEAN DEFAULT 1
+            )
+            """
+        )
+        await base.execute(
+            """
+            CREATE TABLE IF NOT EXISTS student_group(
+                id         INTEGER PRIMARY KEY,
+                name_group TEXT NOT NULL,
+                photo      TEXT,
+                date       TEXT
+            )
+            """
+        )
+        await base.execute(
+            """
+            CREATE TABLE IF NOT EXISTS teacher_group(
+                id         INTEGER PRIMARY KEY,
+                name_group TEXT NOT NULL,
+                photo      TEXT,
+                date       TEXT
+            )
+            """
+        )
+        await base.execute(
+            """
+            CREATE TABLE IF NOT EXISTS photo(
+                id_photo   TEXT UNIQUE,
+                name_photo TEXT,
+                date_photo TEXT
             )
             """
         )
@@ -98,8 +121,8 @@ class Database(
             """
             CREATE TABLE IF NOT EXISTS text(
                 id           INTEGER PRIMARY KEY NOT NULL,
-                text_user   TEXT NOT NULL,
-                group_name TEXT
+                user_text    TEXT NOT NULL,
+                name_group   TEXT
             )
             """
         )

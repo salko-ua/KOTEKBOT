@@ -1,5 +1,6 @@
 import asyncio
 
+from aiogram import F
 from config import *
 from keyboards import *
 from create_bot import bot
@@ -7,12 +8,14 @@ from data_base import Database
 
 from aiogram.types import Message
 from handlers.menu import menu
-from aiogram.dispatcher import Dispatcher
-from aiogram.dispatcher import FSMContext
 
-from aiogram.utils.exceptions import RetryAfter
+from aiogram import Router
+from aiogram.filters import Command
+from aiogram.filters.text import Text
 
-from aiogram.dispatcher.filters.state import State, StatesGroup
+from aiogram.fsm.context import FSMContext
+
+from aiogram.filters.state import State, StatesGroup
 
 
 # =========Класс машини стану=========
@@ -24,12 +27,15 @@ class FSMAdmin(StatesGroup):
     mixed_text = State()
 
 
+router = Router()
+
+
 # ===========================Видалити акаунт============================
-# @dp.message_handler(text ='Видалити акаунт')
+@router.message(Text(text="Видалити акаунт", ignore_case=True))
 async def delete_admin(message: Message):
     db = await Database.setup()
     if not await db.admin_exists_sql(message.from_user.id):
-        await message.answer("Ви не адмін :D", reply_markup=kb_start)
+        await message.answer("Ви не адмін :D", reply_markup=await start_all_kb())
         return
 
     await db.delete_admins_sql(message.from_user.id)
@@ -37,39 +43,42 @@ async def delete_admin(message: Message):
 
 
 # надсилання одного з варіантів
-async def send_photo_news(message: Message):
+@router.message(Text(text="Викласти 🖼", ignore_case=True))
+async def send_photo_news(message: Message, state: FSMContext):
     db = await Database.setup()
     if not await db.admin_exists_sql(message.from_user.id):
         return
 
-    await message.answer("Надішліть фото 🖼", reply_markup=kb_back)
-    await FSMAdmin.photo.set()
+    await message.answer("Надішліть фото 🖼", reply_markup=await back_kb())
+    await state.set_state(FSMAdmin.photo)
 
 
-async def send_message_news(message: Message):
+@router.message(Text(text="Викласти 📝", ignore_case=True))
+async def send_message_news(message: Message, state: FSMContext):
     db = await Database.setup()
     if not await db.admin_exists_sql(message.from_user.id):
         return
 
-    await message.answer("Надішліть текст 📝", reply_markup=kb_back)
-    await FSMAdmin.text.set()
+    await message.answer("Надішліть текст 📝", reply_markup=await back_kb())
+    await state.set_state(FSMAdmin.text)
 
 
-async def send_mixed_news(message: Message):
+@router.message(Text(text="Викласти 🖼📝", ignore_case=True))
+async def send_mixed_news(message: Message, state: FSMContext):
     db = await Database.setup()
     if not await db.admin_exists_sql(message.from_user.id):
         return
 
-    await message.answer("Надішліть текст 📝", reply_markup=kb_back)
-    await FSMAdmin.mixed_text.set()
+    await message.answer("Надішліть текст 📝", reply_markup=await back_kb())
+    await state.set_state(FSMAdmin.mixed_text)
 
 
-# Другий етап
+@router.message(FSMAdmin.photo, F.photo | F.text)
 async def send_photo_news1(message: Message, state: FSMContext):
     db = await Database.setup()
     if message.text == "Назад":
-        await message.answer("Новину відмінено✅", reply_markup=kb_admin)
-        await state.finish()
+        await message.answer("Новину відмінено✅", reply_markup=await admin_kb())
+        await state.clear()
         return
 
     if not await db.admin_exists_sql(message.from_user.id):
@@ -79,11 +88,11 @@ async def send_photo_news1(message: Message, state: FSMContext):
     text = None
     what_send = 1
 
-    await message.answer("Надсилається..", reply_markup=kb_admin)
-    await state.finish()
+    await message.answer("Надсилається..", reply_markup=await admin_kb())
+    await state.clear()
 
-    all_user_ids = map(lambda e: e[0], await db.all_user_id_sql())
-    all_teachers_ids = map(lambda e: e[0], await db.all_teachers_id_sql())
+    all_user_ids = map(lambda e: e[0], await db.list_id_student_agreed_news_sql())
+    all_teachers_ids = map(lambda e: e[0], await db.list_id_teacher_agreed_news_sql())
 
     await asyncio.gather(*map(send_notification(what_send, text, photo), all_user_ids))
     await asyncio.gather(
@@ -92,11 +101,12 @@ async def send_photo_news1(message: Message, state: FSMContext):
     await message.answer("Надсилання закінчено!")
 
 
+@router.message(FSMAdmin.text, F.text)
 async def send_message_news1(message: Message, state: FSMContext):
     db = await Database.setup()
     if message.text == "Назад":
-        await message.answer("Новину відмінено✅", reply_markup=kb_admin)
-        await state.finish()
+        await message.answer("Новину відмінено✅", reply_markup=await admin_kb())
+        await state.clear()
         return
 
     if not await db.admin_exists_sql(message.from_user.id):
@@ -106,11 +116,11 @@ async def send_message_news1(message: Message, state: FSMContext):
     text = message.text
     what_send = 2
 
-    await message.answer("Надсилається..", reply_markup=kb_admin)
-    await state.finish()
+    await message.answer("Надсилається..", reply_markup=await admin_kb())
+    await state.clear()
 
-    all_user_ids = map(lambda e: e[0], await db.all_user_id_sql())
-    all_teachers_ids = map(lambda e: e[0], await db.all_teachers_id_sql())
+    all_user_ids = map(lambda e: e[0], await db.list_id_student_agreed_news_sql())
+    all_teachers_ids = map(lambda e: e[0], await db.list_id_teacher_agreed_news_sql())
     await asyncio.gather(*map(send_notification(what_send, text, photo), all_user_ids))
     await asyncio.gather(
         *map(send_notification(what_send, text, photo), all_teachers_ids)
@@ -118,43 +128,44 @@ async def send_message_news1(message: Message, state: FSMContext):
     await message.answer("Надсилання закінчено!")
 
 
+@router.message(FSMAdmin.mixed_text, F.text)
 async def send_mixed_news1(message: Message, state: FSMContext):
     db = await Database.setup()
     if message.text == "Назад":
-        await message.answer("Новину відмінено✅", reply_markup=kb_admin)
-        await state.finish()
+        await message.answer("Новину відмінено✅", reply_markup=await admin_kb())
+        await state.clear()
         return
 
     if not await db.admin_exists_sql(message.from_user.id):
         return
 
-    async with state.proxy() as data:
-        data["text"] = message.text
-    await message.answer("Надішліть фото 🖼", reply_markup=kb_back)
-    await FSMAdmin.mixed_photo.set()
+    await state.update_data(text=message.text)
+
+    await message.answer("Надішліть фото 🖼", reply_markup=await back_kb())
+    await state.set_state(FSMAdmin.mixed_photo)
 
 
-# 3 етап тільки для змішаної новини
+@router.message(FSMAdmin.mixed_photo, F.photo | F.text)
 async def send_mixed_news2(message: Message, state: FSMContext):
     db = await Database.setup()
     if message.text == "Назад":
-        await message.answer("Новину відмінено✅", reply_markup=kb_admin)
-        await state.finish()
+        await message.answer("Новину відмінено✅", reply_markup=await admin_kb())
+        await state.clear()
         return
 
     if not await db.admin_exists_sql(message.from_user.id):
         return
 
-    async with state.proxy() as data:
-        text = data["text"]
-        photo = message.photo[0].file_id
-        what_send = 3
+    data = await state.get_data()
+    text = data["text"]
+    photo = message.photo[0].file_id
+    what_send = 3
 
-    await message.answer("Надсилається..", reply_markup=kb_admin)
-    await state.finish()
+    await message.answer("Надсилається..", reply_markup=await admin_kb())
+    await state.clear()
 
-    all_user_ids = map(lambda e: e[0], await db.all_user_id_sql())
-    all_teachers_ids = map(lambda e: e[0], await db.all_teachers_id_sql())
+    all_user_ids = map(lambda e: e[0], await db.list_id_student_agreed_news_sql())
+    all_teachers_ids = map(lambda e: e[0], await db.list_id_teacher_agreed_news_sql())
 
     await asyncio.gather(*map(send_notification(what_send, text, photo), all_user_ids))
     await asyncio.gather(
@@ -166,38 +177,14 @@ async def send_mixed_news2(message: Message, state: FSMContext):
 # Функція надсилання
 def send_notification(what_send: int, text: str, photo: str):
     async def wrapped(user_id: int):
-        db = await Database.setup()
         try:
-            try:
-                if what_send == 1:
-                    await bot.send_photo(user_id, photo)
-                elif what_send == 2:
-                    await bot.send_message(user_id, text)
-                elif what_send == 3:
-                    await bot.send_photo(user_id, photo, text)
-            except RetryAfter as ra:
-                await asyncio.sleep(ra.timeout)
+            if what_send == 1:
+                await bot.send_photo(user_id, photo)
+            elif what_send == 2:
+                await bot.send_message(user_id, text)
+            elif what_send == 3:
+                await bot.send_photo(user_id, photo, caption=text)
         except:
             pass
 
     return wrapped
-
-
-# ===========================реєстратор============================
-def register_handler_admin(dp: Dispatcher):
-    # ===========================Викласти фото=============================
-    dp.register_message_handler(send_photo_news, text="Викласти 🖼")
-    dp.register_message_handler(
-        send_photo_news1, content_types=["photo", "text"], state=FSMAdmin.photo
-    )
-    # ===========================Викласти текст=============================
-    dp.register_message_handler(send_message_news, text="Викласти 📝")
-    dp.register_message_handler(send_message_news1, state=FSMAdmin.text)
-    # ===========================Викласти фото і текст=============================
-    dp.register_message_handler(send_mixed_news, text="Викласти 🖼📝")
-    dp.register_message_handler(send_mixed_news1, state=FSMAdmin.mixed_text)
-    dp.register_message_handler(
-        send_mixed_news2, content_types=["photo", "text"], state=FSMAdmin.mixed_photo
-    )
-    # ===========================Видалити акаунт=============================
-    dp.register_message_handler(delete_admin, text="Видалити акаунт")

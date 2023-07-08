@@ -4,35 +4,35 @@ from data_base import Database
 
 
 # ===========================1 Keyboards================================
-async def reg_teacher_kb() -> ReplyKeyboardMarkup:
+async def reg_student_kb() -> ReplyKeyboardMarkup:
     db = await Database.setup()
-    list_teachers = await db.teacher_group_list_sql()
+    list_group = await db.student_group_list_sql()
     builder = ReplyKeyboardBuilder()
 
-    for teacher in list_teachers:
-        builder.add(KeyboardButton(text=teacher))
+    for group in list_group:
+        builder.add(KeyboardButton(text=group))
 
     builder.add(KeyboardButton(text="Меню 👥"))
 
-    return builder.adjust(2).as_markup(resize_keyboard=True)
+    return builder.adjust(4).as_markup(resize_keyboard=True)
 
 
 # ======================================================================
 
 
 # ===========================2 Keyboards================================
-async def teacher_kb() -> ReplyKeyboardMarkup:
+async def student_kb() -> ReplyKeyboardMarkup:
     builder = ReplyKeyboardBuilder()
 
     keyboard = [
-        "Розклад занять 👀",
+        "Розклад пар 👀",
         "Розклад дзвінків ⌚️",
         "Тривоги ⚠️",
         "Ч/З тиждень ✏️",
         "Замітки 📝",
         "Написати ✉️",
         "Меню 👥",
-        "Вийти 🚫",
+        "Змінити групу 🚫",
     ]
 
     for button in keyboard:

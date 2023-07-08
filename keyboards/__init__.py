@@ -1,27 +1,21 @@
-from keyboards.reg_kb import kb_choice
-from keyboards.sp_admin_kb import sadmin
-from keyboards.admin_kb import kb_admin, kb_back
-from keyboards.client_kb import get_kb, kb_client
+# REPLYKEYBOARD
+from keyboards.reg_kb import reg_choice_kb
+from keyboards.sp_admin_kb import (
+    super_admin_kb,
+    group_selection_student_kb,
+    group_selection_teacher_kb,
+)
+from keyboards.admin_kb import admin_kb, back_kb
+from keyboards.student_kb import reg_student_kb, student_kb
 from keyboards.main_kb import (
-    kb_start,
-    kb_start_user,
-    kb_speciality,
-    kb_infs,
-    kb_start_admin,
-    kb_for_applicant,
+    start_all_kb,
+    start_admin_kb,
+    start_user_kb,
+    other_kb,
+    for_applicant_kb,
 )
-from keyboards.teachers_kb import get_t_kb, kb_teachers
-from keyboards.inline_kb import (
-    update_kb,
-    inline_kb_group,
-    inline_back,
-    cancle_inline_kb,
-    text_inline_kb,
-    url_card_kb,
-    site_contacts_url,
-)
-from keyboards.dev_inline_kb import (
-    dev_inline_kb,
-    dev_back_inline_kb,
-    dev_request_inline_kb,
-)
+from keyboards.teachers_kb import reg_teacher_kb, teacher_kb
+
+# INLINEKEYBOARD
+from keyboards.inline_kb import *
+from keyboards.dev_inline_kb import *

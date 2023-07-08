@@ -5,13 +5,12 @@ class TextDB(BaseDBPart):
     async def add_text_sql(self, text_user, group_name):
         exits = await (
             await self.cur.execute(
-                "SELECT id FROM text WHERE group_name=?", (group_name,)
+                "SELECT `id` FROM `text` WHERE `name_group`=?", (group_name,)
             )
         ).fetchall()
-
         if len(exits) < 1:
             await self.cur.execute(
-                "INSERT INTO `text` (`text_user`, `group_name`) VALUES (?,?)",
+                "INSERT INTO `text` (`user_text`, `name_group`) VALUES (?,?)",
                 (
                     text_user,
                     group_name,
@@ -19,7 +18,7 @@ class TextDB(BaseDBPart):
             )
         elif len(exits) > 0:
             await self.cur.execute(
-                "UPDATE `text` SET `text_user` = ? WHERE `group_name` = ?",
+                "UPDATE `text` SET `user_text` = ? WHERE `name_group` = ?",
                 (
                     text_user,
                     group_name,
@@ -30,7 +29,7 @@ class TextDB(BaseDBPart):
     async def see_text_sql(self, group_name):
         exits = await (
             await self.cur.execute(
-                "SELECT text_user FROM text WHERE group_name=?", (group_name,)
+                "SELECT `user_text` FROM `text` WHERE `name_group`=?", (group_name,)
             )
         ).fetchall()
 

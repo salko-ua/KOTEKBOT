@@ -5,8 +5,6 @@ import cachetools
 from data_base import Database
 from create_bot import bot, alerts_client, scheduler
 
-from aiogram.utils.exceptions import RetryAfter
-
 
 # =========================== Тривога ===========================
 @asyncache.cached(cachetools.TTLCache(1, 17))
@@ -82,8 +80,8 @@ async def wait_start_alarm():
     scheduler.remove_job("wait_start_alarm")
     scheduler.add_job(wait_finish_alarm, "interval", seconds=25, id="wait_finish_alarm")
 
-    all_user_ids = map(lambda e: e[0], await db.all_user_id_sql())
-    all_teach_ids = map(lambda e: e[0], await db.all_teachers_id_sql())
+    all_user_ids = map(lambda e: e[0], await db.list_id_student_agreed_alert_sql())
+    all_teach_ids = map(lambda e: e[0], await db.list_id_teacher_agreed_alert_sql())
     await asyncio.gather(*map(send_notification(is_active), all_user_ids))
     await asyncio.gather(*map(send_notification(is_active), all_teach_ids))
 
@@ -108,13 +106,13 @@ def send_notification(is_active: bool):
     async def wrapped(user_id: int):
         db = await Database.setup()
         try:
-            try:
-                await bot.send_sticker(user_id, r"CAACAgIAAxkBAAEI_1hkY5y8yh_-0cKFPQ5Sv2SWlYQaCwACLCUAAvF3IUhe2e30dH6RaC8E" if is_active else r"CAACAgIAAxkBAAEI_1xkY5zsKG4_LdSX-d2oMY994WAHjQACQisAAssEIUhdsPeRZOOUMC8E")
-                await bot.send_message(
-                    user_id, "Тривога! 🔴" if is_active else "Відбій! 🟢"
-                )
-            except RetryAfter as ra:
-                await asyncio.sleep(ra.timeout)
+            await bot.send_sticker(
+                user_id,
+                r"CAACAgIAAxkBAAEI_1hkY5y8yh_-0cKFPQ5Sv2SWlYQaCwACLCUAAvF3IUhe2e30dH6RaC8E"
+                if is_active
+                else r"CAACAgIAAxkBAAEI_1xkY5zsKG4_LdSX-d2oMY994WAHjQACQisAAssEIUhdsPeRZOOUMC8E",
+            )
+            await bot.send_message(user_id, "Тривога! 🔴" if is_active else "Відбій! 🟢")
         except:
             pass
 
@@ -122,4 +120,5 @@ def send_notification(is_active: bool):
 
 
 async def create_task_alarm():
-    scheduler.add_job(wait_start_alarm, "interval", seconds=17, id="wait_start_alarm")
+    pass
+    # scheduler.add_job(wait_start_alarm, "interval", seconds=17, id="wait_start_alarm")

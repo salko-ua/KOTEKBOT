@@ -4,118 +4,150 @@ from data_base.create_db import BaseDBPart
 class TeacherDB(BaseDBPart):
     # Функція перевірки чи є викладач з данним user_id у db
     # Повертає True or False
-    async def teachers_exists_sql(self, user_id):
+    async def teacher_exists_sql(self, user_id):
         result = await self.cur.execute(
-            "SELECT COUNT(`id`) FROM `teachers` WHERE `user_id` = ?", (user_id,)
+            "SELECT COUNT(`user_id`) FROM `teacher` WHERE `user_id` = ?", (user_id,)
         )
         result = await result.fetchall()
         return bool(result[0][0])
 
-    # Переглянути всіх викладачів
-    # Повертає user_id всіх користувачів list
-    async def all_teachers_id_sql(self):
-        rest = await self.cur.execute("SELECT `user_id` FROM `teachers`")
-        return await rest.fetchall()
-
     # Перевірка чи є у групі викладачі якщо немає False якщо є 1 або більше True
     # Повертає True or False
-    async def teacher_name_exists_sql(self, group):
+    async def teacher_for_group_exists_sql(self, group_teacher):
         result = await self.cur.execute(
-            "SELECT COUNT(`id`) FROM `teachers` WHERE `teacher_name` = ?", (group,)
+            "SELECT COUNT(`user_id`) FROM `teacher` WHERE `group_teacher` = ?",
+            (group_teacher,),
         )
         result = await result.fetchall()
         return bool(result[0][0])
 
     # Додає викладача до бази даних
     # Повертає збереження бази данних
-    async def add_teachers_sql(self, user_id, Name, Nickname, teachers_name):
+    async def add_teacher_sql(self, user_id, group_teacher):
         await self.cur.execute(
-            "INSERT INTO `teachers` (`user_id`, `Name`, `Nickname`, `teacher_name`) VALUES (?,?,?,?)",
-            (user_id, Name, Nickname, teachers_name),
+            "INSERT INTO `teacher` (user_id, group_teacher) VALUES (?,?)",
+            (
+                user_id,
+                group_teacher,
+            ),
         )
         return await self.base.commit()
 
-    # Видалити викладача за його user_id
+    # Видалити викладача за його id (user_id)
     # Повертає збереження бази данних
-    async def delete_teach_for_id_sql(self, user_id):
-        await self.cur.execute("DELETE FROM teachers WHERE user_id = ?", (user_id,))
+    async def delete_teacher_sql(self, user_id):
+        await self.cur.execute("DELETE FROM teacher WHERE user_id = ?", (user_id,))
         return await self.base.commit()
 
-    # Видалити викладача за його user_id
+    # Видалити викладачів за їх групою (group_teacher)
     # Повертає збереження бази данних
-    async def delete_teachers_sql(self, user_id):
-        await self.cur.execute("DELETE FROM teachers WHERE user_id = ?", (user_id,))
-        return await self.base.commit()
-
-    # Видалити викладача за його group
-    # Повертає збереження бази данних
-    async def delete_teachers_name_sql(self, group):
-        await self.cur.execute("DELETE FROM teachers WHERE teacher_name = ?", (group,))
+    async def delete_teacher_name_sql(self, group_teacher):
+        await self.cur.execute(
+            "DELETE FROM teacher WHERE group_teacher = ?", (group_teacher,)
+        )
         return await self.base.commit()
 
     # Переглянути ім'я групи викладача за user_id
     # Повертає назву групи str
     async def see_group_for_teach_id(self, user_id):
         groups = await self.cur.execute(
-            "SELECT `teacher_name` FROM `teachers` WHERE `user_id` = ?", (user_id,)
+            "SELECT `group_teacher` FROM `teacher` WHERE `user_id` = ?", (user_id,)
         )
         result = await groups.fetchall()
         return result[0][0]
-
-    # видає список таблиці викладачів за user_id
-    # Повертає True or false and list or None
-    async def teach_for_id_sql(self, user_id):
-        teachers = await (
-            await self.cur.execute(
-                "SELECT * FROM teachers WHERE user_id = ?", (user_id,)
-            )
-        ).fetchall()
-        if len(teachers) == 0:
-            return True, None
-        elif len(teachers) > 0:
-            return False, teachers
 
     # Переглянути число всіх користувачів
     # Повертає число користувачів int
     async def count_teacher_sql(self):
-        counts = await self.cur.execute("SELECT `id` FROM teachers")
-        row_counts = await counts.fetchall()
-        if len(row_counts) == 0:
-            return 0
-        else:
-            return len(row_counts)
+        counts = await self.cur.execute("SELECT `user_id` FROM teacher")
+        return len(await counts.fetchall())
 
-    # Переглянути всіх користувачів
-    # Повертає user_id всіх користувачів list
-    async def all_teach_id_for_group_sql(self, group):
-        rest = await self.cur.execute(
-            "SELECT `user_id` FROM `teachers` WHERE teacher_name = ?", (group,)
-        )
-        return await rest.fetchall()
-
-    # Переглянути групу користувача за його user_id              Треба покращити
+    # Переглянути групу користувача за його user_id
     # Повертає назву групи str
-    async def group_for_teach_id(self, user_id):
+    async def group_for_teacher_id_sql(self, user_id):
         groups = await self.cur.execute(
-            "SELECT `teacher_name` FROM `teachers` WHERE `user_id` = ?", (user_id,)
+            "SELECT `group_teacher` FROM `teacher` WHERE `user_id` = ?", (user_id,)
         )
         result = await groups.fetchall()
         return result[0][0]
 
-    # Перегляд таблиці teachers за групою в бд
-    # Повертає True or false and str or None , str = викладачів присутніх у бд за певною групою
-    async def teach_all_sql(self):
-        keys = []
-        keys.clear()
-        result = await self.cur.execute("SELECT * FROM `teachers`")
-        list_r = await result.fetchall()
-        if len(list_r) == 0:
-            return True, None
-        elif len(list_r) > 0:
-            for i in list_r:
-                keys.append(i)
-            reslt = ""
-            for i in range(0, len(keys)):
-                reslt += f"{i + 1}|{keys[i][1]}|[{keys[i][2]}]|{keys[i][4]}|\n"
-            keys = reslt
-            return False, keys
+    # Додає користувача до бази даних
+    # Повертає збереження бази данних
+    async def update_teacher_sql(self, group_student):
+        await self.cur.execute(
+            "UPDATE`teacher` SET `group_teacher` = ?",
+            (group_student,),
+        )
+        return await self.base.commit()
+
+    # Зміна дозволів викладача
+    async def teacher_change_news_sql(self, boolean: bool, user_id: int):
+        await self.cur.execute(
+            "UPDATE `teacher` SET `send_news` = ? WHERE user_id = ?",
+            (
+                boolean,
+                user_id,
+            ),
+        )
+        return await self.base.commit()
+
+    async def teacher_change_write_sql(self, boolean: bool, user_id: int):
+        await self.cur.execute(
+            "UPDATE `teacher` SET `send_write` = ? WHERE user_id = ?",
+            (
+                boolean,
+                user_id,
+            ),
+        )
+        return await self.base.commit()
+
+    async def teacher_change_alert_sql(self, boolean: bool, user_id: int):
+        await self.cur.execute(
+            "UPDATE `teacher` SET `send_alert` = ? WHERE user_id = ?",
+            (
+                boolean,
+                user_id,
+            ),
+        )
+        return await self.base.commit()
+
+    # Перевірка дозвілів викладача
+    async def teacher_agreed_write_exsists_sql(self, user_id):
+        result = await self.cur.execute(
+            "SELECT `send_write` FROM `teacher` WHERE user_id = ?", (user_id,)
+        )
+        result = await result.fetchall()
+        return bool(result[0][0])
+
+    async def teacher_agreed_news_exsists_sql(self, user_id):
+        result = await self.cur.execute(
+            "SELECT `send_news` FROM `teacher` WHERE user_id = ?", (user_id,)
+        )
+        result = await result.fetchall()
+        return bool(result[0][0])
+
+    async def teacher_agreed_alert_exsists_sql(self, user_id):
+        result = await self.cur.execute(
+            "SELECT `send_alert` FROM `teacher` WHERE user_id = ?", (user_id,)
+        )
+        result = await result.fetchall()
+        return bool(result[0][0])
+
+    # Список студентів з позитивним дозволом
+    async def list_id_teacher_agreed_news_sql(self):
+        result = await self.cur.execute(
+            "SELECT `user_id` FROM `teacher` WHERE send_news = ?", (1,)
+        )
+        return await result.fetchall()
+
+    async def list_id_teacher_agreed_write_sql(self):
+        result = await self.cur.execute(
+            "SELECT `user_id` FROM `teacher` WHERE send_write = ?", (1,)
+        )
+        return await result.fetchall()
+
+    async def list_id_teacher_agreed_alert_sql(self):
+        result = await self.cur.execute(
+            "SELECT `user_id` FROM `teacher` WHERE send_alert = ?", (1,)
+        )
+        return await result.fetchall()

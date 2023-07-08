@@ -1,54 +1,56 @@
 # from import
-from keyboards import *
-from aiogram import types
+from aiogram import F, Router, types
+from aiogram.filters import Command, Text
+from aiogram.fsm.context import FSMContext
+
 from data_base import Database
+from handlers.text_handlers import menu_text
+from keyboards import *
 
-
-from aiogram.dispatcher import Dispatcher, FSMContext
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-
-from aiogram.dispatcher.filters import ChatTypeFilter, Text
-
-from aiogram.dispatcher.filters.state import State, StatesGroup
-
-
-# =========Класс машини стану=========
-class FSMSpecialty(StatesGroup):
-    specialty = State()
+router = Router()
 
 
 # ===========================Меню 👥============================
 async def menu(message: types.Message):
     db = await Database.setup()
     if await db.admin_exists_sql(message.from_user.id):
-        await message.answer("⬇️Головне меню⬇️", reply_markup=kb_start_admin)
-    elif await db.user_exists_sql(message.from_user.id):
-        await message.answer("⬇️Головне меню⬇️", reply_markup=kb_start_user)
-    elif await db.teachers_exists_sql(message.from_user.id):
-        await message.answer("⬇️Головне меню⬇️", reply_markup=kb_start_user)
+        await message.answer("⬇️Головне меню⬇️", reply_markup=await start_admin_kb())
+    elif await db.student_exists_sql(message.from_user.id):
+        await message.answer("⬇️Головне меню⬇️", reply_markup=await start_user_kb())
+    elif await db.teacher_exists_sql(message.from_user.id):
+        await message.answer("⬇️Головне меню⬇️", reply_markup=await start_user_kb())
     else:
-        await message.answer("⬇️Головне меню⬇️", reply_markup=kb_start)
+        await message.answer("⬇️Головне меню⬇️", reply_markup=await start_all_kb())
 
 
 #                          Елемнти Меню
-
-
+@router.message(Text(text=menu_text["introduction"], ignore_case=True))
 # ===========================Вступ 📗============================
 async def introduction(message: types.Message):
-    await message.answer(
-        "Інформація про <a href='https://telegra.ph/%D0%86nformac%D1%96ya-dlya-vstupnika-2023-02-21'>вступ</a> на 2023 рік\nвсе скопійовано з офіційного\nсайту.У 2023 році - актуально",
+    photo_path = "photo/introduction.jpg"
+    file_path = types.FSInputFile(photo_path)
+    await message.answer_photo(
+        photo=file_path,
+        caption="<code><b>Інформація для вступника 2023</b></code>",
         parse_mode="HTML",
+        reply_markup=await url_introduction_kb(),
     )
 
 
+@router.message(Text(text=menu_text["about_collasge"], ignore_case=True))
 # ===========================Про коледж 🛡============================
 async def about_collasge(message: types.Message):
-    await message.answer(
-        "<a href='https://telegra.ph/Pro-koledzh-02-21'>Про коледж</a>",
+    photo_path = "photo/about_collage.jpg"
+    file_path = types.FSInputFile(photo_path)
+    await message.answer_photo(
+        photo=file_path,
+        caption="""<code><b>Інформація про Володимирський\nпедагогічний фаховий коледж\nімені А.Ю. Кримського\nВолинської обласної ради</b></code>""",
         parse_mode="HTML",
+        reply_markup=await url_about_college_kb(),
     )
 
 
+@router.message(Text(text=menu_text["time_work"], ignore_case=True))
 # ===========================Час роботи 📅============================
 async def time_work(message: types.Message):
     await message.answer(
@@ -58,6 +60,7 @@ async def time_work(message: types.Message):
     )
 
 
+@router.message(Text(text=menu_text["addres"], ignore_case=True))
 # ===========================Адреса 📫============================
 async def addres(message: types.Message):
     await message.answer(
@@ -69,81 +72,37 @@ async def addres(message: types.Message):
     )
 
 
+@router.message(Text(text=menu_text["contact"], ignore_case=True))
 # ===========================Контакти ============================
 async def contact(message: types.Message):
     await message.answer(
         """
 📱 Контактні телефони: 
     - (03342)35555 (факс), 
-    - 20950 (приймальна комісія),
-📨 Почта :
+    - 20950 (приймальна комісія)
+
+📨 Пошта :
     - E-mail: post@vvpc.com.ua
-""", reply_markup=site_contacts_url)
+""",
+        reply_markup=await url_contact_kb(),
+    )
 
 
+@router.message(Text(text="Спеціальності 📜", ignore_case=True))
 # ===========================Спеціальності 📜============================
-async def specialty(message: types.Message):
-    if message.chat.type == "private":
-        await message.answer("Cпеціальності 📜 ВВПФК", reply_markup=kb_speciality)
-        await FSMSpecialty.specialty.set()
-    else:
-        await message.answer("Цю команду можна викоритовувати тільки в лс бот")
+async def specialty(message: types.Message, state: FSMContext):
+    await message.answer(
+        "Cпеціальності 📜 ВВПФК", reply_markup=await url_speciality_kb()
+    )
 
 
-async def specialty1(m: types.Message, state=FSMContext):
-    db = await Database.setup()
-    if m.chat.type == "private":
-        if m.text == "🔙 Назад":
-            if await db.admin_exists_sql(m.from_user.id):
-                await m.answer("⬇️Головне меню⬇️", reply_markup=kb_for_applicant)
-            elif await db.user_exists_sql(m.from_user.id):
-                await m.answer("⬇️Головне меню⬇️", reply_markup=kb_for_applicant)
-            elif await db.teachers_exists_sql(m.from_user.id):
-                await m.answer("⬇️Головне меню⬇️", reply_markup=kb_for_applicant)
-            else:
-                await m.answer("⬇️Головне меню⬇️", reply_markup=kb_for_applicant)
-            await state.finish()
-        else:
-            if m.text == "Діловодство":
-                await m.answer(
-                    """Спеціальність 029 Інформаційна, бібліотечна та архівна справа \n(<a href='https://telegra.ph/Spec%D1%96aln%D1%96st-029-%D0%86nformac%D1%96jna-b%D1%96bl%D1%96otechna-ta-arh%D1%96vna-sprava-D%D1%96lovodstvo-02-20-2'> Діловодство </a>)""",
-                    parse_mode="HTML",
-                )
-            elif m.text == "Дошкільна освіта":
-                await m.answer(
-                    """Спеціальність 012 \n(<a href='https://telegra.ph/SHvidkij-pereglyad-02-20'> Дошкільна освіта </a>)""",
-                    parse_mode="HTML",
-                )
-            elif m.text == "Початкова освіта":
-                await m.answer(
-                    """Спеціальність 013 \n(<a href='https://telegra.ph/CHas-roboti-02-20'> Початкова освіта </a>)""",
-                    parse_mode="HTML",
-                )
-            elif m.text == "Трудове навчання":
-                await m.answer(
-                    """Спеціальність 014 Середня освіта \n(<a href='https://telegra.ph/Spec%D1%96aln%D1%96st-014-Serednya-osv%D1%96ta-Trudove-navchannya-ta-tehnolog%D1%96i-02-21'> Трудове навчання та технології </a>)""",
-                    parse_mode="HTML",
-                )
-            elif m.text == "Образотворче 🎨":
-                await m.answer(
-                    """Спеціальність 014.12 Середня освіта \n(<a href='https://telegra.ph/Spec%D1%96aln%D1%96st-01412-Serednya-osv%D1%96ta-Obrazotvorche-mistectvo-02-21'> Образотворче мистецтво </a>)""",
-                    parse_mode="HTML",
-                )
-            elif m.text == "Цифрові технології":
-                await m.answer(
-                    """Спеціальність 015.39 Професійна освіта \n(<a href='https://telegra.ph/Spec%D1%96aln%D1%96st-029-%D0%86nformac%D1%96jna-b%D1%96bl%D1%96otechna-ta-arh%D1%96vna-sprava-D%D1%96lovodstvo-02-20'> Цифрові технології </a>)""",
-                    parse_mode="HTML",
-                )
-    else:
-        await m.answer("Цю команду можна викоритовувати тільки в лс бота")
-        await state.finish()
-
-
+@router.message(Text(text=menu_text["others"], ignore_case=True))
 # ===========================Інше 📌============================
 async def others(message: types.Message):
-    await message.answer("Інше 🫤", reply_markup=kb_infs)
+    await message.answer("Інше 🫤", reply_markup=await other_kb())
 
 
+@router.message(Text(text=menu_text["stick"], ignore_case=True))
 # ===========================Стікери 👨‍👩‍👧‍👦============================
 async def stick(message: types.Message):
     await message.answer_sticker(
@@ -151,40 +110,93 @@ async def stick(message: types.Message):
     )
 
 
+@router.message(Text(text=menu_text["about_bot"], ignore_case=True))
 # ===========================Про бота 🖇============================
 async def about_bot(message: types.Message):
     await message.answer(
-        """БОТ ВПК ПЕДКІТ
-Версія : release 1.11
-Розробник: <a href='https://t.me/salkooua'>Мусаєв Джаміль</a>
-Зробив аватарку: <a href='https://t.me/rchpsd'>Коновалець Юра</a>
+        """🤖 БОТ ВПФК ПЕДКІТ
+🆙 Версія : release 2.0
+👨‍💻 Розробник: <a href='https://t.me/salkooua'>Salo</a>
+🎨 Дизайн ави: <a href='https://t.me/rchpsd'>Коновалець Юра</a>
+
+📅 Початок розробки : Січень 2023-го року
 
 Бот створено для спрощення
-виконання будь - яких речей
-зв'язаних з коледжем
-У ньому є купа потрібних
-і не дуже функцій, які
-розставленні в зручних місцях
+виконання будь-яких речей,
+зв'язаних з коледжем. У ньому
+є купа потрібних і не дуже
+функцій, які розставлені в
+зручних місцях. Використовуйте
+його для економлення часу!
 
-<a href='https://vvpc.com.ua/'>Офіційний сайт ВПФК</a>
+🌐 <a href='https://vvpc.com.ua/'>Офіційний сайт ВПФК</a>
 """,
         parse_mode="HTML",
         disable_web_page_preview=True,
     )
 
 
+async def check_user(user_id: int):
+    db = await Database.setup()
+    if await db.admin_exists_sql(user_id):
+        admin = "✅"
+    else:
+        admin = "❌"
+
+    if await db.student_exists_sql(user_id):
+        student = await db.group_for_student_id_sql(user_id)
+    else:
+        student = "❌"
+
+    if await db.teacher_exists_sql(user_id):
+        teacher = await db.group_for_teacher_id_sql(user_id)
+    else:
+        teacher = "❌"
+
+    return admin, student, teacher
+
+
+@router.message(Command("me"))
+@router.message(Text(text=menu_text["about_me"], ignore_case=True))
+# ===========================Про бота 🖇============================
+async def about_bot(message: types.Message):
+    db = await Database.setup()
+    user_id = message.from_user.id
+
+    if await db.user_exists_sql(user_id):
+        data = await db.user_show_data_sql(user_id)
+        data = data[0]
+        data_group = await check_user(user_id)
+
+        message_text = f"""
+<b>👤 Ім'я: <a href="{message.from_user.url}">{data[1]}</a> | {data[0]}</b>
+<b>📅 Дата реєстації: {data[4]}</b>
+
+<b>📊 Кількість повідомлень: {data[5]}</b>
+
+<b>👨‍💼 Адмін:</b> {data_group[0]}
+<b>👩‍🎓 Студент:</b> {data_group[1]}
+<b>👨‍🏫 Викладач:</b> {data_group[2]}
+
+<b>⌛️ Останнє повідомлення 
+боту: {data[6]}</b>
+(це не враховується)
+"""
+        await message.answer(
+            message_text, disable_web_page_preview=True, parse_mode="HTML"
+        )
+
+
+@router.message(Text(text="Для абітурієнта 🧑‍💻", ignore_case=True))
 # ===========================Інформація для абітурієнта============================
 async def for_applicant(message: types.Message):
     await message.answer(
-        "Інформація для абітурієнта 😵‍💫", reply_markup=kb_for_applicant
+        "Інформація для абітурієнта 😵‍💫", reply_markup=await for_applicant_kb()
     )
 
 
+@router.message(Text(text=menu_text["score"], ignore_case=True))
 async def score(message: types.Message):
-    button = InlineKeyboardButton(
-        "Перевірити актуальність 🌐", url="https://vvpc.com.ua/node/980"
-    )
-    kb = InlineKeyboardMarkup(row_width=1).add(button)
     await message.answer(
         """
 ❗️ Перевірте чи інформація актуальна ❗️
@@ -212,80 +224,14 @@ async def score(message: types.Message):
 Призначення платежу: плата за гуртожиток
 
 Вказати прізвище студента, курс та групу
-""",
+        """,
         parse_mode="HTML",
-        reply_markup=kb,
+        reply_markup=await url_score_kb(),
     )
 
 
+@router.message(Text(text=menu_text["official_site"], ignore_case=True))
 async def official_site(message: types.Message):
-    link = InlineKeyboardButton("Посилання на сайт 🌐", url="https://vvpc.com.ua/")
-    link_kb = InlineKeyboardMarkup(row_width=1).add(link)
-    await message.answer("Офіційний сайт ВПК 📰", reply_markup=link_kb)
-
-
-async def func(message: types.Message):
-    await message.answer("хуй")
-
-
-text = {
-    "menu": ["Меню 👥", "Меню", "Menu"],
-    "about_bot": ["Про бота 🖇", "Про бота", "about bot"],
-    "about_collasge": ["Про коледж 🛡", "Про коледж", "about collasge"],
-    "introduction": ["Вступ 📗", "Вступ", "introduction"],
-    "time_work": ["Час роботи 📅", "Час роботи", "time work"],
-    "addres": ["Адреса 📫", "Адреса", "addres"],
-    "contact": ["Контакти 📘", "Контакти", "contact"],
-    "others": ["Інше 📌", "Інше ", "others", "other"],
-    "stick": ["Стікери 👨‍👩‍👧‍👦", "Стікери", "Stickers"],
-    "score": ["score", "Реквізити 💳", "Реквізити"],
-    "official_site": ["official site", "Офіційний сайт 🌎", "Офіційний сайт"],
-}
-
-
-def register_handler_menu(dp: Dispatcher):
-    dp.register_message_handler(
-        menu, Text(ignore_case=True, equals=text["menu"]), ChatTypeFilter("private")
-    )
-
-    dp.register_message_handler(
-        about_bot, Text(ignore_case=True, equals=text["about_bot"])
-    )
-
-    dp.register_message_handler(
-        about_collasge, Text(ignore_case=True, equals=text["about_collasge"])
-    )
-
-    dp.register_message_handler(
-        introduction, Text(ignore_case=True, equals=text["introduction"])
-    )
-
-    dp.register_message_handler(
-        time_work, Text(ignore_case=True, equals=text["time_work"])
-    )
-
-    dp.register_message_handler(score, Text(ignore_case=True, equals=text["score"]))
-
-    dp.register_message_handler(
-        official_site, Text(ignore_case=True, equals=text["official_site"])
-    )
-
-    dp.register_message_handler(addres, Text(ignore_case=True, equals=text["addres"]))
-
-    dp.register_message_handler(contact, Text(ignore_case=True, equals=text["contact"]))
-
-    dp.register_message_handler(others, Text(ignore_case=True, equals=text["others"]))
-
-    dp.register_message_handler(stick, Text(ignore_case=True, equals=text["stick"]))
-
-    dp.register_message_handler(
-        for_applicant, ChatTypeFilter("private"), text="Для абітурієнта 🧑‍💻"
-    )
-
-    dp.register_message_handler(
-        specialty, ChatTypeFilter("private"), text="Спеціальності 📜", state=None
-    )
-
-    dp.register_message_handler(
-        specialty1, ChatTypeFilter("private"), state=FSMSpecialty.specialty
+    await message.answer(
+        "Офіційний сайт ВПК 📰", reply_markup=await url_official_site_kb()
     )

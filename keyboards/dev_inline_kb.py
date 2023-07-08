@@ -1,24 +1,45 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-
-# ======================================================================
-kb = InlineKeyboardButton("Запит на участь 📝", callback_data="request")
-kb1 = InlineKeyboardButton("Надіслати відгук ☺️", callback_data="response")
-kb2 = InlineKeyboardButton("Повідомити про помилку 🤔", callback_data="error")
-
-dev_inline_kb = InlineKeyboardMarkup(row_width=1).add(kb).add(kb1).add(kb2)
-# ======================================================================
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 
 # ======================================================================
-back = InlineKeyboardButton("⬅️ Назад", callback_data="back_dev")
+async def dev_inline_kb() -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
 
-dev_back_inline_kb = InlineKeyboardMarkup(row_width=1).add(back)
+    builder.add(InlineKeyboardButton(text="Запит на участь 📝", callback_data="request"))
+    builder.add(
+        InlineKeyboardButton(text="Надіслати відгук ☺️", callback_data="response")
+    )
+    builder.add(
+        InlineKeyboardButton(text="Повідомити про помилку 🤔", callback_data="error")
+    )
+
+    return builder.adjust(1).as_markup()
+
+
 # ======================================================================
 
 
 # ======================================================================
-backs = InlineKeyboardButton("⬅️ Назад", callback_data="back_dev")
-dev = InlineKeyboardButton("Підтвердити 🫡", callback_data="okay")
+async def back_inline_kb() -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
 
-dev_request_inline_kb = InlineKeyboardMarkup(row_width=1).add(dev, back)
+    builder.add(InlineKeyboardButton(text="⬅️ Назад", callback_data="back_dev"))
+
+    return builder.as_markup()
+
+
+# ======================================================================
+
+
+# ======================================================================
+async def choise_inline_kb() -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+
+    builder.add(InlineKeyboardButton(text="⬅️ Назад", callback_data="back_dev"))
+    builder.add(InlineKeyboardButton(text="Підтвердити 🫡", callback_data="okay"))
+
+    return builder.adjust(1).as_markup()
+
+
 # ======================================================================

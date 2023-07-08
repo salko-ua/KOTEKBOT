@@ -1,74 +1,50 @@
-# import
-import os
+from create_bot import bot, dp
 
-# import sentry_sdk
-import logging
-import sentry_sdk
-import asyncio
-import datetime
-
-# from import
-from create_bot import dp
-from aiogram import types
-from handlers import admin, client, reg, super_admin, menu, stats, commands, prime, dev
-from create_bot import scheduler
-from task import alarm
-
-from aiogram.utils.executor import start_polling
-
-APP_URL = os.getenv("APP_URL")
-
-sentry_sdk.init(
-    dsn="https://53565fef30db43dc9498abf76cf91604@o4504669478780928.ingest.sentry.io/4505244319088640",
-    traces_sample_rate=1.0,
+# import handlers
+from handlers import (
+    admin,
+    commands,
+    dev,
+    menu,
+    prime,
+    reg,
+    settings,
+    stats,
+    student,
+    super_admin,
 )
+from middlewares.messagemiddlewares import UpdateDataMiddleware
 
 
-async def logs():
-    # Формування назви файлу з датою
-    filename = f"logs\Аpp_Error.log"
-
-    # Налаштування об'єкта логування
-    logging.basicConfig(
-        level=logging.ERROR,
-        filename=filename,
-        filemode="w",
-        format="%(asctime)s - %(levelname)s - %(message)s",
-    )
+async def register_middleware() -> None:
+    dp.message.middleware.register(UpdateDataMiddleware())
 
 
-async def register_handlers():
-    reg.register_handler_reg(dp)
-    dev.register_handler_dev(dp)
-    admin.register_handler_admin(dp)
-    super_admin.register_handler_sadmin(dp)
-    menu.register_handler_menu(dp)
-    stats.register_handler_stats(dp)
-    commands.register_handler_commands(dp)
-    await prime.register_handler_stats(dp)
-    client.register_handler_client(dp)
+async def register_handlers() -> None:
+    dp.include_router(admin.router)
+    dp.include_router(commands.router)
+    dp.include_router(dev.router)
+    dp.include_router(menu.router)
+    dp.include_router(prime.router)
+    dp.include_router(reg.router)
+    dp.include_router(settings.router)
+    dp.include_router(stats.router)
+    dp.include_router(super_admin.router)
+    dp.include_router(student.router)
 
 
-async def register_task():
-    await alarm.create_task_alarm()
+async def register_task() -> None:
+    pass
 
 
-async def on_startup(dp):
-    await logs()
+async def on_startup(dp) -> None:
     await register_task()
+    await register_middleware()
     await register_handlers()
-    scheduler.start()
     print("Bot Online")
 
 
-async def on_shutdown(dp):
-    print("Bot Offline")
-
-
-def start_bot():
-    start_polling(
-        dispatcher=dp,
-        on_startup=on_startup,
-        on_shutdown=on_shutdown,
-        skip_updates=False,
-    )
+async def start_bot():
+    await on_startup(dp)
+    await bot.delete_webhook(drop_pending_updates=True)
+    await dp.start_polling(bot)
