@@ -19,57 +19,49 @@ class FSMSDev(StatesGroup):
 # ======================================================================================
 async def get_text(type: str, message: types.Message = None):
     # Основний текст
-    main_text = f"""
-Це панель розробки бота 🤝
+    main_text = (
+        "Це панель розробки бота 🤝\n\n"
+        "У ній ви можете :\n"
+        "   • Надіслати запит на участь"
+        " у розробці цього бота.\n"
+        "   • Надіслати відгук про бота"
+        " ваші особисті рекомендації і тп.\n"
+        "   • Надіслати інформацію про\n"
+        " помилку та інші проблеми.\n\n"
+        "Відгук і повідомлення про помилку\n"
+        "надсилаються анонімно @botadmincat"
+    )
 
-У ній ви можете :
-   • Надіслати запит на участь
- у розробці цього бота.
-   • Надіслати відгук про бота
- ваші особисті рекомендації і тп.
-   • Надіслати інформацію про 
- помилку та інші проблеми.
-
-Відгук і повідомлення про помилку
-надсилаються анонімно @botadmincat    
-    """
 
     # Текст для надсилання помилки
-    error_text = f"""
-Опишіть вашу проблему/помилку.
-
-Також ви можете написати 
-в особисті повідомлення
-до @botadmincat 🙃   
-    """
+    error_text = (
+        "Опишіть вашу проблему/помилку.\n\n"
+        "Також ви можете написати\n"
+        "в особисті повідомлення\n"
+        "до @botadmincat 🙃"
+    )
 
     # Текст для запиту
-    request_text = f"""
-Ви можете надіслати запит
-на участь у розробці бота
-
-для цього вам потрібно 
- • Навчатись у ВПК (будь - який курс)
- • Має бути @username
- • Знати :
-    обов'язково
-    - python (рівня джуна)
-    - aiogram v2.25
-    - SQL запити (aiosqlite)
-    - Бути зареєстрованим(ою)
-    на GitHub 
-    - Трошки знати git
-    інші бібліотеки
-    можна довчити згодом
- • Також можна допомогти
- з виправленням помилок у
- тексті. Для цього знати
- те що вище не треба.
- • Не бути малоросом 😃
-
- Після натискання "Підтвердити 🫡"
- ви повинні трошки розказати про себе.
-    """
+    request_text = (
+        "Ви можете надіслати запит\n"
+        "на участь у розробці бота\n\n"
+        "Для цього вам потрібно:\n"
+        " • Навчатись у ВПК (будь - який курс)\n"
+        " • Маєте бути @username\n"
+        " • Знати:\n"
+        "    обов'язково\n"
+        "    - python (рівня джуна)\n"
+        "    - aiogram v3х\n"
+        "    - SQL запити (aiosqlite)\n"
+        "    - Бути зареєстрованим(ою) на GitHub\n"
+        "    - Трошки знати git\n"
+        "    інші бібліотеки можна довчити згодом\n"
+        " • Також можна допомогти з виправленням помилок у тексті.\n"
+        "   Для цього знати те, що вище не треба.\n"
+        " • Не бути малоросом 😃\n\n"
+        "Після натискання \"Підтвердити 🫡\"\n"
+        "ви повинні трошки розказати про себе."
+    )
 
     if type == "main":
         return main_text
@@ -79,7 +71,11 @@ async def get_text(type: str, message: types.Message = None):
         return request_text
     elif type == "request_admin":
         # Структура запиту для адміна
-        request_text_for_admin = f"запит\n{message.from_user.first_name}\n@{message.from_user.username}\n{message.from_user.id}"
+        request_text_for_admin = (
+            f"запит\n{message.from_user.first_name}\n"
+            f"@{message.from_user.username}\n"
+            f"{message.from_user.id}"
+        )
         return request_text_for_admin
 
 
@@ -88,9 +84,10 @@ async def get_text(type: str, message: types.Message = None):
 
 # ======================================================================================
 # main message
-@router.message(Text(text="Розробка 🧩", ignore_case=True))
-async def join_development(message: types.Message):
-    await message.answer(await get_text("main"), reply_markup=await dev_inline_kb())
+@router.callback_query(Text(text="Розробка 🧩", ignore_case=True))
+async def join_development(query: types.CallbackQuery):
+    await query.message.edit_text(await get_text("main"))
+    await query.message.edit_reply_markup(reply_markup=await dev_kb())
 
 
 # ======================================================================================
@@ -104,7 +101,7 @@ async def join_development(message: types.Message):
 async def join_development_query(query: types.CallbackQuery, state: FSMContext):
     await state.clear()
     await query.message.edit_text(await get_text("main"))
-    await query.message.edit_reply_markup(reply_markup=await dev_inline_kb())
+    await query.message.edit_reply_markup(reply_markup=await dev_kb())
 
 
 # ======================================================================================
@@ -115,7 +112,7 @@ async def join_development_query(query: types.CallbackQuery, state: FSMContext):
 @router.callback_query(Text(text="error"))
 async def error(query: types.CallbackQuery, state: FSMContext):
     await query.message.edit_text(await get_text("error"))
-    await query.message.edit_reply_markup(reply_markup=await back_inline_kb())
+    await query.message.edit_reply_markup(reply_markup=await dev_back_kb())
     await state.set_state(FSMSDev.text_error)
     await state.update_data(query=query)
 
@@ -128,7 +125,7 @@ async def error_text(message: types.Message, state: FSMContext):
     await state.clear()
 
     await query.message.edit_text(await get_text("main"))
-    await query.message.edit_reply_markup(reply_markup=await dev_inline_kb())
+    await query.message.edit_reply_markup(reply_markup=await dev_kb())
     await bot.send_message(
         chat_id=-1001873448980, message_thread_id=3, text=f"Помилка :\n{message.text}"
     )
@@ -142,7 +139,7 @@ async def error_text(message: types.Message, state: FSMContext):
 @router.callback_query(Text(text="response"))
 async def response(query: types.CallbackQuery, state: FSMContext):
     await query.message.edit_text("Тепер можете написати відгук 🤝")
-    await query.message.edit_reply_markup(reply_markup=await back_inline_kb())
+    await query.message.edit_reply_markup(reply_markup=await dev_back_kb())
     await state.set_state(FSMSDev.text_response)
     await state.update_data(query=query)
 
@@ -155,7 +152,7 @@ async def response_text(message: types.Message, state: FSMContext):
     await state.clear()
 
     await query.message.edit_text(await get_text("main"))
-    await query.message.edit_reply_markup(reply_markup=await dev_inline_kb())
+    await query.message.edit_reply_markup(reply_markup=await dev_kb())
     await bot.send_message(
         chat_id=-1001873448980, message_thread_id=5, text=f"Відгук :\n{message.text}"
     )
@@ -169,13 +166,13 @@ async def response_text(message: types.Message, state: FSMContext):
 @router.callback_query(Text(text="request"))
 async def request(query: types.CallbackQuery):
     await query.message.edit_text(await get_text("request_t"))
-    await query.message.edit_reply_markup(reply_markup=await choise_inline_kb())
+    await query.message.edit_reply_markup(reply_markup=await dev_choise_kb())
 
 
 @router.callback_query(Text(text="okay"))
 async def confirm_request(query: types.CallbackQuery, state: FSMContext):
     await query.message.edit_text("Тепер напишіть трішки про себе 🥳")
-    await query.message.edit_reply_markup(reply_markup=await back_inline_kb())
+    await query.message.edit_reply_markup(reply_markup=await dev_back_kb())
     await state.set_state(FSMSDev.text_request)
     await state.update_data(query=query)
 
@@ -193,7 +190,4 @@ async def send_request(message: types.Message, state: FSMContext):
         text=f"{await get_text('request_admin', message)}\n{message.text}",
     )
     await query.message.edit_text(await get_text("main"))
-    await query.message.edit_reply_markup(reply_markup=await dev_inline_kb())
-
-
-# ======================================================================================
+    await query.message.edit_reply_markup(reply_markup=await dev_kb())

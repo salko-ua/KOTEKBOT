@@ -3,25 +3,22 @@ from aiogram.utils.keyboard import ReplyKeyboardBuilder
 from data_base import Database
 
 
-# ===========================all func Keyboards============================
+# super admin
 async def super_admin_kb() -> ReplyKeyboardMarkup:
     builder = ReplyKeyboardBuilder()
 
     keyboard = [
         "Адмін 🔑",
         "Меню 👥",
-        "-------",
-        "-------",
+        "Видалення користувачів",
         "Видалити студента",
         "Видалити викладача",
-        "-------",
-        "-------",
+        "Налаштування груп",
         "викладача ❇️",
         "викладача 🗑",
         "групу ❇️",
         "групу 🗑",
-        "-------",
-        "-------",
+        "Налаштування розкладу",
         "групу 🗑🖼",
         "групі ❇️",
         "викладачу ❇️",
@@ -32,13 +29,10 @@ async def super_admin_kb() -> ReplyKeyboardMarkup:
     for button in keyboard:
         builder.add(KeyboardButton(text=button))
 
-    return builder.adjust(2).as_markup(resize_keyboard=True)
+    return builder.adjust(2,1,2,1,2,2,1,2,2,1).as_markup(resize_keyboard=True)
 
 
-# ========================================================================
-
-
-# ===========================1 Keyboards================================
+# список груп - студенти
 async def group_selection_student_kb() -> ReplyKeyboardMarkup:
     db = await Database.setup()
     list_group = await db.student_group_list_sql()
@@ -51,11 +45,7 @@ async def group_selection_student_kb() -> ReplyKeyboardMarkup:
 
     return builder.adjust(4).as_markup(resize_keyboard=True)
 
-
-# ======================================================================
-
-
-# ===========================1 Keyboards================================
+# список груп - викладачі
 async def group_selection_teacher_kb() -> ReplyKeyboardMarkup:
     db = await Database.setup()
     list_teachers = await db.teacher_group_list_sql()
@@ -69,4 +59,4 @@ async def group_selection_teacher_kb() -> ReplyKeyboardMarkup:
     return builder.adjust(2).as_markup(resize_keyboard=True)
 
 
-# ======================================================================
+

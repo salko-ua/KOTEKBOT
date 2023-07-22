@@ -1,5 +1,3 @@
-import os
-import random
 import asyncio
 
 from keyboards import *
@@ -64,12 +62,10 @@ async def text_save(query: types.CallbackQuery, state: FSMContext):
 async def text_save1(message: types.Message, state: FSMContext):
     db = await Database.setup()
 
-    print("here")
     await message.delete()
     data = await state.get_data()
     data_message: types.Message = data["message"]
     await data_message.delete()
-    print("here")
 
     if await db.student_exists_sql(message.from_user.id):
         if len(message.text) <= 1:
@@ -114,45 +110,45 @@ async def text_save1(message: types.Message, state: FSMContext):
 
 # ======================================================================================
 # Перегляд замітки
-@router.message(Command("text"))
-@router.message(Text(text="Замітки 📝", ignore_case=True))
-async def see_text(message: types.Message):
+@router.callback_query(F.data == "Замітки 📝")
+async def see_text(query: types.CallbackQuery):
     db = await Database.setup()
-    if await db.student_exists_sql(message.from_user.id):
-        groups = await db.group_for_student_id_sql(message.from_user.id)
+    if await db.student_exists_sql(query.from_user.id):
+        groups = await db.group_for_student_id_sql(query.from_user.id)
         boolean, text = await db.see_text_sql(groups)
-        if boolean:
-            await message.answer(
-                "Замітки для вашої групи :\n\n"
-                + text
-                + "\n\nЩоб встановити нові\nнатисніть кнопку нижче",
-                reply_markup=await text_inline_kb(),
-            )
-        elif not boolean:
-            await message.answer(
-                "У вашої групи не додано ніякого тексту\nЩоб це зробити\nнатисніть кнопку нижче",
-                reply_markup=await text_inline_kb(),
-            )
-    elif await db.teacher_exists_sql(message.from_user.id):
-        groups = await db.see_group_for_teach_id(message.from_user.id)
+
+        if not boolean:
+            await query.message.edit_text("У вашої групи\nнемає заміток")
+            await query.message.edit_reply_markup(reply_markup=await text_inline_kb())
+            return
+        
+        message = (
+            f"Замітки для вашої групи :\n\n"
+            f"{text}"
+        )
+
+        await query.message.edit_text(text=message)
+        await query.message.edit_reply_markup(reply_markup=await text_inline_kb())
+            
+    if await db.teacher_exists_sql(query.from_user.id):
+        groups = await db.see_group_for_teach_id(query.from_user.id)
         boolean, text = await db.see_text_sql(groups)
-        if boolean:
-            await message.answer(
-                "Ваші замітки :\n\n"
-                + text
-                + "\n\nЩоб встановити нові\nнатисніть кнопку нижче",
-                reply_markup=await text_inline_kb(),
-            )
-        elif not boolean:
-            await message.answer(
-                "У вас не додано ніякого тексту\nЩоб це зробити\nнатисніть кнопку нижче",
-                reply_markup=await text_inline_kb(),
-            )
-    else:
-        await message.answer("Ви не зареєстровані")
 
+        if not boolean:
+            await query.message.edit_text("У вас немає заміток")
+            await query.message.edit_reply_markup(reply_markup=await text_inline_kb())
+            return
+        
+        message = (
+            f"Ваші замітки :\n\n"
+            f"{text}\n\n"
+        )
+        
+        await query.message.edit_text(text=message)
+        await query.message.edit_reply_markup(reply_markup=await text_inline_kb())
 
-# ======================================================================================
+    await query.answer("Ви не зареєстровані ❌")
+
 
 
 # ======================================================================================
@@ -180,36 +176,28 @@ async def get_user_data(message: types.Message, state: FSMContext):
 
 
 # ============= функція написати 1 етап | вибір групи
-@router.message(Text(text="Написати ✉️", ignore_case=True))
-async def write(message: types.Message, state: FSMContext):
+@router.callback_query(F.data == "Написати ✉️")
+async def write(query: types.CallbackQuery, state: FSMContext):
     db = await Database.setup()
-    if not await db.student_exists_sql(message.from_user.id):
-        await message.answer("Функція доступна тільки\nзареєстрованим студентам ❌")
+    if not await db.student_exists_sql(query.from_user.id):
+        await query.answer("Функція доступна тільки\nзареєстрованим студентам ❌")
         return
 
-    if not await db.student_agreed_write_exsists_sql(message.from_user.id):
-        await message.answer(
-            """
-Щоб користуватися цією функцією, 
-вам необхідно увімкнути отримання 
-"Повідомленнь від інших груп ✅" 
-
-Для цього перйдіть в меню >
-Інше 📌/Налаштування ⚙️
-або натисніть /settings
-        """
+    if not await db.student_agreed_write_exsists_sql(query.from_user.id):
+        text = (
+            "Щоб користуватися цією функцією,\n"
+            "вам необхідно увімкнути отримання\n"
+            "\"Повідомленнь від інших груп ✅\"\n"
+            "\n"
+            "Для цього перейдіть в меню >\n"
+            "Інше 📌/Налаштування ⚙️\n"
+            "або натисніть /settings"
         )
+        await query.answer(text)
         return
 
-    await message.delete()
-
-    msg = await message.answer("deletekb", reply_markup=types.ReplyKeyboardRemove())
-    await msg.delete()
-
-    await message.answer(
-        "Щоб написати повідомлення іншій групі\nспочатку виберіть її ім'я нижче ⬇️",
-        reply_markup=await inline_kb_student_group(),
-    )
+    await query.message.edit_text("Щоб написати повідомлення іншій групі\nспочатку виберіть її ім'я нижче ⬇️")
+    await query.message.edit_reply_markup(reply_markup=await student_group_list_kb())
     await state.set_state(FSMWrite.group)
 
 
@@ -221,10 +209,9 @@ async def write_group(query: types.CallbackQuery, state: FSMContext):
 
     if query.data == "Назад":
         await state.clear()
+        await query.answer("Надсилання відмінено ✅", show_alert=True)
         await query.message.delete()
-        await query.message.answer(
-            "Надсилання повідомлення відмінено ✅", reply_markup=await student_kb()
-        )
+        await query.message.answer("Ваша клавіатура ⌨️", reply_markup=await student_kb())
         return
 
     if not group:
@@ -239,7 +226,7 @@ async def write_group(query: types.CallbackQuery, state: FSMContext):
     await query.message.delete_reply_markup()
     message = await query.message.edit_text(
         f"Надішліть :\n • Текст 📝\n • Фото 🖼\n • Відео 📼\n • Стікер 💌\n • GIF 🪨",
-        reply_markup=await back_inline_kb(),
+        reply_markup=await prime_back_kb(),
     )
     await state.update_data(
         group=query.data, msg_id=message.message_id, chat_id=message.chat.id
@@ -511,32 +498,7 @@ async def back_write_group_message(query: types.CallbackQuery, state: FSMContext
     await state.clear()
     await query.message.edit_text(
         "Щоб написати повідомлення іншій групі\nспочатку виберіть її ім'я нижче ⬇️",
-        reply_markup=await inline_kb_student_group(),
+        reply_markup=await student_group_list_kb(),
     )
     await state.set_state(FSMWrite.group)
 
-
-# ======================================================================================
-
-
-# ======================================================================================
-# ===========================Фото кота 🖼============================
-async def choose_random_photo():
-    folder_path = "cat/"
-    file_list = os.listdir(folder_path)
-    random_file = random.choice(file_list)
-    file_path = os.path.join(folder_path, random_file)
-    return file_path
-
-
-@router.message(Text(text="Фото кота 🖼", ignore_case=True))
-async def send_random_cat_photo(message: types.Message):
-    try:
-        photo_path = await choose_random_photo()
-        file_path = types.FSInputFile(photo_path)
-        await message.answer_photo(file_path)
-    except:
-        await message.answer("Фото кота ще не додано 😿")
-
-
-# ======================================================================================

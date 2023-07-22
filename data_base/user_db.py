@@ -48,8 +48,8 @@ class UserDB(BaseDBPart):
                 last_name,
                 username,
                 date_join,
-                count_message,
-                last_message,
+                count_interaction,
+                last_interaction,
                 admin,
                 student_group,
                 teacher_group) 
@@ -79,17 +79,17 @@ class UserDB(BaseDBPart):
         first_name,
         last_name,
         username,
-        last_message,
+        last_interaction,
         admin,
         student_group,
         teacher_group,
     ):
-        count_message = await self.cur.execute(
-            "SELECT count_message FROM user WHERE user_id = ?", (user_id,)
+        count_interaction = await self.cur.execute(
+            "SELECT count_interaction FROM user WHERE user_id = ?", (user_id,)
         )
-        count_message = await count_message.fetchall()
-        count_message: int = count_message[0][0]
-        count_message += 1
+        count_interaction = await count_interaction.fetchall()
+        count_interaction: int = count_interaction[0][0]
+        count_interaction += 1
 
         await self.cur.execute(
             """UPDATE user 
@@ -97,8 +97,8 @@ class UserDB(BaseDBPart):
                 first_name = ?,    
                 last_name = ?,    
                 username = ?,    
-                count_message = ?,  
-                last_message = ?,  
+                count_interaction = ?,  
+                last_interaction = ?,  
                 admin = ?,   
                 student_group = ?, 
                 teacher_group = ? 
@@ -108,8 +108,8 @@ class UserDB(BaseDBPart):
                 first_name,
                 last_name,
                 username,
-                count_message,
-                last_message,
+                count_interaction,
+                last_interaction,
                 admin,
                 student_group,
                 teacher_group,

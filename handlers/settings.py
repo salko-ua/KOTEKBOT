@@ -15,10 +15,11 @@ class FSMSettings(StatesGroup):
     change_teacher_group = State()
 
 
-@router.message(F.text == "Налаштування ⚙️")
+@router.message(F.text == "Налаштування ⚙️", F.chat.type == "private")
 async def settings(message: types.Message):
     db = await Database.setup()
     user_id = message.from_user.id
+    await message.delete()
 
     if not await db.student_exists_sql(user_id) and not await db.teacher_exists_sql(
         user_id
@@ -35,7 +36,7 @@ async def settings(message: types.Message):
 @router.callback_query(Text(text="change_student_group"))
 async def change_student_group(query: types.CallbackQuery, state: FSMContext):
     await query.message.edit_text("Виберіть групу")
-    await query.message.edit_reply_markup(reply_markup=await inline_kb_student_group())
+    await query.message.edit_reply_markup(reply_markup=await student_group_list_kb())
     await state.set_state(FSMSettings.change_student_group)
 
 
@@ -65,7 +66,7 @@ async def change_student_group1(query: types.CallbackQuery, state: FSMContext):
 @router.callback_query(Text(text="change_teacher_group"))
 async def change_teacher_group(query: types.CallbackQuery, state: FSMContext):
     await query.message.edit_text("Виберіть групу")
-    await query.message.edit_reply_markup(reply_markup=await inline_kb_teacher_group())
+    await query.message.edit_reply_markup(reply_markup=await teacher_group_list_kb())
     await state.set_state(FSMSettings.change_teacher_group)
 
 

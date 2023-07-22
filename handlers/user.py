@@ -2,8 +2,27 @@ import asyncache
 import cachetools
 
 from data_base import Database
-from aiogram.types import Message
+from aiogram import Router, F, types
+from keyboards import *
 import datetime
+
+router = Router()
+
+@router.callback_query(F.data == "user_inline")
+async def back_user(query: types.CallbackQuery):    
+    await query.message.delete()
+    await query.message.answer("Ваша клавіатура ⌨️", reply_markup=await schedule_kb(query.from_user.id))
+
+@router.callback_query(F.data == "reg_inline")
+async def back_reg(query: types.CallbackQuery):
+    db = await Database.setup()   
+    await query.message.delete()
+    
+    if await db.student_exists_sql(query.from_user.id):
+        await query.message.answer("Ваша клавіатура ⌨️", reply_markup=await student_kb())
+
+    elif await db.teacher_exists_sql(query.from_user.id):
+        await query.message.answer("Ваша клавіатура ⌨️", reply_markup=await teacher_kb())
 
 
 @asyncache.cached(cachetools.TTLCache(1, 1))
@@ -57,3 +76,4 @@ async def user_update_db(
             student_group,
             teacher_group,
         )
+

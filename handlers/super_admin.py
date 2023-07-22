@@ -1,5 +1,4 @@
 # import
-import asyncio
 import datetime
 
 # from import
@@ -49,13 +48,6 @@ async def is_super_admin(message: types.Message):
 
 
 # ===========================Список груп============================ss
-# Клавіаура адміна
-@router.message(Text(text="Адмін 🔑", ignore_case=True))
-async def admin(message: types.Message):
-    db = await Database.setup()
-    if await is_super_admin(message) or await db.admin_exists_sql(message.from_user.id):
-        await message.answer("Клавіатура адміна", reply_markup=await admin_kb())
-
 
 # Клавіаура власника
 @router.message(Command("sadmin"))

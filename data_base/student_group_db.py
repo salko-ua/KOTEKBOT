@@ -4,10 +4,10 @@ from data_base.create_db import BaseDBPart
 class StudentGroupDB(BaseDBPart):
     # Функція перевірки чи є гурпа з данним name_group у db
     # Повертає True or False
-    async def student_group_exists_sql(self, student_group):
+    async def student_group_exists_sql(self, name_group):
         result = await self.cur.execute(
             "SELECT COUNT(`id`) FROM `student_group` WHERE `name_group` = ?",
-            (student_group,),
+            (name_group,),
         )
         result = await result.fetchall()
         return bool(result[0][0])
@@ -87,4 +87,20 @@ class StudentGroupDB(BaseDBPart):
         elif lens >= 6:
             reslt = rows_photo[0][0]
             datka = rows_date[0][0]
+            return True, reslt, datka
+
+    async def see_schedule_student_sql(self, name_group):
+        photo = await (await self.cur.execute(
+            "SELECT `photo` FROM student_group WHERE name_group = ?", (name_group,))).fetchall()
+        date = await (await self.cur.execute(
+            "SELECT `date` FROM student_group WHERE name_group = ?", (name_group,))).fetchall()
+        try:
+            lens = len(photo[0][0])
+        except TypeError:
+            lens = 1
+        if lens <= 5:
+            return False, None, None
+        elif lens >= 6:
+            reslt = photo[0][0]
+            datka = date[0][0]
             return True, reslt, datka

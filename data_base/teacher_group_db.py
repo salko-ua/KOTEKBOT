@@ -82,3 +82,19 @@ class TeacherGroupDB(BaseDBPart):
             reslt = rows_photo[0][0]
             datka = rows_date[0][0]
             return True, reslt, datka
+        
+    async def see_schedule_teacher_sql(self, name_group):
+        photo = await (await self.cur.execute(
+            "SELECT `photo` FROM teacher_group WHERE name_group = ?", (name_group,))).fetchall()
+        date = await (await self.cur.execute(
+            "SELECT `date` FROM teacher_group WHERE name_group = ?", (name_group,))).fetchall()
+        try:
+            lens = len(photo[0][0])
+        except TypeError:
+            lens = 1
+        if lens <= 5:
+            return False, None, None
+        elif lens >= 6:
+            reslt = photo[0][0]
+            datka = date[0][0]
+            return True, reslt, datka
