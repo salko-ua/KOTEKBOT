@@ -102,35 +102,40 @@ async def alert(query: types.CallbackQuery):
         reply_markup=await reg_back_kb()
     )
 
-#        "Розклад студ. 🧑‍🎓","Розклад викл. 👨‍🏫"
+#"Розклад викл. 👨‍🏫"
 @router.callback_query(F.data == 'Розклад викл. 👨‍🏫')
 async def schedule_teacher(query: types.CallbackQuery, state: FSMContext):
-    await query.message.delete()
-    await query.message.answer("Виберіть групу викладача", reply_markup=await teacher_group_list_kb())
     await state.set_state(FSMTeacher.name_gpoup)
+    await query.message.delete()
+    await query.message.answer("Виберіть групу викладача", 
+                               reply_markup=await teacher_group_list_kb())
 
 
 
 @router.callback_query(FSMTeacher.name_gpoup)
 async def schedule_teacher1(query: types.CallbackQuery, state: FSMContext):
     db = await Database.setup()
+    keyboard = await schedule_kb(query.from_user.id)
     await query.message.edit_reply_markup()
 
     if query.data == 'Назад':
-        await query.message.delete()
-        await query.message.answer("Ваша клавіатура ⌨️", reply_markup=await schedule_kb(query.from_user.id))
         await state.clear()
+        await query.message.delete()
+        await query.message.answer("Ваша клавіатура ⌨️", reply_markup=keyboard)
         return
     
     
     boolen, photo, date = await db.see_schedule_teacher_sql(query.data)
 
     if not boolen:
-        await query.answer(f"У викладача {query.data} \nнемає розкладу ☹️", show_alert=True)
-        await query.message.delete()
-        await query.message.answer("Ваша клавіатура ⌨️", reply_markup=await schedule_kb(query.from_user.id))
+        text = f"У викладача {query.data} \nнемає розкладу ☹️"
         await state.clear()
+        await query.answer(text=text, show_alert=True)
+        await query.message.delete()
+        await query.message.answer("Ваша клавіатура ⌨️", reply_markup=keyboard)
         return
 
     await query.message.delete()
-    await query.message.answer_photo(photo=photo, caption=date, reply_markup=await user_back_kb())
+    await query.message.answer_photo(photo=photo, 
+                                     caption=date, 
+                                     reply_markup=await user_back_kb())

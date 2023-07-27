@@ -9,5 +9,4 @@ from handlers import stats
 from handlers import super_admin
 from handlers import teacher
 from handlers import user
-
 from handlers import student

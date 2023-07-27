@@ -1,20 +1,18 @@
 # import
 import datetime
 
+from aiogram import F, Router, types
+from aiogram.filters import Command, Text
+from aiogram.filters.state import State, StatesGroup
+from aiogram.fsm.context import FSMContext
+from aiogram.types import ReplyKeyboardRemove
+
+from config import SUPER_ADMIN
+from create_bot import bot, translator
+from data_base import Database
+from handlers.reg import password_for_admin
 # from import
 from keyboards import *
-from aiogram import types, Router, F
-from data_base import Database
-from create_bot import bot, translator
-from config import SUPER_ADMIN
-
-from handlers.reg import password_for_admin
-from aiogram.types import ReplyKeyboardRemove
-from aiogram.fsm.context import FSMContext
-
-from aiogram.filters import Text, Command
-
-from aiogram.filters.state import State, StatesGroup
 
 router = Router()
 

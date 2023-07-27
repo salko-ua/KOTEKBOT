@@ -1,11 +1,11 @@
 # from import
+import os
+import random
+
 from aiogram import F, Router, types
-from aiogram.filters import Command
 
 from data_base import Database
 from keyboards import *
-import os
-import random
 
 router = Router()
 
@@ -102,9 +102,6 @@ async def send_random_cat_photo(query: types.CallbackQuery):
         await query.message.answer_photo(file_path, reply_markup=await other_back_kb())
     except:
         await query.message.answer("Фото кота ще не додано 😿", reply_markup=await other_back_kb())
-
-
-
 
 # Донат 🫡
 @router.callback_query(F.data == "Донат 🫡")

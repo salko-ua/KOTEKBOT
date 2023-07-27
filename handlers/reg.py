@@ -1,23 +1,17 @@
 # import
+from random import choice
+
 import asyncache
 import cachetools
-
 # from import
-from aiogram import types, Router, F
-from create_bot import bot
-from data_base import Database
-from random import choice
-from keyboards import *
-
-from aiogram.types import ReplyKeyboardRemove
+from aiogram import F, Router, types
+from aiogram.filters import Text
+from aiogram.filters.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 
-from handlers.menu import menu
-
-from aiogram.filters import Text
-
-from aiogram.filters.state import State, StatesGroup
-
+from create_bot import bot
+from data_base import Database
+from keyboards import *
 
 router = Router()
 

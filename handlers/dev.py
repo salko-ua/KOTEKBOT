@@ -89,11 +89,11 @@ async def join_development(query: types.CallbackQuery):
     await query.message.edit_text(await get_text("main"))
     await query.message.edit_reply_markup(reply_markup=await dev_kb())
 
-
 # ======================================================================================
 
 
 # ======================================================================================
+# back
 @router.callback_query(Text(text="back_dev"))
 @router.callback_query(Text(text="back_dev"), FSMSDev.text_error)
 @router.callback_query(Text(text="back_dev"), FSMSDev.text_response)
@@ -102,8 +102,6 @@ async def join_development_query(query: types.CallbackQuery, state: FSMContext):
     await state.clear()
     await query.message.edit_text(await get_text("main"))
     await query.message.edit_reply_markup(reply_markup=await dev_kb())
-
-
 # ======================================================================================
 
 
@@ -156,8 +154,6 @@ async def response_text(message: types.Message, state: FSMContext):
     await bot.send_message(
         chat_id=-1001873448980, message_thread_id=5, text=f"Відгук :\n{message.text}"
     )
-
-
 # ======================================================================================
 
 

@@ -1,10 +1,10 @@
-from aiogram import types, Router, F
-from data_base import Database
-from keyboards import *
+from aiogram import F, Router, types
+from aiogram.filters import Text
+from aiogram.filters.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 
-from aiogram.filters.state import State, StatesGroup
-from aiogram.filters import Text
+from data_base import Database
+from keyboards import *
 
 router = Router()
 

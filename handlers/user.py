@@ -1,10 +1,11 @@
+import datetime
+
 import asyncache
 import cachetools
+from aiogram import F, Router, types
 
 from data_base import Database
-from aiogram import Router, F, types
 from keyboards import *
-import datetime
 
 router = Router()
 

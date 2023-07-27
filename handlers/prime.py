@@ -1,16 +1,13 @@
 import asyncio
 
-from keyboards import *
-from create_bot import bot
-from aiogram import types, Router, F
-from data_base import Database
-
-
+from aiogram import F, Router, types
+from aiogram.filters import Text
+from aiogram.filters.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 
-from aiogram.filters import Text, Command
-
-from aiogram.filters.state import State, StatesGroup
+from create_bot import bot
+from data_base import Database
+from keyboards import *
 
 router = Router()
 

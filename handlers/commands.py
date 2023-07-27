@@ -23,7 +23,8 @@ async def delete_keyboard(message: types.Message):
         await message.answer("Бот повинен бути адміністратором❗️")
         return
     
-    await message.answer("♻️Клавіатуру видалено♻️", reply_markup=ReplyKeyboardRemove())
+    await message.answer("♻️Клавіатуру видалено♻️", 
+                         reply_markup=ReplyKeyboardRemove())
 
 
 @router.message(Command("version"))
@@ -93,6 +94,8 @@ async def others(message: types.Message):
         return
     
     await message.answer("Інша інформація 🤯", reply_markup=await other_kb())
+
+
 
 """ список для BotFather
 start - запуск / перезапуск бота
