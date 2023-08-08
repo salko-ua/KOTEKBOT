@@ -1,5 +1,6 @@
 import asyncache
 import aiosqlite
+import os
 from data_base.admin_db import AdminDB
 from data_base.photo_db import PhotoDB
 from data_base.text_db import TextDB
@@ -25,10 +26,15 @@ class Database(
     @classmethod
     @asyncache.cached({})
     async def setup(cls):
+        if not os.path.exists("./data"):
+            os.mkdir("./data")
+
         base = await aiosqlite.connect("data/database.db")
         cur = await base.cursor()
+        
         if base:
             print("DATA BASE CONNECTED")
+
         await base.execute(
             """
             CREATE TABLE IF NOT EXISTS user(

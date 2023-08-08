@@ -17,7 +17,7 @@ async def url_contact_kb() -> InlineKeyboardMarkup:
     url_contact = "https://vvpc.com.ua/contacts"
 
     builder.add(InlineKeyboardButton(text="⬅️ Назад", callback_data="applicant_inline"))
-    builder.add(InlineKeyboardButton(text="Перевірити на сайті 🌐", url=url_contact))
+    builder.add(InlineKeyboardButton(text="Перевірити 🌐", url=url_contact))
 
     return builder.as_markup()
 
@@ -37,7 +37,7 @@ async def url_official_site_kb() -> InlineKeyboardMarkup:
     url_official_site = "https://vvpc.com.ua/"
 
     builder.add(InlineKeyboardButton(text="⬅️ Назад", callback_data="applicant_inline"))
-    builder.add(InlineKeyboardButton(text="Посилання на сайт 🌐", url=url_official_site))
+    builder.add(InlineKeyboardButton(text="Cайт 🌐", url=url_official_site))
 
     return builder.as_markup()
 

@@ -1,6 +1,7 @@
 import asyncio
 import asyncache
 import cachetools
+import datetime
 
 from data_base import Database
 from create_bot import bot, alerts_client, scheduler
@@ -9,6 +10,13 @@ from create_bot import bot, alerts_client, scheduler
 # =========================== Тривога ===========================
 @asyncache.cached(cachetools.TTLCache(1, 17))
 async def alert_func():
+    delta = datetime.timedelta(hours=2, minutes=0)
+    todays = datetime.datetime.now(datetime.timezone.utc) + delta
+    hours = todays.strftime("%H")
+    minut = todays.strftime("%M")
+    second = todays.strftime("%S")
+
+    
     # Достаю список областей у яких повітряна тривога типу air_raid
     active_alerts = await alerts_client.get_active_alerts()
     filtered_alerts = active_alerts.filter(
@@ -17,7 +25,7 @@ async def alert_func():
 
     # Достаю список назв областей у яких повітряна тривога
     count = len(filtered_alerts)
-    all_alerts = f"🌍 Області з тривогою({count} з 26):\n\n"
+    all_alerts = f"🌍 Області з тривогою({count} з 26):\nОновлено : {int(hours)+1}:{minut}:{second}\n\n"
     list_alerts_oblast_title = []
     for title in filtered_alerts:
         list_alerts_oblast_title.append(title.location_title)

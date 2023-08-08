@@ -31,7 +31,7 @@ async def hide_message(query: CallbackQuery):
     await query.message.delete()
 
 # Клавіаура адміна
-@router.message(F.data == "Адмін 🔑")
+@router.message(F.text == "Адмін 🔑")
 async def admin(message: Message):
     db = await Database.setup()
     if await db.admin_exists_sql(message.from_user.id):

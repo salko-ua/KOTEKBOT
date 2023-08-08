@@ -31,8 +31,8 @@ async def view_coupes_student(query: types.CallbackQuery):
     
     await query.message.delete()
     await query.message.answer_photo(photo=photo, caption=date, reply_markup=await user_back_kb())
-    
 
+    
 
 # ===========================Переглянути розклад дзвінків============================
 @router.callback_query(F.data == "Розклад дзвінків ⌚️")  # registration router
@@ -146,6 +146,9 @@ async def schedule_student1(query: types.CallbackQuery, state: FSMContext):
 # ===========================Пустий хендлер============================
 @router.message()
 async def all_text(message: types.Message):
-    db = await Database.setup()
+    print(message.content_type)
     if message.text == "Меню 👥":
         await menu(message)
+    if message.content_type == "document":
+        print(message.document.file_id)
+        await message.answer_document(message.document.file_id)

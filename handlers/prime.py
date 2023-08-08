@@ -126,6 +126,7 @@ async def see_text(query: types.CallbackQuery):
 
         await query.message.edit_text(text=message)
         await query.message.edit_reply_markup(reply_markup=await text_inline_kb())
+        return
             
     if await db.teacher_exists_sql(query.from_user.id):
         groups = await db.see_group_for_teach_id(query.from_user.id)
@@ -143,6 +144,7 @@ async def see_text(query: types.CallbackQuery):
         
         await query.message.edit_text(text=message)
         await query.message.edit_reply_markup(reply_markup=await text_inline_kb())
+        return
 
     await query.answer("Ви не зареєстровані ❌")
 

@@ -12,7 +12,7 @@ async def start_all_kb() -> ReplyKeyboardMarkup:
 
     keyboard = [
         "Реєстрація 📝",
-        "Не зайнята кнопка",
+        "Розклад 📚",
         "Інше 📌",
         "Для абітурієнта 🧑‍💻",
     ]
@@ -105,14 +105,21 @@ async def applicant_kb() -> InlineKeyboardMarkup:
         "Адреса 📫",
         "Контакти 📘",
         "Реквізити 💳",
-        "Офіційний сайт 🌎",
-        "Сховати ❌",
-        "Спеціальності 📜",
+
+    ]
+    keyboard_url = [
+        ("Офіційний сайт 🌎", "https://vvpc.com.ua/"),
+        ("Спеціальності 📜", "https://padlet.com/VasylT/padlet-2ppk483bi2mgsg3h"),
     ]
 
     for button in keyboard:
         builder.add(InlineKeyboardButton(text=button, callback_data=button))
 
+    builder.add(InlineKeyboardButton(text=keyboard_url[0][0], url=keyboard_url[0][1]))
+    builder.add(InlineKeyboardButton(text="Сховати ❌", callback_data="Сховати ❌",))
+    builder.add(InlineKeyboardButton(text=keyboard_url[1][0], url=keyboard_url[1][1]))
+    
+        
     return builder.adjust(2).as_markup(resize_keyboard=True)
 
 
@@ -130,7 +137,7 @@ async def schedule_kb(user_id: int) -> InlineKeyboardMarkup:
     if await db.student_exists_sql(user_id):
         keyboard.insert(0, "Розклад дзвінків ⌚️")
         keyboard.insert(0, "Розклад пар 👀")
-        keyboard.insert(4, "Ч/З тиждень ✏️")
+        keyboard.insert(5, "Ч/З тиждень ✏️")
 
         for button in keyboard:
             builder.add(InlineKeyboardButton(text=button, callback_data=button))
@@ -140,7 +147,7 @@ async def schedule_kb(user_id: int) -> InlineKeyboardMarkup:
     if await db.teacher_exists_sql(user_id):
         keyboard.insert(0, "Розклад дзвінків ⌛️")
         keyboard.insert(0, "Розклад занять 👀")
-        keyboard.insert(4, "Ч/З тиждень ✒️")
+        keyboard.insert(5, "Ч/З тиждень ✒️")
         
         for button in keyboard:
             builder.add(InlineKeyboardButton(text=button, callback_data=button))
@@ -148,8 +155,8 @@ async def schedule_kb(user_id: int) -> InlineKeyboardMarkup:
         return builder.adjust(2).as_markup(resize_keyboard=True)
     
     if await db.admin_exists_sql(user_id):
-        keyboard.insert(2, "Ч/З тиждень ✒️")
-        keyboard.insert(2, "Розклад дзвінків ⌛️")
+        keyboard.insert(0, "Ч/З тиждень ✒️")
+        keyboard.insert(0, "Розклад дзвінків ⌛️")
 
         for button in keyboard:
             builder.add(InlineKeyboardButton(text=button, callback_data=button))

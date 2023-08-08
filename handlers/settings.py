@@ -13,6 +13,9 @@ router = Router()
 class FSMSettings(StatesGroup):
     change_student_group = State()
     change_teacher_group = State()
+    change_account_to_student = State()
+    change_account_to_teacher = State()
+
 
 
 @router.message(F.text == "Налаштування ⚙️", F.chat.type == "private")
@@ -24,13 +27,55 @@ async def settings(message: types.Message):
     if not await db.student_exists_sql(user_id) and not await db.teacher_exists_sql(
         user_id
     ):
-        await message.answer("Ви не зареєстровані! ❌")
+        await message.answer("Ви не зареєстровані! ❌", reply_markup=await hide_kb)
         return
 
     await message.answer(
         "Налаштуйте свій акаунт в боті:", reply_markup=await settings_inile_kb(user_id)
     )
 
+# ЗМІНА АКАУНТУ =============================================
+@router.callback_query(F.data == "change_account")
+async def change_account(query: types.CallbackQuery, state: FSMContext):
+    db = await Database.setup()
+    user_id  = query.from_user.id
+
+    if await db.student_exists_sql(user_id):
+        await query.message.edit_text("Тепер ви будете викладач 😎\n⬇️ Виберіть викладача", reply_markup=await teacher_group_list_kb())
+        await state.set_state(FSMSettings.change_account_to_teacher)
+    elif await db.teacher_exists_sql(user_id):
+        await query.message.edit_text("Тепер ви будете студентом 😎\n⬇️ Виберіть групу", reply_markup=await student_group_list_kb())
+        await state.set_state(FSMSettings.change_account_to_student)
+
+@router.callback_query(FSMSettings.change_account_to_student)
+async def change_account_to_student(query: types.CallbackQuery, state: FSMContext):
+    db = await Database.setup()
+    await query.message.delete()
+    group = query.data
+    user_id = query.from_user.id
+    
+    if await db.student_group_exists_sql(group):
+        await db.delete_teacher_sql(user_id)
+        await db.add_student_sql(user_id=user_id, group_student=group)
+        await query.message.answer("Дані оновлено ✅", reply_markup=await start_student_kb())
+        await query.answer(f"Тепер ви студент\nу групі {group}", show_alert=True)
+        await query.message.answer("Налаштуйте свій акаунт в боті:", reply_markup=await settings_inile_kb(user_id))
+        await state.clear()
+
+@router.callback_query(FSMSettings.change_account_to_teacher)
+async def change_account_to_teacher(query: types.CallbackQuery, state: FSMContext):
+    db = await Database.setup()
+    await query.message.delete()
+    group = query.data
+    user_id = query.from_user.id
+    
+    if await db.teacher_group_exists_sql(group):
+        await db.delete_student_sql(user_id)
+        await db.add_teacher_sql(user_id=user_id, group_teacher=group)
+        await query.message.answer("Дані оновлено ✅", reply_markup=await start_teacher_kb())
+        await query.answer(f"Тепер ви {group}", show_alert=True)
+        await query.message.answer("Налаштуйте свій акаунт в боті:", reply_markup=await settings_inile_kb(user_id))
+        await state.clear()
 
 # ЗМІНА ГРУПИ =============================================
 @router.callback_query(Text(text="change_student_group"))

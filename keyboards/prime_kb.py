@@ -8,9 +8,10 @@ async def text_inline_kb() -> InlineKeyboardMarkup:
     builder.add(
         InlineKeyboardButton(text="Змінити замітку ✏️", callback_data="edit_text")
     )
+    builder.add(InlineKeyboardButton(text="⬅️ Назад", callback_data="reg_inline"))
     builder.add(InlineKeyboardButton(text="Сховати ❌", callback_data="Сховати ❌"))
 
-    return builder.adjust(1).as_markup()
+    return builder.adjust(1,2).as_markup()
 
 
 async def cancle_inline_kb() -> InlineKeyboardMarkup:
@@ -18,7 +19,7 @@ async def cancle_inline_kb() -> InlineKeyboardMarkup:
 
     builder.add(InlineKeyboardButton(text="Відмінити ❌", callback_data="cancel"))
 
-    return builder.as_markup()
+    return builder.adjust(2).as_markup()
 
 
 # ======================================================================
