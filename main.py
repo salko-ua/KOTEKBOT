@@ -1,21 +1,17 @@
-from create_bot import bot, dp
+import sentry_sdk
 
+from create_bot import bot, dp
+from config import TOKEN_SENTRY
 # import handlers
-from handlers import (
-    admin,
-    commands,
-    dev,
-    menu,
-    prime,
-    reg,
-    settings,
-    stats,
-    student,
-    super_admin,
-    teacher,
-    user
+from handlers import (admin, commands, dev, menu, prime, reg, settings, stats,
+                      student, super_admin, teacher, user)
+from middlewares.messagemiddlewares import (UpdateDataCallbackQeryMiddleware,
+                                            UpdateDataMessageMiddleware)
+
+sentry_sdk.init(
+    dsn=TOKEN_SENTRY,
+    traces_sample_rate=1.0,
 )
-from middlewares.messagemiddlewares import UpdateDataMessageMiddleware, UpdateDataCallbackQeryMiddleware
 
 
 async def register_middleware() -> None:
