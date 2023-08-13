@@ -27,7 +27,7 @@ async def settings(message: types.Message):
     if not await db.student_exists_sql(user_id) and not await db.teacher_exists_sql(
         user_id
     ):
-        await message.answer("Ви не зареєстровані! ❌", reply_markup=await hide_kb)
+        await message.answer("Ви не зареєстровані! ❌", reply_markup=await hide_kb())
         return
 
     await message.answer(

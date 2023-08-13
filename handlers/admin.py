@@ -1,6 +1,6 @@
 import asyncio
 
-from aiogram import F, Router
+from aiogram import F, Router, types
 from aiogram.filters.state import State, StatesGroup
 from aiogram.filters.text import Text
 from aiogram.fsm.context import FSMContext
@@ -171,7 +171,7 @@ def send_notification(what_send: int, text: str, photo: str):
             if what_send == 1:
                 await bot.send_photo(user_id, photo)
             elif what_send == 2:
-                await bot.send_message(user_id, text)
+                await bot.send_message(user_id, text, reply_markup=types.ReplyKeyboardRemove())
             elif what_send == 3:
                 await bot.send_photo(user_id, photo, caption=text)
         except:

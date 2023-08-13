@@ -64,6 +64,7 @@ async def start_admin_kb() -> ReplyKeyboardMarkup:
         "Адмін 🔑",
         "Інше 📌",
         "Розклад 📚",
+        "Налаштування ⚙️"
     ]
 
     for button in keyboard:
