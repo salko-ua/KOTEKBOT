@@ -73,10 +73,10 @@ class TeacherDB(BaseDBPart):
 
     # Додає користувача до бази даних
     # Повертає збереження бази данних
-    async def update_teacher_sql(self, group_student):
+    async def update_teacher_sql(self, user_id, group_teacher):
         await self.cur.execute(
-            "UPDATE`teacher` SET `group_teacher` = ?",
-            (group_student,),
+            "UPDATE`teacher` SET `group_teacher` = ? WHERE user_id = ?",
+            (group_teacher, user_id,),
         )
         return await self.base.commit()
 

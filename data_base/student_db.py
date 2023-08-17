@@ -47,10 +47,10 @@ class StudentDB(BaseDBPart):
 
     # Додає користувача до бази даних
     # Повертає збереження бази данних
-    async def update_student_sql(self, group_student):
+    async def update_student_sql(self, user_id, group_student):
         await self.cur.execute(
-            "UPDATE`student` SET `group_student` = ?",
-            (group_student,),
+            "UPDATE `student` SET `group_student` = ? WHERE user_id = ?",
+            (group_student, user_id,),
         )
         return await self.base.commit()
 

@@ -113,7 +113,7 @@ async def regUser(query: types.CallbackQuery, state: FSMContext):
         await state.set_state(FSMReg.reply_reg)
         return
     
-    await db.add_student_sql(query.from_user.id, group_student)
+    await db.add_student_sql(user_id=query.from_user.id, group_student=group_student)
     await query.message.answer("✅ Реєстрація завершена ✅", reply_markup=await start_student_kb())
     await query.message.delete()
 

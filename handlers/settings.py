@@ -98,8 +98,13 @@ async def change_student_group1(query: types.CallbackQuery, state: FSMContext):
             reply_markup=await settings_inile_kb(user_id),
         )
         return
+    
+    if not await db.student_group_exists_sql(query.data):
+        await query.answer(f"Не існує групи {query.data}", show_alert=True)
+        await state.clear()
+        return 
 
-    await db.update_student_sql(query.data)
+    await db.update_student_sql(user_id=user_id, group_student=query.data)
     await query.message.delete()
     await query.message.answer(
         "Групу оновлено ✅\n\nНалаштуйте свій акаунт в боті:",
@@ -128,8 +133,13 @@ async def change_teacher_group1(query: types.CallbackQuery, state: FSMContext):
             reply_markup=await settings_inile_kb(user_id),
         )
         return
+    
+    if not await db.teacher_group_exists_sql(query.data):
+        await query.answer(f"Не існує групи {query.data}", show_alert=True)
+        await state.clear()
+        return 
 
-    await db.update_teacher_sql(query.data)
+    await db.update_teacher_sql(user_id=user_id, group_teacher=query.data)
     await query.message.delete()
     await query.message.answer(
         "Групу оновлено ✅\n\nНалаштуйте свій акаунт в боті:",
