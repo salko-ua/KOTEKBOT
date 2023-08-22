@@ -112,7 +112,6 @@ async def wait_finish_alarm():
 
 def send_notification(is_active: bool):
     async def wrapped(user_id: int):
-        db = await Database.setup()
         try:
             await bot.send_sticker(
                 user_id,
@@ -128,5 +127,4 @@ def send_notification(is_active: bool):
 
 
 async def create_task_alarm():
-    pass
-    # scheduler.add_job(wait_start_alarm, "interval", seconds=17, id="wait_start_alarm")
+    scheduler.add_job(wait_start_alarm, "interval", seconds=17, id="wait_start_alarm")
