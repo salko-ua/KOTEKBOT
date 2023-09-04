@@ -149,6 +149,3 @@ async def all_text(message: types.Message):
     print(message.content_type)
     if message.text == "Меню 👥":
         await menu(message)
-    if message.content_type == "document":
-        print(message.document.file_id)
-        await message.answer_document(message.document.file_id)
