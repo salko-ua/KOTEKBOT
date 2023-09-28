@@ -128,3 +128,4 @@ def send_notification(is_active: bool):
 
 async def create_task_alarm():
     scheduler.add_job(wait_start_alarm, "interval", seconds=17, id="wait_start_alarm")
+    scheduler.start()
