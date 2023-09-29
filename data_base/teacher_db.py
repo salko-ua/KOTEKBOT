@@ -140,11 +140,11 @@ class TeacherDB(BaseDBPart):
         )
         return await result.fetchall()
 
-    async def list_id_teacher_agreed_write_sql(self):
+    """async def list_id_teacher_agreed_write_sql(self):
         result = await self.cur.execute(
             "SELECT `user_id` FROM `teacher` WHERE send_write = ?", (1,)
         )
-        return await result.fetchall()
+        return await result.fetchall()"""
 
     async def list_id_teacher_agreed_alert_sql(self):
         result = await self.cur.execute(

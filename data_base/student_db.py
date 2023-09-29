@@ -133,9 +133,9 @@ class StudentDB(BaseDBPart):
         )
         return await result.fetchall()
 
-    async def list_id_student_agreed_alert_sql(self, group_student):
+    async def list_id_student_agreed_alert_sql(self):
         result = await self.cur.execute(
-            "SELECT `user_id` FROM `student` WHERE group_student = ? AND send_alert = ?",
-            (group_student, 1),
+            "SELECT `user_id` FROM `student` WHERE send_alert = ?",
+            (1,),
         )
         return await result.fetchall()

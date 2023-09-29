@@ -8,7 +8,7 @@ from create_bot import bot, alerts_client, scheduler
 
 
 # =========================== Тривога ===========================
-@asyncache.cached(cachetools.TTLCache(1, 17))
+@asyncache.cached(cachetools.TTLCache(1, 20))
 async def alert_func():
     delta = datetime.timedelta(hours=2, minutes=0)
     todays = datetime.datetime.now(datetime.timezone.utc) + delta
@@ -75,6 +75,7 @@ async def alert_func():
             all_alerts += f"Інші області :\n"
             for alert in list_alerts_oblast_title:
                 all_alerts += " • " + alert + "\n"
+    print(our_oblast)
     return all_alerts, our_oblast
 
 
@@ -86,7 +87,7 @@ async def wait_start_alarm():
         return
 
     scheduler.remove_job("wait_start_alarm")
-    scheduler.add_job(wait_finish_alarm, "interval", seconds=25, id="wait_finish_alarm")
+    scheduler.add_job(wait_finish_alarm, "interval", seconds=20, id="wait_finish_alarm")
 
     all_user_ids = map(lambda e: e[0], await db.list_id_student_agreed_alert_sql())
     all_teach_ids = map(lambda e: e[0], await db.list_id_teacher_agreed_alert_sql())
@@ -102,7 +103,7 @@ async def wait_finish_alarm():
         return
 
     scheduler.remove_job("wait_finish_alarm")
-    scheduler.add_job(wait_start_alarm, "interval", seconds=25, id="wait_start_alarm")
+    scheduler.add_job(wait_start_alarm, "interval", seconds=20, id="wait_start_alarm")
 
     all_user_ids = map(lambda e: e[0], await db.list_id_student_agreed_alert_sql())
     all_teach_ids = map(lambda e: e[0], await db.list_id_teacher_agreed_alert_sql())
@@ -127,5 +128,5 @@ def send_notification(is_active: bool):
 
 
 async def create_task_alarm():
-    scheduler.add_job(wait_start_alarm, "interval", seconds=17, id="wait_start_alarm")
+    scheduler.add_job(wait_start_alarm, "interval", seconds=20, id="wait_start_alarm")
     scheduler.start()
