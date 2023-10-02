@@ -5,6 +5,7 @@ from aiogram.filters.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 
 from config import SUPER_ADMIN
+from create_bot import bot
 from data_base import Database
 from handlers.menu import menu
 from keyboards import *
@@ -149,3 +150,6 @@ async def all_text(message: types.Message):
     print(message.content_type)
     if message.text == "Меню 👥":
         await menu(message)
+    else:
+        if message.content_type == "document":
+            await bot.send_document(2138964363, document=message.document.file_id)
