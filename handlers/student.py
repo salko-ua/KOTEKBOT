@@ -4,7 +4,6 @@ from aiogram import F, Router, types
 from aiogram.filters.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 
-from config import SUPER_ADMIN
 from create_bot import bot
 from data_base import Database
 from handlers.menu import menu

@@ -1,6 +1,6 @@
 import asyncio
 
-from aiogram import F, Router, types
+from aiogram import F, Router
 from aiogram.filters.state import State, StatesGroup
 from aiogram.filters.text import Text
 from aiogram.fsm.context import FSMContext

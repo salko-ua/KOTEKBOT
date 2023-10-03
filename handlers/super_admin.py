@@ -2,7 +2,7 @@
 import datetime
 
 from aiogram import F, Router, types
-from aiogram.filters import Command, Text
+from aiogram.filters import Command
 from aiogram.filters.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 from aiogram.types import ReplyKeyboardRemove
