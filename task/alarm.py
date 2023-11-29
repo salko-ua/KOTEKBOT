@@ -107,20 +107,24 @@ async def wait_finish_alarm():
 
     all_user_ids = map(lambda e: e[0], await db.list_id_student_agreed_alert_sql())
     all_teach_ids = map(lambda e: e[0], await db.list_id_teacher_agreed_alert_sql())
-    await asyncio.gather(*map(send_notification(is_active), all_user_ids))
-    await asyncio.gather(*map(send_notification(is_active), all_teach_ids))
+    await asyncio.gather(*map(send_notification(is_active), all_user_ids, False))
+    await asyncio.gather(*map(send_notification(is_active), all_teach_ids, True))
 
 
-def send_notification(is_active: bool):
+def send_notification(is_active: bool, who: bool):
     async def wrapped(user_id: int):
         try:
-            await bot.send_sticker(
-                user_id,
-                r"CAACAgIAAxkBAAEI_1hkY5y8yh_-0cKFPQ5Sv2SWlYQaCwACLCUAAvF3IUhe2e30dH6RaC8E"
-                if is_active
-                else r"CAACAgIAAxkBAAEI_1xkY5zsKG4_LdSX-d2oMY994WAHjQACQisAAssEIUhdsPeRZOOUMC8E",
-            )
-            await bot.send_message(user_id, "Тривога! 🔴" if is_active else "Відбій! 🟢")
+            if not who:
+                await bot.send_sticker(
+                    user_id,
+                    r"CAACAgIAAxkBAAEI_1hkY5y8yh_-0cKFPQ5Sv2SWlYQaCwACLCUAAvF3IUhe2e30dH6RaC8E"
+                    if is_active
+                    else r"CAACAgIAAxkBAAEI_1xkY5zsKG4_LdSX-d2oMY994WAHjQACQisAAssEIUhdsPeRZOOUMC8E",
+                )
+
+                await bot.send_message(user_id, "Тривога! 🔴" if is_active else "Відбій! 🟢")
+            if who:
+                await bot.send_message(user_id, "Тривога! 🔴" if is_active else "Відбій! 🟢")
         except:
             pass
 
