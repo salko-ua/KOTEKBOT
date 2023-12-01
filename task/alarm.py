@@ -107,8 +107,8 @@ async def wait_finish_alarm():
 
     all_user_ids = map(lambda e: e[0], await db.list_id_student_agreed_alert_sql())
     all_teach_ids = map(lambda e: e[0], await db.list_id_teacher_agreed_alert_sql())
-    await asyncio.gather(*map(send_notification(is_active), all_user_ids, False))
-    await asyncio.gather(*map(send_notification(is_active), all_teach_ids, True))
+    await asyncio.gather(*map(send_notification(is_active, False), all_user_ids))
+    await asyncio.gather(*map(send_notification(is_active, True), all_teach_ids))
 
 
 def send_notification(is_active: bool, who: bool):
