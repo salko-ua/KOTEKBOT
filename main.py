@@ -2,16 +2,29 @@ import sentry_sdk
 
 from config import TOKEN_SENTRY
 from create_bot import bot, dp
-from handlers import (admin, commands, dev, menu, prime, reg, settings, stats,
-                      student, super_admin, teacher, user)
-from middlewares.messagemiddlewares import (UpdateDataCallbackQeryMiddleware,
-                                            UpdateDataMessageMiddleware)
+from data_base import Database
+from handlers import (
+    admin,
+    commands,
+    dev,
+    menu,
+    prime,
+    reg,
+    settings,
+    stats,
+    student,
+    super_admin,
+    teacher,
+    user,
+)
+from middlewares.messagemiddlewares import (
+    UpdateDataCallbackQeryMiddleware,
+    UpdateDataMessageMiddleware,
+)
 from task.alarm import create_task_alarm
 
-sentry_sdk.init(
-    dsn=TOKEN_SENTRY,
-    traces_sample_rate=1.0,
-)
+if TOKEN_SENTRY != "":
+    sentry_sdk.init(dsn=TOKEN_SENTRY, traces_sample_rate=1.0)
 
 
 async def register_middleware() -> None:
