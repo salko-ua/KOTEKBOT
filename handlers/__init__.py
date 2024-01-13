@@ -1,7 +1,6 @@
 from handlers import (
     admin,
     commands,
-    dev,
     menu,
     prime,
     reg,

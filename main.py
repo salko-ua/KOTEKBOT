@@ -6,7 +6,6 @@ from create_bot import bot, dp
 from handlers import (
     admin,
     commands,
-    dev,
     menu,
     prime,
     reg,
@@ -35,7 +34,6 @@ async def register_middleware() -> None:
 async def register_handlers() -> None:
     dp.include_router(admin.router)
     dp.include_router(commands.router)
-    dp.include_router(dev.router)
     dp.include_router(menu.router)
     dp.include_router(prime.router)
     dp.include_router(reg.router)
