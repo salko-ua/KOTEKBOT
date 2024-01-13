@@ -1,6 +1,7 @@
 import sentry_sdk
+import apykuma
 
-from config import TOKEN_SENTRY
+from config import TOKEN_SENTRY, KUMA_TOKEN
 from create_bot import bot, dp
 from handlers import (
     admin,
@@ -60,4 +61,6 @@ async def on_startup() -> None:
 async def start_bot():
     await on_startup()
     await bot.delete_webhook(drop_pending_updates=True)
+    if KUMA_TOKEN != "":
+        await apykuma.start(url=KUMA_TOKEN, delay=10)
     await dp.start_polling(bot)

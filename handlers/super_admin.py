@@ -28,13 +28,13 @@ class FSMSuperAdmin(StatesGroup):
     curse_group = State()
     curse_group_delete = State()
     curse_group_photo_delete = State()
-    # Розклад пар студ
+    # SCHEDULE STUDENTS
     curse_group_rad = State()
     curse_group_rad_photo = State()
-    # Розклад пар викдаж
+    # SCHEDULE TEACHERS
     teachers_rad = State()
     teachers_rad_photo = State()
-    # Розклад дзвінків
+    # SCHEDULE CALLS
     id_photo = State()
 
 

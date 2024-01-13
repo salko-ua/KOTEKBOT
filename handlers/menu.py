@@ -41,15 +41,6 @@ async def others_inline(query: types.CallbackQuery):
     await query.message.answer("Інша інформація 🤯", reply_markup=await other_kb())
 
 
-# Стікери 👨‍👩‍👧‍👦
-@router.callback_query(F.data == "Стікери 👨‍👩‍👧‍👦")
-async def stick(query: types.CallbackQuery):
-    await query.message.answer_sticker(
-        r"CAACAgIAAxkBAAEH15Nj9O7fae-x_g7MdX6tus4wAh8SngACLQAD3jyHIuJ7Rhz4aJKDLgQ"
-    )
-    await query.answer()
-
-
 # Про бота 🖇
 @router.callback_query(F.data == "Про бота 🖇")
 async def about_bot(query: types.CallbackQuery):

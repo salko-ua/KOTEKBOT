@@ -79,12 +79,10 @@ async def other_kb() -> InlineKeyboardMarkup:
     keyboard = [
         "Про бота 🖇",
         "Про мене 👀",
-        "Розробка 🧩",
         "Статистика 🧮",
         "Допомога 🛠",
         "Час роботи 📅",
         "Фото кота 🖼",
-        "Стікери 👨‍👩‍👧‍👦",
         "Сховати ❌",
         "Донат 🫡",
     ]
@@ -115,12 +113,7 @@ async def applicant_kb() -> InlineKeyboardMarkup:
         builder.add(InlineKeyboardButton(text=button, callback_data=button))
 
     builder.add(InlineKeyboardButton(text=keyboard_url[0][0], url=keyboard_url[0][1]))
-    builder.add(
-        InlineKeyboardButton(
-            text="Сховати ❌",
-            callback_data="Сховати ❌",
-        )
-    )
+    builder.add(InlineKeyboardButton(text="Сховати ❌", callback_data="Сховати ❌"))
     builder.add(InlineKeyboardButton(text=keyboard_url[1][0], url=keyboard_url[1][1]))
 
     return builder.adjust(2).as_markup(resize_keyboard=True)

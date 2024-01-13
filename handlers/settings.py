@@ -168,11 +168,6 @@ async def change_teacher_group1(query: types.CallbackQuery, state: FSMContext):
 
 
 # ===============================================================
-
-# change_news_agreed change_news_not_agreed
-# change_write_agreed change_write_not_agreed
-
-
 @router.callback_query(Text(text="change_news_agreed"))
 async def change_news_agreed(query: types.CallbackQuery):
     db = await Database.setup()
