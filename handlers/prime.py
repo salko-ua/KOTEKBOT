@@ -118,16 +118,13 @@ async def see_text(query: types.CallbackQuery):
             await query.message.edit_text("У вашої групи\nнемає заміток")
             await query.message.edit_reply_markup(reply_markup=await text_inline_kb())
             return
-        
-        message = (
-            f"Замітки для вашої групи :\n\n"
-            f"{text}"
-        )
+
+        message = f"Замітки для вашої групи :\n\n" f"{text}"
 
         await query.message.edit_text(text=message)
         await query.message.edit_reply_markup(reply_markup=await text_inline_kb())
         return
-            
+
     if await db.teacher_exists_sql(query.from_user.id):
         groups = await db.see_group_for_teach_id(query.from_user.id)
         boolean, text = await db.see_text_sql(groups)
@@ -136,18 +133,14 @@ async def see_text(query: types.CallbackQuery):
             await query.message.edit_text("У вас немає заміток")
             await query.message.edit_reply_markup(reply_markup=await text_inline_kb())
             return
-        
-        message = (
-            f"Ваші замітки :\n\n"
-            f"{text}\n\n"
-        )
-        
+
+        message = f"Ваші замітки :\n\n" f"{text}\n\n"
+
         await query.message.edit_text(text=message)
         await query.message.edit_reply_markup(reply_markup=await text_inline_kb())
         return
 
     await query.answer("Ви не зареєстровані ❌")
-
 
 
 # ======================================================================================
@@ -186,7 +179,7 @@ async def write(query: types.CallbackQuery, state: FSMContext):
         text = (
             "Щоб користуватися цією функцією,\n"
             "вам необхідно увімкнути отримання\n"
-            "\"Повідомленнь від інших груп ✅\"\n"
+            '"Повідомленнь від інших груп ✅"\n'
             "\n"
             "Для цього перейдіть в меню >\n"
             "Інше 📌/Налаштування ⚙️\n"
@@ -195,7 +188,9 @@ async def write(query: types.CallbackQuery, state: FSMContext):
         await query.answer(text)
         return
 
-    await query.message.edit_text("Щоб написати повідомлення іншій групі\nспочатку виберіть її ім'я нижче ⬇️")
+    await query.message.edit_text(
+        "Щоб написати повідомлення іншій групі\nспочатку виберіть її ім'я нижче ⬇️"
+    )
     await query.message.edit_reply_markup(reply_markup=await student_group_list_kb())
     await state.set_state(FSMWrite.group)
 
@@ -210,7 +205,9 @@ async def write_group(query: types.CallbackQuery, state: FSMContext):
         await state.clear()
         await query.answer("Надсилання відмінено ✅", show_alert=True)
         await query.message.delete()
-        await query.message.answer("Ваша клавіатура ⌨️", reply_markup=await student_kb())
+        await query.message.answer(
+            "Ваша клавіатура ⌨️", reply_markup=await student_kb()
+        )
         return
 
     if not group:
@@ -500,4 +497,3 @@ async def back_write_group_message(query: types.CallbackQuery, state: FSMContext
         reply_markup=await student_group_list_kb(),
     )
     await state.set_state(FSMWrite.group)
-

@@ -1,8 +1,11 @@
+from typing import Any, Awaitable, Callable, Dict
+
 from aiogram import BaseMiddleware
-from aiogram.types import Message, CallbackQuery
-from typing import Callable, Awaitable, Dict, Any
-from handlers.user import user_update_db
+from aiogram.types import CallbackQuery, Message
+
 from data_base import Database
+from handlers.user import user_update_db
+
 
 class UpdateDataMessageMiddleware(BaseMiddleware):
     def __init__(self) -> None:
@@ -24,6 +27,7 @@ class UpdateDataMessageMiddleware(BaseMiddleware):
 
         return await handler(message, data)
 
+
 class UpdateDataCallbackQeryMiddleware(BaseMiddleware):
     def __init__(self) -> None:
         self.counter = 0
@@ -38,7 +42,7 @@ class UpdateDataCallbackQeryMiddleware(BaseMiddleware):
         if not await db.user_exists_sql(query.from_user.id):
             await query.answer("Напишіть боту /start", show_alert=True)
             return
-        
+
         if not query.data == "Про мене 👀" and not query.data == "/me":
             await user_update_db(
                 query.from_user.id,

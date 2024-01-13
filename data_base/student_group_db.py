@@ -90,10 +90,16 @@ class StudentGroupDB(BaseDBPart):
             return True, reslt, datka
 
     async def see_schedule_student_sql(self, name_group):
-        photo = await (await self.cur.execute(
-            "SELECT `photo` FROM student_group WHERE name_group = ?", (name_group,))).fetchall()
-        date = await (await self.cur.execute(
-            "SELECT `date` FROM student_group WHERE name_group = ?", (name_group,))).fetchall()
+        photo = await (
+            await self.cur.execute(
+                "SELECT `photo` FROM student_group WHERE name_group = ?", (name_group,)
+            )
+        ).fetchall()
+        date = await (
+            await self.cur.execute(
+                "SELECT `date` FROM student_group WHERE name_group = ?", (name_group,)
+            )
+        ).fetchall()
         try:
             lens = len(photo[0][0])
         except TypeError:

@@ -1,4 +1,6 @@
-import asyncio, logging
+import asyncio
+import logging
+
 from main import start_bot
 
 if __name__ == "__main__":

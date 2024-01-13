@@ -1,5 +1,6 @@
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+
 
 # ⬅️ Back admin
 async def admin_back_kb() -> InlineKeyboardMarkup:
@@ -9,6 +10,7 @@ async def admin_back_kb() -> InlineKeyboardMarkup:
 
     return builder.adjust(2).as_markup(resize_keyboard=True)
 
+
 # ⬅️ Back prime
 async def prime_back_kb() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
@@ -17,6 +19,7 @@ async def prime_back_kb() -> InlineKeyboardMarkup:
 
     return builder.adjust(2).as_markup(resize_keyboard=True)
 
+
 # ⬅️ Back dev
 async def dev_back_kb() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
@@ -24,6 +27,7 @@ async def dev_back_kb() -> InlineKeyboardMarkup:
     builder.add(InlineKeyboardButton(text="⬅️ Назад", callback_data="back_dev"))
 
     return builder.as_markup()
+
 
 # ⬅️ Back other
 async def other_back_kb() -> InlineKeyboardMarkup:
@@ -34,6 +38,7 @@ async def other_back_kb() -> InlineKeyboardMarkup:
 
     return builder.adjust(2).as_markup()
 
+
 # ⬅️ Back applicant
 async def applicant_back_kb() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
@@ -42,6 +47,7 @@ async def applicant_back_kb() -> InlineKeyboardMarkup:
     builder.add(InlineKeyboardButton(text="Сховати ❌", callback_data="Сховати ❌"))
 
     return builder.adjust(2).as_markup()
+
 
 # ⬅️ Back user
 async def user_back_kb() -> InlineKeyboardMarkup:
@@ -52,6 +58,7 @@ async def user_back_kb() -> InlineKeyboardMarkup:
 
     return builder.adjust(2).as_markup()
 
+
 # ⬅️ Back reg
 async def reg_back_kb() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
@@ -60,6 +67,7 @@ async def reg_back_kb() -> InlineKeyboardMarkup:
     builder.add(InlineKeyboardButton(text="Сховати ❌", callback_data="Сховати ❌"))
 
     return builder.adjust(2).as_markup()
+
 
 # ❌ General hide
 async def hide_kb() -> InlineKeyboardMarkup:

@@ -30,6 +30,7 @@ router = Router()
 async def hide_message(query: CallbackQuery):
     await query.message.delete()
 
+
 # Клавіаура адміна
 @router.message(F.text == "Адмін 🔑")
 async def admin(message: Message):
@@ -55,7 +56,6 @@ async def delete_admin(message: Message):
 @router.callback_query(Text(text="Викласти 🖼", ignore_case=True))
 async def send_photo_news(query: CallbackQuery, state: FSMContext):
     db = await Database.setup()
-
 
     if not await db.admin_exists_sql(query.from_user.id):
         return
@@ -109,9 +109,7 @@ async def send_photo_news1(message: Message, state: FSMContext):
     photo = message.photo[0].file_id
     user_ids = map(lambda e: e[0], await db.list_id_student_agreed_news_sql())
     teachers_ids = map(lambda e: e[0], await db.list_id_teacher_agreed_news_sql())
-    
 
-    
     # sending
     await state.clear()
     await message.delete()
@@ -128,7 +126,6 @@ async def send_message_news1(message: Message, state: FSMContext):
     text = message.text
     user_ids = map(lambda e: e[0], await db.list_id_student_agreed_news_sql())
     teachers_ids = map(lambda e: e[0], await db.list_id_teacher_agreed_news_sql())
-    
 
     # sending
     await state.clear()
@@ -154,8 +151,7 @@ async def send_mixed_news2(message: Message, state: FSMContext):
     photo = message.photo[0].file_id
     user_ids = map(lambda e: e[0], await db.list_id_student_agreed_news_sql())
     teachers_ids = map(lambda e: e[0], await db.list_id_teacher_agreed_news_sql())
-    
-    
+
     # sending
     await state.clear()
     await asyncio.gather(*map(send_notification(3, text, photo), user_ids))

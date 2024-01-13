@@ -1,5 +1,6 @@
 import abc
-from aiosqlite import Cursor, Connection
+
+from aiosqlite import Connection, Cursor
 
 
 class BaseDBPart(abc.ABC):

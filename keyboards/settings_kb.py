@@ -1,6 +1,8 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+
 from data_base import Database
+
 
 # ======================================================================
 async def settings_inile_kb(user_id) -> InlineKeyboardMarkup:
@@ -8,7 +10,6 @@ async def settings_inile_kb(user_id) -> InlineKeyboardMarkup:
     db = await Database.setup()
 
     if await db.student_exists_sql(user_id):
-        
         if await db.student_agreed_news_exsists_sql(user_id):
             builder.add(
                 InlineKeyboardButton(
@@ -62,9 +63,7 @@ async def settings_inile_kb(user_id) -> InlineKeyboardMarkup:
         builder.add(InlineKeyboardButton(text="Сховати ❌", callback_data="Сховати ❌"))
 
         builder.add(
-            InlineKeyboardButton(
-                text="Бути виклад. 👤", callback_data="change_account"
-            )
+            InlineKeyboardButton(text="Бути виклад. 👤", callback_data="change_account")
         )
 
         return builder.adjust(2).as_markup()
@@ -120,10 +119,8 @@ async def settings_inile_kb(user_id) -> InlineKeyboardMarkup:
             )
         )
         builder.add(
-            InlineKeyboardButton(
-                text="Бути студент. 👤", callback_data="change_account"
-            )
+            InlineKeyboardButton(text="Бути студент. 👤", callback_data="change_account")
         )
 
         builder.add(InlineKeyboardButton(text="Сховати ❌", callback_data="Сховати ❌"))
-        return builder.adjust(2,2,1).as_markup()
+        return builder.adjust(2, 2, 1).as_markup()

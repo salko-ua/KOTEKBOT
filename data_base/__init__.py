@@ -1,16 +1,16 @@
-import asyncache
-import aiosqlite
 import os
+
+import aiosqlite
+import asyncache
+
 from data_base.admin_db import AdminDB
 from data_base.photo_db import PhotoDB
+from data_base.student_db import StudentDB
+from data_base.student_group_db import StudentGroupDB
+from data_base.teacher_db import TeacherDB
+from data_base.teacher_group_db import TeacherGroupDB
 from data_base.text_db import TextDB
 from data_base.user_db import UserDB
-
-from data_base.student_db import StudentDB
-from data_base.teacher_db import TeacherDB
-
-from data_base.student_group_db import StudentGroupDB
-from data_base.teacher_group_db import TeacherGroupDB
 
 
 class Database(
@@ -31,7 +31,7 @@ class Database(
 
         base = await aiosqlite.connect("data/database.db")
         cur = await base.cursor()
-        
+
         if base:
             print("DATA BASE CONNECTED")
 

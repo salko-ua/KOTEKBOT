@@ -50,7 +50,10 @@ class StudentDB(BaseDBPart):
     async def update_student_sql(self, user_id, group_student):
         await self.cur.execute(
             "UPDATE `student` SET `group_student` = ? WHERE user_id = ?",
-            (group_student, user_id,),
+            (
+                group_student,
+                user_id,
+            ),
         )
         return await self.base.commit()
 

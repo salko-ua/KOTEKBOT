@@ -2,7 +2,6 @@ import sentry_sdk
 
 from config import TOKEN_SENTRY
 from create_bot import bot, dp
-from data_base import Database
 from handlers import (
     admin,
     commands,

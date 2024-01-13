@@ -1,10 +1,13 @@
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
-from aiogram.utils.keyboard import ReplyKeyboardBuilder
-
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.types import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    KeyboardButton,
+    ReplyKeyboardMarkup,
+)
+from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
 
 from data_base import Database
+
 
 # Головна клавіатура для не зареєстрованих
 async def start_all_kb() -> ReplyKeyboardMarkup:
@@ -39,6 +42,7 @@ async def start_student_kb() -> ReplyKeyboardMarkup:
 
     return builder.adjust(2).as_markup(resize_keyboard=True)
 
+
 # Головна клавіатура для викладачів
 async def start_teacher_kb() -> ReplyKeyboardMarkup:
     builder = ReplyKeyboardBuilder()
@@ -55,17 +59,12 @@ async def start_teacher_kb() -> ReplyKeyboardMarkup:
 
     return builder.adjust(2).as_markup(resize_keyboard=True)
 
+
 # Головна клавіатура для адмінів
 async def start_admin_kb() -> ReplyKeyboardMarkup:
     builder = ReplyKeyboardBuilder()
 
-    keyboard = [
-        "Панель 📁",
-        "Адмін 🔑",
-        "Інше 📌",
-        "Розклад 📚",
-        "Налаштування ⚙️"
-    ]
+    keyboard = ["Панель 📁", "Адмін 🔑", "Інше 📌", "Розклад 📚", "Налаштування ⚙️"]
 
     for button in keyboard:
         builder.add(KeyboardButton(text=button))
@@ -106,7 +105,6 @@ async def applicant_kb() -> InlineKeyboardMarkup:
         "Адреса 📫",
         "Контакти 📘",
         "Реквізити 💳",
-
     ]
     keyboard_url = [
         ("Офіційний сайт 🌎", "https://vvpc.com.ua/"),
@@ -117,10 +115,14 @@ async def applicant_kb() -> InlineKeyboardMarkup:
         builder.add(InlineKeyboardButton(text=button, callback_data=button))
 
     builder.add(InlineKeyboardButton(text=keyboard_url[0][0], url=keyboard_url[0][1]))
-    builder.add(InlineKeyboardButton(text="Сховати ❌", callback_data="Сховати ❌",))
+    builder.add(
+        InlineKeyboardButton(
+            text="Сховати ❌",
+            callback_data="Сховати ❌",
+        )
+    )
     builder.add(InlineKeyboardButton(text=keyboard_url[1][0], url=keyboard_url[1][1]))
-    
-        
+
     return builder.adjust(2).as_markup(resize_keyboard=True)
 
 
@@ -128,7 +130,7 @@ async def applicant_kb() -> InlineKeyboardMarkup:
 async def schedule_kb(user_id: int) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     db = await Database.setup()
-    
+
     keyboard = [
         "Розклад студ. 🧑‍🎓",
         "Розклад викл. 👨‍🏫",
@@ -149,12 +151,12 @@ async def schedule_kb(user_id: int) -> InlineKeyboardMarkup:
         keyboard.insert(0, "Розклад дзвінків ⌛️")
         keyboard.insert(0, "Розклад занять 👀")
         keyboard.insert(5, "Ч/З тиждень ✒️")
-        
+
         for button in keyboard:
             builder.add(InlineKeyboardButton(text=button, callback_data=button))
 
         return builder.adjust(2).as_markup(resize_keyboard=True)
-    
+
     if await db.admin_exists_sql(user_id):
         keyboard.insert(0, "Ч/З тиждень ✒️")
         keyboard.insert(0, "Розклад дзвінків ⌛️")
@@ -163,4 +165,3 @@ async def schedule_kb(user_id: int) -> InlineKeyboardMarkup:
             builder.add(InlineKeyboardButton(text=button, callback_data=button))
 
         return builder.adjust(2).as_markup(resize_keyboard=True)
-

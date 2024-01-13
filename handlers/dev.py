@@ -1,11 +1,10 @@
-from keyboards import *
-from aiogram import types, Router, F
-from create_bot import bot
-
-from aiogram.fsm.context import FSMContext
-
+from aiogram import F, Router, types
 from aiogram.filters import Text
 from aiogram.filters.state import State, StatesGroup
+from aiogram.fsm.context import FSMContext
+
+from create_bot import bot
+from keyboards import *
 
 router = Router()
 
@@ -31,7 +30,6 @@ async def get_text(type: str, message: types.Message = None):
         "Відгук і повідомлення про помилку\n"
         "надсилаються анонімно @botadmincat"
     )
-
 
     # Текст для надсилання помилки
     error_text = (
@@ -59,7 +57,7 @@ async def get_text(type: str, message: types.Message = None):
         " • Також можна допомогти з виправленням помилок у тексті.\n"
         "   Для цього знати те, що вище не треба.\n"
         " • Не бути малоросом 😃\n\n"
-        "Після натискання \"Підтвердити 🫡\"\n"
+        'Після натискання "Підтвердити 🫡"\n'
         "ви повинні трошки розказати про себе."
     )
 
@@ -89,6 +87,7 @@ async def join_development(query: types.CallbackQuery):
     await query.message.edit_text(await get_text("main"))
     await query.message.edit_reply_markup(reply_markup=await dev_kb())
 
+
 # ======================================================================================
 
 
@@ -102,6 +101,8 @@ async def join_development_query(query: types.CallbackQuery, state: FSMContext):
     await state.clear()
     await query.message.edit_text(await get_text("main"))
     await query.message.edit_reply_markup(reply_markup=await dev_kb())
+
+
 # ======================================================================================
 
 
@@ -154,6 +155,8 @@ async def response_text(message: types.Message, state: FSMContext):
     await bot.send_message(
         chat_id=-1001873448980, message_thread_id=5, text=f"Відгук :\n{message.text}"
     )
+
+
 # ======================================================================================
 
 

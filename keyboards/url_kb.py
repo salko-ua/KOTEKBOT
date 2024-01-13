@@ -1,5 +1,6 @@
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+
 
 # 🖤 card
 async def url_card_kb() -> InlineKeyboardMarkup:
@@ -11,6 +12,7 @@ async def url_card_kb() -> InlineKeyboardMarkup:
 
     return builder.adjust(1, 2).as_markup()
 
+
 # 📘 contact
 async def url_contact_kb() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
@@ -20,6 +22,7 @@ async def url_contact_kb() -> InlineKeyboardMarkup:
     builder.add(InlineKeyboardButton(text="Перевірити 🌐", url=url_contact))
 
     return builder.as_markup()
+
 
 # 💳 score
 async def url_score_kb() -> InlineKeyboardMarkup:
@@ -31,6 +34,7 @@ async def url_score_kb() -> InlineKeyboardMarkup:
 
     return builder.as_markup()
 
+
 # 🌎 official site
 async def url_official_site_kb() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
@@ -40,6 +44,7 @@ async def url_official_site_kb() -> InlineKeyboardMarkup:
     builder.add(InlineKeyboardButton(text="Cайт 🌐", url=url_official_site))
 
     return builder.as_markup()
+
 
 # 📗 introduction
 async def url_introduction_kb() -> InlineKeyboardMarkup:
@@ -51,6 +56,7 @@ async def url_introduction_kb() -> InlineKeyboardMarkup:
 
     return builder.as_markup()
 
+
 # 🛡 about college
 async def url_about_college_kb() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
@@ -61,13 +67,13 @@ async def url_about_college_kb() -> InlineKeyboardMarkup:
 
     return builder.as_markup()
 
+
 # 📜 speciality
 async def url_speciality_kb() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     url_speciality = "https://padlet.com/VasylT/padlet-2ppk483bi2mgsg3h"
 
     builder.add(InlineKeyboardButton(text="⬅️ Назад", callback_data="applicant_inline"))
-    builder.add(InlineKeyboardButton(text="Спеціальності 🤯",url=url_speciality))
+    builder.add(InlineKeyboardButton(text="Спеціальності 🤯", url=url_speciality))
 
     return builder.as_markup()
-

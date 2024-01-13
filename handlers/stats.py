@@ -6,8 +6,6 @@ from keyboards import *
 router = Router()
 
 
-
-
 # ===========================Статистика 🧮============================
 @router.callback_query(F.data == "Статистика 🧮")
 async def stats_all_query(query: types.CallbackQuery):
@@ -29,6 +27,10 @@ async def stats_all_query(query: types.CallbackQuery):
     )
 
     try:
-        await query.message.edit_text(text=stats, reply_markup=await update_kb(), parse_mode="HTML")
+        await query.message.edit_text(
+            text=stats,
+            reply_markup=await update_kb(),
+            parse_mode="HTML",
+        )
     except:
-        await query.answer(text=error, show_alert=True,)
+        await query.answer(text=error, show_alert=True)

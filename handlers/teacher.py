@@ -15,6 +15,7 @@ class FSMTeacher(StatesGroup):
 
 router = Router()
 
+
 # ===========================Переглянути розклад============================
 @router.callback_query(F.data == "Розклад занять 👀")  # registration router
 async def view_coupes_teacher(query: types.CallbackQuery):
@@ -22,25 +23,25 @@ async def view_coupes_teacher(query: types.CallbackQuery):
     if not await db.teacher_exists_sql(query.from_user.id):
         await query.answer("Ви не зареєстровані ❌", show_alert=True)
         return
-    
+
     boolen, photo, date = await db.see_rod_t_sql(query.from_user.id)
-        
+
     if not boolen:
         await query.answer("Розкладу ще немає ☹️", show_alert=True)
         return
-    
+
     await query.message.delete()
-    await query.message.answer_photo(photo=photo, caption=date, reply_markup=await user_back_kb())
-    
-    
+    await query.message.answer_photo(
+        photo=photo, caption=date, reply_markup=await user_back_kb()
+    )
 
 
 # ===========================Переглянути розклад дзвінків============================
 @router.callback_query(F.data == "Розклад дзвінків ⌛️")  # registration router
 async def view_calls_teacher(query: types.CallbackQuery):
     db = await Database.setup()
-    
-    check, value, date = await db.see_photo_sql('calls')
+
+    check, value, date = await db.see_photo_sql("calls")
 
     if not check:
         await query.answer("Дзвінки ще немає ☹️", show_alert=True)
@@ -49,25 +50,28 @@ async def view_calls_teacher(query: types.CallbackQuery):
     await query.message.delete()
     await query.message.answer_photo(value, date, reply_markup=await user_back_kb())
 
-# ===========================Змінити групу============================   
-@router.message(F.text == 'Вийти 🚫')  # registration router
+
+# ===========================Змінити групу============================
+@router.message(F.text == "Вийти 🚫")  # registration router
 async def delete_user_teacher(message: types.Message):
     db = await Database.setup()
     if not await db.teacher_exists_sql(message.from_user.id):
         await message.answer("❗️Ви не зареєстровані❗️")
         return
-    
+
     if not await db.admin_exists_sql(message.from_user.id):
         await db.delete_teacher_sql(message.from_user.id)
-        await message.answer("Тепер ви не викладач ✅", reply_markup=await start_all_kb())
+        await message.answer(
+            "Тепер ви не викладач ✅", reply_markup=await start_all_kb()
+        )
         return
-    
+
     await db.delete_teacher_sql(message.from_user.id)
     await message.answer("Тепер ви не викладач ✅", reply_markup=await start_admin_kb())
 
 
 # =========================== Дріб ===========================
-@router.callback_query(F.data == 'Ч/З тиждень ✒️')  # registration router
+@router.callback_query(F.data == "Ч/З тиждень ✒️")  # registration router
 async def fraction_teacher(query: types.CallbackQuery):
     delta = datetime.timedelta(hours=2, minutes=0)
     todays = datetime.datetime.now(datetime.timezone.utc) + delta
@@ -89,26 +93,24 @@ async def alert(query: types.CallbackQuery):
 
     all_alerts, check = await alert_func()
 
-    text = (
-        f"{all_alerts}\n"
-        "<a href='https://alerts.in.ua/'>Дані з сайту</a>"
-    )
+    text = f"{all_alerts}\n" "<a href='https://alerts.in.ua/'>Дані з сайту</a>"
 
     await query.message.answer(
         text=text,
         parse_mode="HTML",
         disable_web_page_preview=True,
-        reply_markup=await reg_back_kb()
+        reply_markup=await reg_back_kb(),
     )
 
-#"Розклад викл. 👨‍🏫"
-@router.callback_query(F.data == 'Розклад викл. 👨‍🏫')
+
+# "Розклад викл. 👨‍🏫"
+@router.callback_query(F.data == "Розклад викл. 👨‍🏫")
 async def schedule_teacher(query: types.CallbackQuery, state: FSMContext):
     await state.set_state(FSMTeacher.name_gpoup)
     await query.message.delete()
-    await query.message.answer("Виберіть групу викладача", 
-                               reply_markup=await teacher_group_list_kb())
-
+    await query.message.answer(
+        "Виберіть групу викладача", reply_markup=await teacher_group_list_kb()
+    )
 
 
 @router.callback_query(FSMTeacher.name_gpoup)
@@ -117,13 +119,12 @@ async def schedule_teacher1(query: types.CallbackQuery, state: FSMContext):
     keyboard = await schedule_kb(query.from_user.id)
     await query.message.edit_reply_markup()
 
-    if query.data == 'Назад':
+    if query.data == "Назад":
         await state.clear()
         await query.message.delete()
         await query.message.answer("Ваша клавіатура ⌨️", reply_markup=keyboard)
         return
-    
-    
+
     boolen, photo, date = await db.see_schedule_teacher_sql(query.data)
 
     if not boolen:
@@ -135,6 +136,6 @@ async def schedule_teacher1(query: types.CallbackQuery, state: FSMContext):
         return
 
     await query.message.delete()
-    await query.message.answer_photo(photo=photo, 
-                                     caption=date, 
-                                     reply_markup=await user_back_kb())
+    await query.message.answer_photo(
+        photo=photo, caption=date, reply_markup=await user_back_kb()
+    )

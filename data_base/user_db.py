@@ -2,6 +2,17 @@ from data_base.create_db import BaseDBPart
 
 
 class UserDB(BaseDBPart):
+    async def check_sum(self):
+        result = await (
+            await self.cur.execute("SELECT count_interaction  from user")
+        ).fetchall()
+        sum = 0
+
+        for i in range(len(result[0])):
+            print(result[0][i], i)
+            sum += result[0][i]
+            print(sum)
+
     # Функція перевірки чи є користувач з данним user_id у db
     # Повертає True or False
     async def user_exists_sql(self, user_id):

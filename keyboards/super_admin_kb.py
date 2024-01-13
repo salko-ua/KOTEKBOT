@@ -1,5 +1,6 @@
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 from aiogram.utils.keyboard import ReplyKeyboardBuilder
+
 from data_base import Database
 
 
@@ -29,7 +30,7 @@ async def super_admin_kb() -> ReplyKeyboardMarkup:
     for button in keyboard:
         builder.add(KeyboardButton(text=button))
 
-    return builder.adjust(2,1,2,1,2,2,1,2,2,1).as_markup(resize_keyboard=True)
+    return builder.adjust(2, 1, 2, 1, 2, 2, 1, 2, 2, 1).as_markup(resize_keyboard=True)
 
 
 # список груп - студенти
@@ -45,6 +46,7 @@ async def group_selection_student_kb() -> ReplyKeyboardMarkup:
 
     return builder.adjust(4).as_markup(resize_keyboard=True)
 
+
 # список груп - викладачі
 async def group_selection_teacher_kb() -> ReplyKeyboardMarkup:
     db = await Database.setup()
@@ -57,6 +59,3 @@ async def group_selection_teacher_kb() -> ReplyKeyboardMarkup:
     builder.add(KeyboardButton(text="Назад"))
 
     return builder.adjust(2).as_markup(resize_keyboard=True)
-
-
-

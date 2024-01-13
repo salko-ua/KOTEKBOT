@@ -17,7 +17,6 @@ class FSMSettings(StatesGroup):
     change_account_to_teacher = State()
 
 
-
 @router.message(F.text == "Налаштування ⚙️", F.chat.type == "private")
 async def settings(message: types.Message):
     db = await Database.setup()
@@ -34,18 +33,26 @@ async def settings(message: types.Message):
         "Налаштуйте свій акаунт в боті:", reply_markup=await settings_inile_kb(user_id)
     )
 
+
 # ЗМІНА АКАУНТУ =============================================
 @router.callback_query(F.data == "change_account")
 async def change_account(query: types.CallbackQuery, state: FSMContext):
     db = await Database.setup()
-    user_id  = query.from_user.id
+    user_id = query.from_user.id
 
     if await db.student_exists_sql(user_id):
-        await query.message.edit_text("Тепер ви будете викладач 😎\n⬇️ Виберіть викладача", reply_markup=await teacher_group_list_kb())
+        await query.message.edit_text(
+            "Тепер ви будете викладач 😎\n⬇️ Виберіть викладача",
+            reply_markup=await teacher_group_list_kb(),
+        )
         await state.set_state(FSMSettings.change_account_to_teacher)
     elif await db.teacher_exists_sql(user_id):
-        await query.message.edit_text("Тепер ви будете студентом 😎\n⬇️ Виберіть групу", reply_markup=await student_group_list_kb())
+        await query.message.edit_text(
+            "Тепер ви будете студентом 😎\n⬇️ Виберіть групу",
+            reply_markup=await student_group_list_kb(),
+        )
         await state.set_state(FSMSettings.change_account_to_student)
+
 
 @router.callback_query(FSMSettings.change_account_to_student)
 async def change_account_to_student(query: types.CallbackQuery, state: FSMContext):
@@ -53,14 +60,20 @@ async def change_account_to_student(query: types.CallbackQuery, state: FSMContex
     await query.message.delete()
     group = query.data
     user_id = query.from_user.id
-    
+
     if await db.student_group_exists_sql(group):
         await db.delete_teacher_sql(user_id)
         await db.add_student_sql(user_id=user_id, group_student=group)
-        await query.message.answer("Дані оновлено ✅", reply_markup=await start_student_kb())
+        await query.message.answer(
+            "Дані оновлено ✅", reply_markup=await start_student_kb()
+        )
         await query.answer(f"Тепер ви студент\nу групі {group}", show_alert=True)
-        await query.message.answer("Налаштуйте свій акаунт в боті:", reply_markup=await settings_inile_kb(user_id))
+        await query.message.answer(
+            "Налаштуйте свій акаунт в боті:",
+            reply_markup=await settings_inile_kb(user_id),
+        )
         await state.clear()
+
 
 @router.callback_query(FSMSettings.change_account_to_teacher)
 async def change_account_to_teacher(query: types.CallbackQuery, state: FSMContext):
@@ -68,14 +81,20 @@ async def change_account_to_teacher(query: types.CallbackQuery, state: FSMContex
     await query.message.delete()
     group = query.data
     user_id = query.from_user.id
-    
+
     if await db.teacher_group_exists_sql(group):
         await db.delete_student_sql(user_id)
         await db.add_teacher_sql(user_id=user_id, group_teacher=group)
-        await query.message.answer("Дані оновлено ✅", reply_markup=await start_teacher_kb())
+        await query.message.answer(
+            "Дані оновлено ✅", reply_markup=await start_teacher_kb()
+        )
         await query.answer(f"Тепер ви {group}", show_alert=True)
-        await query.message.answer("Налаштуйте свій акаунт в боті:", reply_markup=await settings_inile_kb(user_id))
+        await query.message.answer(
+            "Налаштуйте свій акаунт в боті:",
+            reply_markup=await settings_inile_kb(user_id),
+        )
         await state.clear()
+
 
 # ЗМІНА ГРУПИ =============================================
 @router.callback_query(Text(text="change_student_group"))
@@ -98,11 +117,11 @@ async def change_student_group1(query: types.CallbackQuery, state: FSMContext):
             reply_markup=await settings_inile_kb(user_id),
         )
         return
-    
+
     if not await db.student_group_exists_sql(query.data):
         await query.answer(f"Не існує групи {query.data}", show_alert=True)
         await state.clear()
-        return 
+        return
 
     await db.update_student_sql(user_id=user_id, group_student=query.data)
     await query.message.delete()
@@ -133,11 +152,11 @@ async def change_teacher_group1(query: types.CallbackQuery, state: FSMContext):
             reply_markup=await settings_inile_kb(user_id),
         )
         return
-    
+
     if not await db.teacher_group_exists_sql(query.data):
         await query.answer(f"Не існує групи {query.data}", show_alert=True)
         await state.clear()
-        return 
+        return
 
     await db.update_teacher_sql(user_id=user_id, group_teacher=query.data)
     await query.message.delete()

@@ -1,6 +1,7 @@
-from data_base.create_db import BaseDBPart
 import asyncache
 import cachetools
+
+from data_base.create_db import BaseDBPart
 
 
 class AdminDB(BaseDBPart):
@@ -11,7 +12,9 @@ class AdminDB(BaseDBPart):
         Аргументи - user_id (int)
         Повертає - True or False
         """
-        exists = await self.cur.execute("SELECT COUNT(`user_id`) FROM `admin` WHERE `user_id` = ?", (user_id,))
+        exists = await self.cur.execute(
+            "SELECT COUNT(`user_id`) FROM `admin` WHERE `user_id` = ?", (user_id,)
+        )
         exists = await exists.fetchall()
         return bool(exists[0][0])
 
@@ -20,7 +23,11 @@ class AdminDB(BaseDBPart):
     async def add_admin_sql(self, user_id, username):
         await self.cur.execute(
             "INSERT INTO `admin` (`user_id`, `username`) VALUES (?,?)",
-            (user_id, username,))
+            (
+                user_id,
+                username,
+            ),
+        )
         return await self.base.commit()
 
     # Видаляє адміна за його user_id

@@ -1,22 +1,20 @@
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+
 from data_base import Database
+
 
 # 👩‍🏫 Клавіатура викладача
 async def teacher_kb() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
-    keyboard = [
-        "Тривоги ☢️",
-        "Написати ✉️",
-        "Сховати ❌",
-        "Замітки 📝"
-    ]
+    keyboard = ["Тривоги ☢️", "Написати ✉️", "Сховати ❌", "Замітки 📝"]
 
     for button in keyboard:
         builder.add(InlineKeyboardButton(text=button, callback_data=button))
 
     return builder.adjust(2).as_markup(resize_keyboard=True)
+
 
 # 👩‍🏫 Список груп викладачів
 async def teacher_group_list_kb():
