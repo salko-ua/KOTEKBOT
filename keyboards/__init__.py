@@ -2,7 +2,6 @@ from keyboards.admin_kb import *
 from keyboards.back_kb import *
 from keyboards.commands_kb import *
 from keyboards.menu_kb import *
-from keyboards.prime_kb import *
 from keyboards.reg_kb import *
 from keyboards.settings_kb import *
 from keyboards.stats_kb import *
