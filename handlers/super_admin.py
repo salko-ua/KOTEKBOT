@@ -292,7 +292,7 @@ async def delete_group1(message: types.Message, state: FSMContext):
         return
 
     fullname = message.text
-    if not await db.student_exists_sql(fullname):
+    if not await db.student_group_exists_sql(fullname):
         await message.answer(
             "Група з такою назвою немає", reply_markup=await super_admin_kb()
         )

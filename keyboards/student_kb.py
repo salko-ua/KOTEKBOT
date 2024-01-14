@@ -13,7 +13,11 @@ from data_base import Database
 async def student_kb() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
-    keyboard = ["Тривоги ⚠️", "Написати ✉️", "Сховати ❌", "Замітки 📝"]
+    keyboard = [
+        "Тривоги ⚠️",
+        "Написати ✉️",
+        "Сховати ❌",
+    ]
 
     for button in keyboard:
         builder.add(InlineKeyboardButton(text=button, callback_data=button))

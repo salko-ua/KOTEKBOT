@@ -64,7 +64,13 @@ async def start_teacher_kb() -> ReplyKeyboardMarkup:
 async def start_admin_kb() -> ReplyKeyboardMarkup:
     builder = ReplyKeyboardBuilder()
 
-    keyboard = ["Панель 📁", "Адмін 🔑", "Інше 📌", "Розклад 📚", "Налаштування ⚙️"]
+    keyboard = [
+        "Панель 📁",
+        "Адмін ",
+        "Інше 📌",
+        "Розклад 📚",
+        "Налаштування ⚙️",
+    ]
 
     for button in keyboard:
         builder.add(KeyboardButton(text=button))
