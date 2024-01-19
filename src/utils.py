@@ -1,7 +1,14 @@
 from datetime import datetime
-
-from aiogram import Bot, types
 from translate import Translator
+from aiosqlite import Row, Cursor
+
+
+async def exist(exist_cur: Cursor) -> bool:
+    exists: Row = await exist_cur.fetchone()
+    if not exists:
+        return False
+
+    return bool(exists[0])
 
 
 async def get_current_date() -> str:

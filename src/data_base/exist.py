@@ -1,16 +1,7 @@
 import asyncache
 import cachetools
-
 from src.data_base.create_db import BaseDBPart
-from aiosqlite import Row, Cursor
-
-
-async def exist(exist_cur: Cursor) -> bool:
-    exists: Row = await exist_cur.fetchone()
-    if not exists:
-        return False
-
-    return bool(exists[0])
+from src.utils import exist
 
 
 class ExistDB(BaseDBPart):
