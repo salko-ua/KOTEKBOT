@@ -69,6 +69,17 @@ class Database(AddDB, DeleteDB, ExistDB, SelectDB, UpdateDB):
         )
         await base.execute(
             """
+            CREATE TABLE Voting (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title TEXT NOT NULL,
+                result TEXT NOT NULL, --json
+                status TEXT CHECK(status IN ('Waiting', 'In progress', 'Finished')) NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+            """
+        )
+        await base.execute(
+            """
             CREATE TABLE IF NOT EXISTS photo(
                 id_photo   TEXT UNIQUE,
                 name_photo TEXT,
