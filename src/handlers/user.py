@@ -4,7 +4,7 @@ import asyncache
 import cachetools
 from aiogram import F, Router
 
-from data_base import Database
+from src.data_base import Database
 
 router = Router()
 
@@ -19,29 +19,16 @@ async def user_update_db(
     date_join = now.strftime("%d/%m/%Y, %H:%M:%S")
     count_message = 1
     last_message = now.strftime("%d/%m/%Y, %H:%M:%S")
-    admin = await db.admin_exists_sql(user_id)
+    admin = await db.admin_exists(user_id)
 
     # student group
-    if await db.student_exists_sql(user_id):
-        student_group = await db.group_for_student_id_sql(user_id)
-    elif not await db.student_exists_sql(user_id):
-        student_group = "absent"
+    student_group = "absent"
+    if await db.student_exists(user_id):
+        student_group = await db.group_for_student_id(user_id)
 
     # user exists (update user)
-    if await db.user_exists_sql(user_id):
-        await db.update_user_sql(
-            user_id,
-            first_name,
-            last_name,
-            username,
-            last_message,
-            admin,
-            student_group,
-        )
-
-    # user not exists (add user)
-    if not await db.user_exists_sql(user_id):
-        await db.add_user_sql(
+    if not await db.user_exists(user_id):
+        await db.add_user(
             user_id,
             first_name,
             last_name,
@@ -52,3 +39,14 @@ async def user_update_db(
             admin,
             student_group,
         )
+        return
+
+    await db.update_user(
+        user_id,
+        first_name,
+        last_name,
+        username,
+        last_message,
+        admin,
+        student_group,
+    )

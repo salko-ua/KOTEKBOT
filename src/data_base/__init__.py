@@ -3,20 +3,14 @@ import os
 import aiosqlite
 import asyncache
 
-from data_base.admin_db import AdminDB
-from data_base.photo_db import PhotoDB
-from data_base.student_db import StudentDB
-from data_base.student_group_db import StudentGroupDB
-from data_base.user_db import UserDB
+from src.data_base.add import AddDB
+from src.data_base.delete import DeleteDB
+from src.data_base.exist import ExistDB
+from src.data_base.select import SelectDB
+from src.data_base.update import UpdateDB
 
 
-class Database(
-    AdminDB,
-    PhotoDB,
-    StudentDB,
-    StudentGroupDB,
-    UserDB,
-):
+class Database(AddDB, DeleteDB, ExistDB, SelectDB, UpdateDB):
     @classmethod
     @asyncache.cached({})
     async def setup(cls):

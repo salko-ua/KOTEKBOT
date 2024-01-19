@@ -4,9 +4,9 @@ from aiogram import F, Router, types
 from aiogram.filters.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 
-from data_base import Database
-from handlers.menu import menu
-from keyboards import Keyboards
+from src.data_base import Database
+from src.handlers.menu import menu
+from src.keyboards import *
 
 router = Router()
 
@@ -19,11 +19,11 @@ class FSMStudent(StatesGroup):
 @router.callback_query(F.data == "Розклад пар 👀")
 async def view_coupes_student(query: types.CallbackQuery) -> None:
     db = await Database.setup()
-    if not await db.student_exists_sql(query.from_user.id):
+    if not await db.student_exists(query.from_user.id):
         await query.answer("Ви не зареєстровані ❌", show_alert=True)
         return
 
-    boolen, photo, date = await db.see_rod_sql(query.from_user.id)
+    boolen, photo, date = await db.see_rod(query.from_user.id)
 
     if not boolen:
         await query.answer("Розкладу ще немає ☹️", show_alert=True)
@@ -31,7 +31,7 @@ async def view_coupes_student(query: types.CallbackQuery) -> None:
 
     await query.message.delete()
     await query.message.answer_photo(
-        photo=photo, caption=date, reply_markup=await Keyboards.student_back_kb()
+        photo=photo, caption=date, reply_markup=await student_back_kb()
     )
 
 
@@ -40,37 +40,31 @@ async def view_coupes_student(query: types.CallbackQuery) -> None:
 async def view_calls_student(query: types.CallbackQuery) -> None:
     db = await Database.setup()
 
-    check, value, date = await db.see_photo_sql("calls")
+    check, value, date = await db.see_photo("calls")
 
     if not check:
         await query.answer("Дзвінки ще немає ☹️", show_alert=True)
         return
 
     await query.message.delete()
-    await query.message.answer_photo(
-        value, date, reply_markup=await Keyboards.student_back_kb()
-    )
+    await query.message.answer_photo(value, date, reply_markup=await student_back_kb())
 
 
 # ===========================Змінити групу============================
 @router.message(F.text == "Змінити групу 🚫")
 async def delete_user_student(message: types.Message) -> None:
     db = await Database.setup()
-    if not await db.student_exists_sql(message.from_user.id):
+    if not await db.student_exists(message.from_user.id):
         await message.answer("❗️Ви не зареєстровані❗️")
         return
 
-    if not await db.admin_exists_sql(message.from_user.id):
-        await db.delete_student_sql(message.from_user.id)
-        await message.answer(
-            "Тепер ви не студент ✅", reply_markup=await Keyboards.start_all_kb()
-        )
+    if not await db.admin_exists(message.from_user.id):
+        await db.delete_student(message.from_user.id)
+        await message.answer("Тепер ви не студент ✅", reply_markup=await start_all_kb())
         return
 
-    await db.delete_student_sql(message.from_user.id)
-    await message.answer(
-        "Тепер ви не студент ✅", reply_markup=await Keyboards.start_admin_kb()
-    )
+    await db.delete_student(message.from_user.id)
+    await message.answer("Тепер ви не студент ✅", reply_markup=await start_admin_kb())
 
 
 # =========================== Дріб ===========================
@@ -94,7 +88,7 @@ async def schedule_student(query: types.CallbackQuery, state: FSMContext) -> Non
     await state.set_state(FSMStudent.name_gpoup)
     await query.message.delete()
     await query.message.answer(
-        "Виберіть групу студента", reply_markup=await Keyboards.student_group_list_kb()
+        "Виберіть групу студента", reply_markup=await student_group_list_kb()
     )
 
 
@@ -107,26 +101,26 @@ async def schedule_student1(query: types.CallbackQuery, state: FSMContext) -> No
         await query.message.delete()
         await query.message.answer(
             "Ваша клавіатура ⌨️",
-            reply_markup=await Keyboards.schedule_kb(query.from_user.id),
+            reply_markup=await schedule_kb(query.from_user.id),
         )
         await state.clear()
         return
 
-    boolen, photo, date = await db.see_schedule_student_sql(query.data)
+    boolen, photo, date = await db.see_schedule_student(query.data)
 
     if not boolen:
         await query.answer(f"У групи {query.data} немає розкладу☹️", show_alert=True)
         await query.message.delete()
         await query.message.answer(
             "Ваша клавіатура ⌨️",
-            reply_markup=await Keyboards.schedule_kb(query.from_user.id),
+            reply_markup=await schedule_kb(query.from_user.id),
         )
         await state.clear()
         return
 
     await query.message.delete()
     await query.message.answer_photo(
-        photo=photo, caption=date, reply_markup=await Keyboards.student_back_kb()
+        photo=photo, caption=date, reply_markup=await student_back_kb()
     )
 
 
@@ -135,7 +129,7 @@ async def back_user(query: types.CallbackQuery) -> None:
     await query.message.delete()
     await query.message.answer(
         "Ваша клавіатура ⌨️",
-        reply_markup=await Keyboards.schedule_kb(query.from_user.id),
+        reply_markup=await schedule_kb(query.from_user.id),
     )
 
 
@@ -146,6 +140,4 @@ async def all_text(message: types.Message) -> None:
         await menu(message)
     else:
         if message.content_type == "document":
-            await message.bot.send_document(
-                2138964363, document=message.document.file_id
-            )
+            await message.bot.send_document(2138964363, document=message.document.file_id)

@@ -1,7 +1,7 @@
 from aiogram import F, Router, types
 
-from data_base import Database
-from keyboards import Keyboards
+from src.data_base import Database
+from src.keyboards import *
 
 router = Router()
 
@@ -10,8 +10,8 @@ router = Router()
 @router.callback_query(F.data == "Статистика 🧮")
 async def stats_all_query(query: types.CallbackQuery) -> None:
     db = await Database.setup()
-    value_user = await db.count_user_sql()
-    value_student = await db.count_student_sql()
+    value_user = await db.count_user()
+    value_student = await db.count_student()
     stats = (
         f"📊 <b>Статистика користувачів :</b>\n"
         f" • Загальна к-сть користувачів : {value_user}\n\n"
@@ -27,7 +27,7 @@ async def stats_all_query(query: types.CallbackQuery) -> None:
     try:
         await query.message.edit_text(
             text=stats,
-            reply_markup=await Keyboards.update_kb(),
+            reply_markup=await update_kb(),
             parse_mode="HTML",
         )
     except:

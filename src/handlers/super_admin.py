@@ -4,11 +4,11 @@ from aiogram.filters.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 from aiogram.types import ReplyKeyboardRemove
 
-from config import SUPER_ADMIN
-from data_base import Database
-from handlers.reg import password_for_admin
-from keyboards import Keyboards
-from utils import get_current_date
+from src.config import SUPER_ADMIN
+from src.data_base import Database
+from src.handlers.reg import password_for_admin
+from src.keyboards import *
+from src.utils import get_current_date
 
 router = Router()
 
@@ -43,9 +43,7 @@ async def super_admin(message: types.Message) -> None:
     if not await is_super_admin(message):
         return
 
-    await message.answer(
-        "Клавіатура власника", reply_markup=await Keyboards.super_admin_kb()
-    )
+    await message.answer("Клавіатура власника", reply_markup=await super_admin_kb())
 
 
 # Видалити студента за id
@@ -64,9 +62,9 @@ async def super_admin_delete_user1(message: types.Message, state: FSMContext) ->
     if not await is_super_admin(message):
         return
 
-    exits = await db.student_exists_sql(message.text)
+    exits = await db.student_exists(message.text)
     if exits:
-        await db.delete_student_sql(message.text)
+        await db.delete_student(message.text)
         await message.answer("Студента видаленно")
         await state.clear()
     elif not exits:
@@ -109,11 +107,9 @@ async def add_calls1(message: types.Message, state: FSMContext) -> None:
     if not await is_super_admin(message):
         return
 
-    await db.add_photo_sql(
-        "calls", message.photo[0].file_id, "Зміненно: " + translation
-    )
+    await db.add_photo("calls", message.photo[0].file_id, "Зміненно: " + translation)
     await message.answer(
-        "Розклад дзвінків оновлено ✅", reply_markup=await Keyboards.super_admin_kb()
+        "Розклад дзвінків оновлено ✅", reply_markup=await super_admin_kb()
     )
     await state.clear()
 
@@ -122,7 +118,7 @@ async def add_calls1(message: types.Message, state: FSMContext) -> None:
 @router.message(F.text == "дзвінків 🗑")
 async def delete_calls(message: types.Message) -> None:
     db = await Database.setup()
-    check = await db.delete_photo_sql("calls")
+    check = await db.delete_photo("calls")
 
     if not await is_super_admin(message):
         return
@@ -130,12 +126,12 @@ async def delete_calls(message: types.Message) -> None:
     if not check:
         await message.answer(
             "Розкладу дзвінків ще немає 🔴",
-            reply_markup=await Keyboards.super_admin_kb(),
+            reply_markup=await super_admin_kb(),
         )
         return
 
     await message.answer(
-        "Розклад дзвінків видалено 🗑", reply_markup=await Keyboards.super_admin_kb()
+        "Розклад дзвінків видалено 🗑", reply_markup=await super_admin_kb()
     )
 
 
@@ -147,7 +143,7 @@ async def delete_group(message: types.Message, state: FSMContext) -> None:
 
     await state.set_state(FSMSuperAdmin.curse_group_delete)
     await message.answer(
-        "Виберіть групу ⬇️", reply_markup=await Keyboards.group_selection_student_kb()
+        "Виберіть групу ⬇️", reply_markup=await group_selection_student_kb()
     )
 
 
@@ -158,38 +154,32 @@ async def delete_group1(message: types.Message, state: FSMContext) -> None:
         return
 
     if message.text == "Назад":
-        await message.answer("Меню", reply_markup=await Keyboards.super_admin_kb())
+        await message.answer("Меню", reply_markup=await super_admin_kb())
         await state.clear()
         return
 
     fullname = message.text
-    if not await db.student_group_exists_sql(fullname):
+    if not await db.student_group_exists(fullname):
         await message.answer(
-            "Група з такою назвою немає", reply_markup=await Keyboards.super_admin_kb()
+            "Група з такою назвою немає", reply_markup=await super_admin_kb()
         )
         await state.clear()
         return
 
     if len(fullname) >= 3:
-        await message.answer(
-            "❌ Ліміт 3 символи ", reply_markup=await Keyboards.super_admin_kb()
-        )
+        await message.answer("❌ Ліміт 3 символи ", reply_markup=await super_admin_kb())
         await state.clear()
         return
 
-    if not await db.student_in_group_exists_sql(fullname):
-        await db.delete_student_group_sql(fullname)
-        await message.answer(
-            "Групу видалено ✅", reply_markup=await Keyboards.super_admin_kb()
-        )
+    if not await db.student_in_group_exists(fullname):
+        await db.delete_student_group(fullname)
+        await message.answer("Групу видалено ✅", reply_markup=await super_admin_kb())
         await state.clear()
         return
 
-    await db.delete_student_group_sql(fullname)
-    await db.delete_student_for_group_sql(fullname)
-    await message.answer(
-        "Групу видалено ✅", reply_markup=await Keyboards.super_admin_kb()
-    )
+    await db.delete_student_group(fullname)
+    await db.delete_student_for_group(fullname)
+    await message.answer("Групу видалено ✅", reply_markup=await super_admin_kb())
     await state.clear()
 
 
@@ -212,14 +202,14 @@ async def add_group1(message: types.Message, state: FSMContext) -> None:
         return
 
     if message.text == "Назад":
-        await message.answer("Меню", reply_markup=await Keyboards.super_admin_kb())
+        await message.answer("Меню", reply_markup=await super_admin_kb())
         await state.clear()
         return
 
     name = message.text
-    if await db.student_group_exists_sql(name):
+    if await db.student_group_exists(name):
         await message.answer(
-            "Група з такою назвою вже є", reply_markup=await Keyboards.super_admin_kb()
+            "Група з такою назвою вже є", reply_markup=await super_admin_kb()
         )
         await state.clear()
         return
@@ -227,15 +217,13 @@ async def add_group1(message: types.Message, state: FSMContext) -> None:
     if len(name) >= 3:
         await message.answer(
             "❌ Ліміт 3 символи",
-            reply_markup=await Keyboards.super_admin_kb(),
+            reply_markup=await super_admin_kb(),
         )
         await state.clear()
         return
 
-    await db.add_student_group_sql(name)
-    await message.answer(
-        "Групу створено ✅", reply_markup=await Keyboards.super_admin_kb()
-    )
+    await db.add_student_group(name)
+    await message.answer("Групу створено ✅", reply_markup=await super_admin_kb())
     await state.clear()
 
 
@@ -258,7 +246,7 @@ async def add_schedule_to_group1(message: types.Message, state: FSMContext) -> N
     await state.set_state(FSMSuperAdmin.curse_group_rad)
     await message.answer(
         "До якої групи привязати",
-        reply_markup=await Keyboards.group_selection_student_kb(),
+        reply_markup=await group_selection_student_kb(),
     )
 
 
@@ -272,27 +260,21 @@ async def add_schedule_to_group2(message: types.Message, state: FSMContext) -> N
         return
 
     if message.text == "Назад":
-        await message.answer(
-            "Клавіатура", reply_markup=await Keyboards.super_admin_kb()
-        )
+        await message.answer("Клавіатура", reply_markup=await super_admin_kb())
         await state.clear()
         return
 
-    if not await db.student_group_exists_sql(message.text):
-        await message.answer(
-            "Немає такої групи ❌", reply_markup=await Keyboards.super_admin_kb()
-        )
+    if not await db.student_group_exists(message.text):
+        await message.answer("Немає такої групи ❌", reply_markup=await super_admin_kb())
         await state.clear()
         return
 
-    await db.student_group_photo_update_sql(
+    await db.student_group_photo_update(
         data["curse_group_rad_photo"],
         message.text,
         "Зміненно: " + translation,
     )
-    await message.answer(
-        "Розклад успішно додано ✅", reply_markup=await Keyboards.super_admin_kb()
-    )
+    await message.answer("Розклад успішно додано ✅", reply_markup=await super_admin_kb())
     await state.clear()
 
 
@@ -303,7 +285,7 @@ async def delete_photo_group(message: types.Message, state: FSMContext) -> None:
 
     await state.set_state(FSMSuperAdmin.curse_group_photo_delete)
     await message.answer(
-        "Виберіть групу ⬇️", reply_markup=await Keyboards.group_selection_student_kb()
+        "Виберіть групу ⬇️", reply_markup=await group_selection_student_kb()
     )
 
 
@@ -314,18 +296,18 @@ async def delete_photo_group1(message: types.Message, state: FSMContext) -> None
         return
 
     if message.text == "Назад":
-        await message.answer("Меню", reply_markup=await Keyboards.super_admin_kb())
+        await message.answer("Меню", reply_markup=await super_admin_kb())
         await state.clear()
         return
 
-    if not await db.student_group_exists_sql(message.text):
+    if not await db.student_group_exists(message.text):
         await message.answer(
-            "Групи з такою назвою немає", reply_markup=await Keyboards.super_admin_kb()
+            "Групи з такою назвою немає", reply_markup=await super_admin_kb()
         )
         await state.clear()
         return
 
-    await db.delete_student_group_photo_sql(message.text)
+    await db.delete_student_group_photo(message.text)
     await message.answer(
-        "Розклад групі успішно видалено", reply_markup=await Keyboards.super_admin_kb()
+        "Розклад групі успішно видалено", reply_markup=await super_admin_kb()
     )

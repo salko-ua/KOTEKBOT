@@ -6,8 +6,8 @@ from aiogram import Bot
 from alerts_in_ua import AsyncClient as AsyncAlertsClient
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
-from config import TOKEN_ALERT
-from data_base import Database
+from src.config import TOKEN_ALERT
+from src.data_base import Database
 
 
 class Alerts:
@@ -59,7 +59,7 @@ class Alerts:
             id="wait_finish_alarm",
         )
 
-        all_user_ids = map(lambda e: e[0], await db.list_id_student_agreed_alert_sql())
+        all_user_ids = map(lambda e: e[0], await db.list_id_student_agreed_alert())
         await asyncio.gather(
             *map(self.send_notification(is_active=is_active, who=False), all_user_ids)
         )
@@ -79,7 +79,7 @@ class Alerts:
             id="wait_start_alarm",
         )
 
-        all_user_ids = map(lambda e: e[0], await db.list_id_student_agreed_alert_sql())
+        all_user_ids = map(lambda e: e[0], await db.list_id_student_agreed_alert())
         await asyncio.gather(
             *map(self.send_notification(is_active=is_active), all_user_ids)
         )

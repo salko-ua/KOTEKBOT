@@ -3,7 +3,7 @@ from typing import Any, Awaitable, Callable, Dict
 from aiogram import BaseMiddleware
 from aiogram.types import CallbackQuery, Message
 
-from handlers.user import user_update_db
+from src.handlers.user import user_update_db
 
 
 class MessageMiddleware(BaseMiddleware):

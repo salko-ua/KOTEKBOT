@@ -1,14 +1,13 @@
 import asyncio
+from typing import Any
 
 from aiogram import Bot, F, Router
 from aiogram.filters.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
-from config import *
-from data_base import Database
-from handlers.menu import menu
-from keyboards import Keyboards
+from src.handlers.menu import menu
+from src.keyboards import *
 
 
 class FSMAdmin(StatesGroup):
@@ -31,24 +30,20 @@ async def hide_message(query: CallbackQuery):
 @router.message(F.text == "Адмін 🔑")
 async def admin(message: Message) -> None:
     db = await Database.setup()
-    if await db.admin_exists_sql(message.from_user.id):
+    if await db.admin_exists(message.from_user.id):
         await message.delete()
-        await message.answer(
-            "Клавіатура адміна", reply_markup=await Keyboards.admin_kb()
-        )
+        await message.answer("Клавіатура адміна", reply_markup=await admin_kb())
 
 
 # ===========================Видалити акаунт============================
 @router.message(F.text == "Видалити акаунт")
 async def delete_admin(message: Message) -> None:
     db = await Database.setup()
-    if not await db.admin_exists_sql(message.from_user.id):
-        await message.answer(
-            "Ви не адмін :D", reply_markup=await Keyboards.start_all_kb()
-        )
+    if not await db.admin_exists(message.from_user.id):
+        await message.answer("Ви не адмін :D", reply_markup=await start_all_kb())
         return
 
-    await db.delete_admins_sql(message.from_user.id)
+    await db.delete_admins(message.from_user.id)
     await menu(message)
 
 
@@ -57,11 +52,11 @@ async def delete_admin(message: Message) -> None:
 async def send_photo_news(query: CallbackQuery, state: FSMContext) -> None:
     db = await Database.setup()
 
-    if not await db.admin_exists_sql(query.from_user.id):
+    if not await db.admin_exists(query.from_user.id):
         return
 
     await query.message.edit_text("Надішліть фото 🖼")
-    await query.message.edit_reply_markup(reply_markup=await Keyboards.admin_back_kb())
+    await query.message.edit_reply_markup(reply_markup=await admin_back_kb())
     await state.set_state(FSMAdmin.photo)
     await state.update_data(query=query)
 
@@ -69,11 +64,11 @@ async def send_photo_news(query: CallbackQuery, state: FSMContext) -> None:
 @router.callback_query(F.date == "Викласти 📝")
 async def send_message_news(query: CallbackQuery, state: FSMContext) -> None:
     db = await Database.setup()
-    if not await db.admin_exists_sql(query.from_user.id):
+    if not await db.admin_exists(query.from_user.id):
         return
 
     await query.message.edit_text("Надішліть текст 📝")
-    await query.message.edit_reply_markup(reply_markup=await Keyboards.admin_back_kb())
+    await query.message.edit_reply_markup(reply_markup=await admin_back_kb())
     await state.set_state(FSMAdmin.text)
     await state.update_data(query=query)
 
@@ -81,11 +76,11 @@ async def send_message_news(query: CallbackQuery, state: FSMContext) -> None:
 @router.callback_query(F.data == "Викласти 🖼📝")
 async def send_mixed_news(query: CallbackQuery, state: FSMContext) -> None:
     db = await Database.setup()
-    if not await db.admin_exists_sql(query.from_user.id):
+    if not await db.admin_exists(query.from_user.id):
         return
 
     await query.message.edit_text("Надішліть текст 📝")
-    await query.message.edit_reply_markup(reply_markup=await Keyboards.admin_back_kb())
+    await query.message.edit_reply_markup(reply_markup=await admin_back_kb())
     await state.set_state(FSMAdmin.mixed_text)
     await state.update_data(query=query)
 
@@ -96,7 +91,7 @@ async def send_mixed_news(query: CallbackQuery, state: FSMContext) -> None:
 @router.callback_query(FSMAdmin.mixed_photo, F.data == "Назад")
 async def back(query: CallbackQuery, state: FSMContext) -> None:
     await query.message.edit_text("Новину відмінено✅")
-    await query.message.edit_reply_markup(reply_markup=await Keyboards.admin_kb())
+    await query.message.edit_reply_markup(reply_markup=await admin_kb())
     await state.clear()
     return
 
@@ -107,12 +102,17 @@ async def send_photo_news1(message: Message, state: FSMContext) -> None:
     data = await state.get_data()
     query: CallbackQuery = data["query"]
     photo = message.photo[0].file_id
-    user_ids = map(lambda e: e[0], await db.list_id_student_agreed_news_sql())
+    user_ids = map(lambda e: e[0], await db.list_id_student_agreed_news())
 
     await state.clear()
     await message.delete()
     await query.message.delete()
-    await asyncio.gather(*map(send_notification(1, None, photo), user_ids))
+    await asyncio.gather(
+        *map(
+            send_notification(bot=message.bot, what_send=1, text="", photo=photo),
+            user_ids,
+        )
+    )
     await message.answer("Надсилання закінчено!")
 
 
@@ -120,18 +120,21 @@ async def send_photo_news1(message: Message, state: FSMContext) -> None:
 async def send_message_news1(message: Message, state: FSMContext) -> None:
     db = await Database.setup()
     text = message.text
-    user_ids = map(lambda e: e[0], await db.list_id_student_agreed_news_sql())
+    user_ids = map(lambda e: e[0], await db.list_id_student_agreed_news())
 
     await state.clear()
-    await asyncio.gather(*map(send_notification(2, text, None), user_ids))
+    await asyncio.gather(
+        *map(
+            send_notification(bot=message.bot, what_send=2, text=text, photo=""),
+            user_ids,
+        )
+    )
     await message.answer("Надсилання закінчено!")
 
 
 @router.message(FSMAdmin.mixed_text, F.text)
 async def send_mixed_news1(message: Message, state: FSMContext) -> None:
-    await message.answer(
-        "Надішліть фото 🖼", reply_markup=await Keyboards.admin_back_kb()
-    )
+    await message.answer("Надішліть фото 🖼", reply_markup=await admin_back_kb())
     await state.update_data(text=message.text)
     await state.set_state(FSMAdmin.mixed_photo)
 
@@ -142,14 +145,19 @@ async def send_mixed_news2(message: Message, state: FSMContext) -> None:
     data = await state.get_data()
     text = data["text"]
     photo = message.photo[0].file_id
-    user_ids = map(lambda e: e[0], await db.list_id_student_agreed_news_sql())
+    user_ids = map(lambda e: e[0], await db.list_id_student_agreed_news())
 
     await state.clear()
-    await asyncio.gather(*map(send_notification(message.bot, 3, text, photo), user_ids))
+    await asyncio.gather(
+        *map(
+            send_notification(bot=message.bot, what_send=3, text=text, photo=photo),
+            user_ids,
+        )
+    )
     await message.answer("Надсилання закінчено!")
 
 
-def send_notification(bot: Bot, what_send: int, text: str, photo: str) -> None:
+def send_notification(bot: Bot, what_send: int, text: str, photo: str) -> Any:
     async def wrapped(user_id: int):
         try:
             if what_send == 1:
@@ -158,7 +166,7 @@ def send_notification(bot: Bot, what_send: int, text: str, photo: str) -> None:
                 await bot.send_message(user_id, text)
             elif what_send == 3:
                 await bot.send_photo(user_id, photo, caption=text)
-        except:
+        finally:
             pass
 
     return wrapped
