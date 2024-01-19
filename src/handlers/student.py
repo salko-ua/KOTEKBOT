@@ -30,9 +30,7 @@ async def view_coupes_student(query: types.CallbackQuery) -> None:
         return
 
     await query.message.delete()
-    await query.message.answer_photo(
-        photo=photo, caption=date, reply_markup=await student_back_kb()
-    )
+    await query.message.answer_photo(photo=photo, caption=date, reply_murkup=student_back_kb())
 
 
 # ===========================Переглянути розклад дзвінків============================
@@ -47,7 +45,7 @@ async def view_calls_student(query: types.CallbackQuery) -> None:
         return
 
     await query.message.delete()
-    await query.message.answer_photo(value, date, reply_markup=await student_back_kb())
+    await query.message.answer_photo(value, date, reply_murkup=student_back_kb())
 
 
 # ===========================Змінити групу============================
@@ -60,11 +58,11 @@ async def delete_user_student(message: types.Message) -> None:
 
     if not await db.admin_exists(message.from_user.id):
         await db.delete_student(message.from_user.id)
-        await message.answer("Тепер ви не студент ✅", reply_markup=await start_all_kb())
+        await message.answer("Тепер ви не студент ✅", reply_murkup=start_all_kb())
         return
 
     await db.delete_student(message.from_user.id)
-    await message.answer("Тепер ви не студент ✅", reply_markup=await start_admin_kb())
+    await message.answer("Тепер ви не студент ✅", reply_murkup=start_admin_kb())
 
 
 # =========================== Дріб ===========================
@@ -88,7 +86,7 @@ async def schedule_student(query: types.CallbackQuery, state: FSMContext) -> Non
     await state.set_state(FSMStudent.name_gpoup)
     await query.message.delete()
     await query.message.answer(
-        "Виберіть групу студента", reply_markup=await student_group_list_kb()
+        "Виберіть групу студента", reply_murkup=await student_group_list_kb()
     )
 
 
@@ -100,8 +98,7 @@ async def schedule_student1(query: types.CallbackQuery, state: FSMContext) -> No
     if query.data == "Назад":
         await query.message.delete()
         await query.message.answer(
-            "Ваша клавіатура ⌨️",
-            reply_markup=await schedule_kb(query.from_user.id),
+            "Ваша клавіатура ⌨️", reply_murkup=schedule_kb(query.from_user.id)
         )
         await state.clear()
         return
@@ -112,25 +109,19 @@ async def schedule_student1(query: types.CallbackQuery, state: FSMContext) -> No
         await query.answer(f"У групи {query.data} немає розкладу☹️", show_alert=True)
         await query.message.delete()
         await query.message.answer(
-            "Ваша клавіатура ⌨️",
-            reply_markup=await schedule_kb(query.from_user.id),
+            "Ваша клавіатура ⌨️", reply_murkup=schedule_kb(query.from_user.id)
         )
         await state.clear()
         return
 
     await query.message.delete()
-    await query.message.answer_photo(
-        photo=photo, caption=date, reply_markup=await student_back_kb()
-    )
+    await query.message.answer_photo(photo=photo, caption=date, reply_murkup=student_back_kb())
 
 
 @router.callback_query(F.data == "student_back_kb")
 async def back_user(query: types.CallbackQuery) -> None:
     await query.message.delete()
-    await query.message.answer(
-        "Ваша клавіатура ⌨️",
-        reply_markup=await schedule_kb(query.from_user.id),
-    )
+    await query.message.answer("Ваша клавіатура ⌨️", reply_murkup=schedule_kb(query.from_user.id))
 
 
 # ===========================Пустий хендлер============================

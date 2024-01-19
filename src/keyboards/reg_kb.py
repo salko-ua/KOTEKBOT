@@ -3,14 +3,10 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 
 # Реєстрація 📝
-async def reg_choice_kb() -> InlineKeyboardMarkup:
+def reg_choice_kb() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
-    keyboard = [
-        "Студент 👩‍🎓",
-        "Адміністратор 🔐",
-        "Сховати ❌",
-    ]
+    keyboard = ["Студент 👩‍🎓", "Адміністратор 🔐", "Сховати ❌"]
 
     for button in keyboard:
         builder.add(InlineKeyboardButton(text=button, callback_data=button))

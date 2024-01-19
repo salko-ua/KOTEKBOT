@@ -5,7 +5,7 @@ from src.data_base import Database
 
 
 # super admin
-async def super_admin_kb() -> ReplyKeyboardMarkup:
+def super_admin_kb() -> ReplyKeyboardMarkup:
     builder = ReplyKeyboardBuilder()
 
     keyboard = [

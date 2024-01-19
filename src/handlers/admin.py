@@ -32,7 +32,7 @@ async def admin(message: Message) -> None:
     db = await Database.setup()
     if await db.admin_exists(message.from_user.id):
         await message.delete()
-        await message.answer("Клавіатура адміна", reply_markup=await admin_kb())
+        await message.answer("Клавіатура адміна", reply_murkup=admin_kb())
 
 
 # ===========================Видалити акаунт============================
@@ -40,7 +40,7 @@ async def admin(message: Message) -> None:
 async def delete_admin(message: Message) -> None:
     db = await Database.setup()
     if not await db.admin_exists(message.from_user.id):
-        await message.answer("Ви не адмін :D", reply_markup=await start_all_kb())
+        await message.answer("Ви не адмін :D", reply_murkup=start_all_kb())
         return
 
     await db.delete_admins(message.from_user.id)
@@ -56,7 +56,7 @@ async def send_photo_news(query: CallbackQuery, state: FSMContext) -> None:
         return
 
     await query.message.edit_text("Надішліть фото 🖼")
-    await query.message.edit_reply_markup(reply_markup=await admin_back_kb())
+    await query.message.edit_reply_markup(reply_murkup=admin_back_kb())
     await state.set_state(FSMAdmin.photo)
     await state.update_data(query=query)
 
@@ -68,7 +68,7 @@ async def send_message_news(query: CallbackQuery, state: FSMContext) -> None:
         return
 
     await query.message.edit_text("Надішліть текст 📝")
-    await query.message.edit_reply_markup(reply_markup=await admin_back_kb())
+    await query.message.edit_reply_markup(reply_murkup=admin_back_kb())
     await state.set_state(FSMAdmin.text)
     await state.update_data(query=query)
 
@@ -80,7 +80,7 @@ async def send_mixed_news(query: CallbackQuery, state: FSMContext) -> None:
         return
 
     await query.message.edit_text("Надішліть текст 📝")
-    await query.message.edit_reply_markup(reply_markup=await admin_back_kb())
+    await query.message.edit_reply_markup(reply_murkup=admin_back_kb())
     await state.set_state(FSMAdmin.mixed_text)
     await state.update_data(query=query)
 
@@ -91,7 +91,7 @@ async def send_mixed_news(query: CallbackQuery, state: FSMContext) -> None:
 @router.callback_query(FSMAdmin.mixed_photo, F.data == "Назад")
 async def back(query: CallbackQuery, state: FSMContext) -> None:
     await query.message.edit_text("Новину відмінено✅")
-    await query.message.edit_reply_markup(reply_markup=await admin_kb())
+    await query.message.edit_reply_markup(reply_murkup=admin_kb())
     await state.clear()
     return
 
@@ -108,10 +108,7 @@ async def send_photo_news1(message: Message, state: FSMContext) -> None:
     await message.delete()
     await query.message.delete()
     await asyncio.gather(
-        *map(
-            send_notification(bot=message.bot, what_send=1, text="", photo=photo),
-            user_ids,
-        )
+        *map(send_notification(bot=message.bot, what_send=1, text="", photo=photo), user_ids)
     )
     await message.answer("Надсилання закінчено!")
 
@@ -124,17 +121,14 @@ async def send_message_news1(message: Message, state: FSMContext) -> None:
 
     await state.clear()
     await asyncio.gather(
-        *map(
-            send_notification(bot=message.bot, what_send=2, text=text, photo=""),
-            user_ids,
-        )
+        *map(send_notification(bot=message.bot, what_send=2, text=text, photo=""), user_ids)
     )
     await message.answer("Надсилання закінчено!")
 
 
 @router.message(FSMAdmin.mixed_text, F.text)
 async def send_mixed_news1(message: Message, state: FSMContext) -> None:
-    await message.answer("Надішліть фото 🖼", reply_markup=await admin_back_kb())
+    await message.answer("Надішліть фото 🖼", reply_murkup=admin_back_kb())
     await state.update_data(text=message.text)
     await state.set_state(FSMAdmin.mixed_photo)
 
@@ -149,10 +143,7 @@ async def send_mixed_news2(message: Message, state: FSMContext) -> None:
 
     await state.clear()
     await asyncio.gather(
-        *map(
-            send_notification(bot=message.bot, what_send=3, text=text, photo=photo),
-            user_ids,
-        )
+        *map(send_notification(bot=message.bot, what_send=3, text=text, photo=photo), user_ids)
     )
     await message.answer("Надсилання закінчено!")
 

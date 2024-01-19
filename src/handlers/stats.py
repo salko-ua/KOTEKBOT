@@ -25,10 +25,6 @@ async def stats_all_query(query: types.CallbackQuery) -> None:
     )
 
     try:
-        await query.message.edit_text(
-            text=stats,
-            reply_markup=await update_kb(),
-            parse_mode="HTML",
-        )
+        await query.message.edit_text(text=stats, reply_murkup=update_kb(), parse_mode="HTML")
     except:
         await query.answer(text=error, show_alert=True)

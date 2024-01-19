@@ -1,14 +1,10 @@
-from aiogram.utils.keyboard import (
-    InlineKeyboardBuilder,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-)
+from aiogram.utils.keyboard import InlineKeyboardBuilder, InlineKeyboardButton, InlineKeyboardMarkup
 
 from src.data_base import Database
 
 
 # 👨‍🎓 student keyboard
-async def student_kb() -> InlineKeyboardMarkup:
+def student_kb() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
     keyboard = ["Сховати ❌"]

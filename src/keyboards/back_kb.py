@@ -3,7 +3,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 
 # ⬅️ Back admin
-async def admin_back_kb() -> InlineKeyboardMarkup:
+def admin_back_kb() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
     builder.add(InlineKeyboardButton(text="⬅️ Назад", callback_data="Назад"))
@@ -12,7 +12,7 @@ async def admin_back_kb() -> InlineKeyboardMarkup:
 
 
 # ⬅️ Back other
-async def other_back_kb() -> InlineKeyboardMarkup:
+def other_back_kb() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
     builder.add(InlineKeyboardButton(text="⬅️ Назад", callback_data="other_inline"))
@@ -22,7 +22,7 @@ async def other_back_kb() -> InlineKeyboardMarkup:
 
 
 # ⬅️ Back applicant
-async def applicant_back_kb() -> InlineKeyboardMarkup:
+def applicant_back_kb() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
     builder.add(InlineKeyboardButton(text="⬅️ Назад", callback_data="applicant_inline"))
@@ -32,7 +32,7 @@ async def applicant_back_kb() -> InlineKeyboardMarkup:
 
 
 # ⬅️ Back user
-async def student_back_kb() -> InlineKeyboardMarkup:
+def student_back_kb() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
     builder.add(InlineKeyboardButton(text="⬅️ Назад", callback_data="student_back_kb"))
@@ -42,7 +42,7 @@ async def student_back_kb() -> InlineKeyboardMarkup:
 
 
 # ❌ General hide
-async def hide_kb() -> InlineKeyboardMarkup:
+def hide_kb() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
     builder.add(InlineKeyboardButton(text="Сховати ❌", callback_data="Сховати ❌"))

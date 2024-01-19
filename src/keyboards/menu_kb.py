@@ -11,15 +11,10 @@ from src.data_base import Database
 
 
 # Головна клавіатура для не зареєстрованих
-async def start_all_kb() -> ReplyKeyboardMarkup:
+def start_all_kb() -> ReplyKeyboardMarkup:
     builder = ReplyKeyboardBuilder()
 
-    keyboard = [
-        "Реєстрація 📝",
-        "Розклад 📚",
-        "Інше 📌",
-        "Для абітурієнта 🧑‍💻",
-    ]
+    keyboard = ["Реєстрація 📝", "Розклад 📚", "Інше 📌", "Для абітурієнта 🧑‍💻"]
 
     for button in keyboard:
         builder.add(KeyboardButton(text=button))
@@ -28,15 +23,10 @@ async def start_all_kb() -> ReplyKeyboardMarkup:
 
 
 # Головна клавіатура для студентів
-async def start_student_kb() -> ReplyKeyboardMarkup:
+def start_student_kb() -> ReplyKeyboardMarkup:
     builder = ReplyKeyboardBuilder()
 
-    keyboard = [
-        "Студент 👨‍🎓",
-        "Налаштування ⚙️",
-        "Інше 📌",
-        "Розклад 📚",
-    ]
+    keyboard = ["Студент 👨‍🎓", "Налаштування ⚙️", "Інше 📌", "Розклад 📚"]
 
     for button in keyboard:
         builder.add(KeyboardButton(text=button))
@@ -45,16 +35,10 @@ async def start_student_kb() -> ReplyKeyboardMarkup:
 
 
 # Головна клавіатура для адмінів
-async def start_admin_kb() -> ReplyKeyboardMarkup:
+def start_admin_kb() -> ReplyKeyboardMarkup:
     builder = ReplyKeyboardBuilder()
 
-    keyboard = [
-        "Панель 📁",
-        "Адмін 🔑",
-        "Інше 📌",
-        "Розклад 📚",
-        "Налаштування ⚙️",
-    ]
+    keyboard = ["Панель 📁", "Адмін 🔑", "Інше 📌", "Розклад 📚", "Налаштування ⚙️"]
 
     for button in keyboard:
         builder.add(KeyboardButton(text=button))
@@ -63,7 +47,7 @@ async def start_admin_kb() -> ReplyKeyboardMarkup:
 
 
 # 📌 other
-async def other_kb() -> InlineKeyboardMarkup:
+def other_kb() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
     keyboard = [
@@ -84,16 +68,10 @@ async def other_kb() -> InlineKeyboardMarkup:
 
 
 # 🧑‍💻 applicant
-async def applicant_kb() -> InlineKeyboardMarkup:
+def applicant_kb() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
-    keyboard = [
-        "Вступ 📗",
-        "Про коледж 🛡",
-        "Адреса 📫",
-        "Контакти 📘",
-        "Реквізити 💳",
-    ]
+    keyboard = ["Вступ 📗", "Про коледж 🛡", "Адреса 📫", "Контакти 📘", "Реквізити 💳"]
     keyboard_url = [
         ("Офіційний сайт 🌎", "https://vvpc.com.ua/"),
         ("Спеціальності 📜", "https://padlet.com/VasylT/padlet-2ppk483bi2mgsg3h"),
@@ -114,10 +92,7 @@ async def schedule_kb(user_id: int) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     db = await Database.setup()
 
-    keyboard = [
-        "Розклад студ. 🧑‍🎓",
-        "Сховати ❌",
-    ]
+    keyboard = ["Розклад студ. 🧑‍🎓", "Сховати ❌"]
 
     if await db.student_exists(user_id):
         keyboard.insert(0, "Розклад дзвінків ⌚️")

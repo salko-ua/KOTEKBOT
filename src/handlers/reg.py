@@ -39,14 +39,14 @@ async def registration(message: types.Message, state: FSMContext) -> None:
     await message.delete()
 
     if await db.student_exists(message.from_user.id):
-        await message.answer("Ваша клавіатура ⌨️", reply_markup=await student_kb())
+        await message.answer("Ваша клавіатура ⌨️", reply_murkup=student_kb())
 
     elif await db.admin_exists(message.from_user.id):
-        await message.answer("Оберіть ⬇️", reply_markup=await reg_choice_kb())
+        await message.answer("Оберіть ⬇️", reply_murkup=reg_choice_kb())
         await state.set_state(FSMReg.reply_reg)
 
     else:
-        await message.answer("Оберіть ⬇️", reply_markup=await reg_choice_kb())
+        await message.answer("Оберіть ⬇️", reply_murkup=reg_choice_kb())
         await state.set_state(FSMReg.reply_reg)
 
 
@@ -61,7 +61,7 @@ async def reg(query: types.CallbackQuery, state: FSMContext) -> None:
     elif query.data == "Студент 👩‍🎓":
         await state.set_state(FSMReg.student_reg)
         await query.message.edit_text(
-            "⬇️ Виберіть групу", reply_markup=await student_group_list_kb()
+            "⬇️ Виберіть групу", reply_murkup=await student_group_list_kb()
         )
 
 
@@ -85,13 +85,11 @@ async def regAdmin(message: types.Message, state: FSMContext) -> None:
 
     if not await db.admin_exists(message.from_user.id):
         await db.add_admin(user_id, username)
-        await message.answer(
-            "Реєстрація завершена ✅", reply_markup=await start_admin_kb()
-        )
+        await message.answer("Реєстрація завершена ✅", reply_murkup=start_admin_kb())
         await state.clear()
         return
 
-    await message.answer("Ви зареєстровані адміном ✅", reply_markup=await hide_kb())
+    await message.answer("Ви зареєстровані адміном ✅", reply_murkup=hide_kb())
     await state.clear()
 
 
@@ -105,12 +103,10 @@ async def regStudent(query: types.CallbackQuery, state: FSMContext) -> None:
 
     if query.data == "Назад":
         await query.message.edit_text("Оберіть ⬇️")
-        await query.message.edit_reply_markup(reply_markup=await reg_choice_kb())
+        await query.message.edit_reply_markup(reply_murkup=reg_choice_kb())
         await state.set_state(FSMReg.reply_reg)
         return
 
     await db.add_student(user_id=query.from_user.id, group_student=group_student)
-    await query.message.answer(
-        "✅ Реєстрація завершена ✅", reply_markup=await start_student_kb()
-    )
+    await query.message.answer("✅ Реєстрація завершена ✅", reply_murkup=start_student_kb())
     await query.message.delete()
