@@ -1,8 +1,5 @@
 # KOTEKBOT
 [![Support Ukraine](https://badgen.net/badge/support/UKRAINE/?color=0057B8&labelColor=FFD700)](https://www.gov.uk/government/news/ukraine-what-you-can-do-to-help)
-
-[![codecov](https://codecov.io/gh/PerchunPak/pinger-bot/branch/master/graph/badge.svg)](https://codecov.io/gh/PerchunPak/pinger-bot)
-[![Documentation Build Status](https://readthedocs.org/projects/pinger-bot/badge/?version=latest)](https://pinger-bot.readthedocs.io/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Python support versions badge](https://img.shields.io/badge/python-3.12-blue)](https://www.python.org/downloads/)
 [![DeepSource](https://deepsource.io/gh/PerchunPak/pinger-bot.svg/?label=active+issues&show_trend=true&token=Tast9YwlUsJbok_-qTQLL0vX)](https://deepsource.io/gh/PerchunPak/pinger-bot/?ref=repository-badge)
