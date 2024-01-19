@@ -69,7 +69,7 @@ class Database(AddDB, DeleteDB, ExistDB, SelectDB, UpdateDB):
         )
         await base.execute(
             """
-            CREATE TABLE Voting (
+            CREATE TABLE voting (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 title TEXT NOT NULL,
                 result TEXT NOT NULL, --json
