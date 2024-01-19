@@ -8,11 +8,11 @@ Bot created by [salko-ua](https://t.me/salkooua) for [my college](https://vvpc.c
 
 # Instalation
 
-1. Get a token from [@BotFather in Telegram]
+1. Get a token from [@BotFather in Telegram](https://t.me/BotFather)
 
 2. Clone the repository (using the green button on the upper right) and install dependencies with `poetry install`
 
-3. Make your changes to the bot and [create a pull request]
+3. Make your changes to the bot and [create a pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
 
 ## Database
 
