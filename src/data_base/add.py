@@ -1,5 +1,6 @@
-from src.data_base.create_db import BaseDBPart
 from typing import Literal
+
+from src.data_base.create_db import BaseDBPart
 
 
 class AddDB(BaseDBPart):
@@ -38,16 +39,7 @@ class AddDB(BaseDBPart):
         return await self.base.commit()
 
     async def add_user(
-        self,
-        user_id,
-        first_name,
-        last_name,
-        username,
-        date_join,
-        count_message,
-        last_message,
-        admin,
-        student_group,
+        self, tg_id, first_name, last_name, username, date_join, last_msg, admin, group
     ):
         await self.cur.execute(
             """INSERT INTO user(
@@ -63,16 +55,6 @@ class AddDB(BaseDBPart):
             VALUES 
             (?,?,?,?,?,?,?,?,?)
             """,
-            (
-                user_id,
-                first_name,
-                last_name,
-                username,
-                date_join,
-                count_message,
-                last_message,
-                admin,
-                student_group,
-            ),
+            (tg_id, first_name, last_name, username, date_join, 1, last_msg, admin, group),
         )
         return await self.base.commit()

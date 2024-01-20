@@ -1,6 +1,6 @@
 from datetime import datetime
+from aiosqlite import Cursor, Row
 from translate import Translator
-from aiosqlite import Row, Cursor
 
 
 async def exist(exist_cur: Cursor) -> bool:

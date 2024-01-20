@@ -1,46 +1,61 @@
-# from import
 import os
 import random
 
 from aiogram import F, Router, types
 
-from src.data_base import Database
+
 from src.keyboards import *
+from src.data_base import Database
 
 router = Router()
 
 
-# Розклад 📚
-@router.message(F.text == "Розклад 📚", F.chat.type == "private")
+@router.message(F.text == "Розклад 📚")
 async def schedule(message: types.Message) -> None:
     await message.delete()
+    telegram_id = message.from_user.id
 
-    if not await check_all(message):
-        await message.answer("Ви повинні бути зарєстровані❗️", reply_murkup=hide_kb())
+    if not await check_who(message):
+        await message.answer("Ви повинні бути зарєстровані❗️", reply_markup=hide_kb())
         return
 
-    await message.answer("Перегляд розкладу ⬇️", reply_murkup=schedule_kb(message.from_user.id))
+    await message.answer("Перегляд розкладу ⬇️", reply_markup=await schedule_kb(telegram_id))
 
 
-# =======================================================
-# Інше 📌
-@router.message(F.text == "Інше 📌", F.chat.type == "private")
-async def others(message: types.Message) -> None:
-    await message.delete()
-    await message.answer("Інша інформація 🤯", reply_murkup=other_kb())
-
-
-# Інше 📌
-@router.callback_query(F.data == "other_inline")
-async def others_inline(query: types.CallbackQuery) -> None:
+@router.callback_query(F.data == "student_back_kb")
+async def back_student(query: types.CallbackQuery) -> None:
+    telegram_id = query.from_user.id
     await query.message.delete()
-    await query.message.answer("Інша інформація 🤯", reply_murkup=other_kb())
+    await query.message.answer("Ваша клавіатура ⌨️", reply_markup=await schedule_kb(telegram_id))
 
 
-# Про бота 🖇
+@router.message(F.text == "Інше 📌")
+@router.callback_query(F.data == "other_inline")
+async def others(event: types.Message | types.CallbackQuery) -> None:
+    if not isinstance(event, types.Message):
+        await event.message.delete()
+        await event.message.answer("Інша інформація 🤯", reply_markup=other_kb())
+        return
+
+    await event.delete()
+    await event.answer("Інша інформація 🤯", reply_markup=other_kb())
+
+
+@router.message(F.text == "Для абітурієнта 🧑‍💻")
+@router.callback_query(F.data == "applicant_inline")
+async def for_applicant(event: types.Message | types.CallbackQuery) -> None:
+    if not isinstance(event, types.Message):
+        await event.message.delete()
+        await event.message.answer("Інформація для абітурієнта 😵‍💫", reply_markup=applicant_kb())
+        return
+
+    await event.delete()
+    await event.answer("Інформація для абітурієнта 😵‍💫", reply_markup=applicant_kb())
+
+
 @router.callback_query(F.data == "Про бота 🖇")
 async def about_bot(query: types.CallbackQuery) -> None:
-    about_bot = (
+    about_bot_text = (
         f"🤖 БОТ ВПФК ПЕДКІТ\n"
         f"🆙 Версія : release 2.0\n"
         f"👨‍💻 Розробник: <a href='https://t.me/salkooua'>Salo</a>\n"
@@ -55,11 +70,10 @@ async def about_bot(query: types.CallbackQuery) -> None:
         f"його для економлення часу!\n"
         f"🌐 <a href='https://vvpc.com.ua/'>Офіційний сайт ВПФК</a>\n"
     )
-    await query.message.edit_text(about_bot, parse_mode="HTML", disable_web_page_preview=True)
-    await query.message.edit_reply_markup(reply_murkup=other_back_kb())
+    await query.message.edit_text(about_bot_text, parse_mode="HTML", disable_web_page_preview=True)
+    await query.message.edit_reply_markup(reply_markup=other_back_kb())
 
 
-# Про мене 👀
 @router.callback_query(F.data == "Про мене 👀")
 async def about_me(query: types.CallbackQuery) -> None:
     user_id = query.from_user.id
@@ -67,26 +81,25 @@ async def about_me(query: types.CallbackQuery) -> None:
     text = await get_about_me(user_id, url)
 
     await query.message.edit_text(text, parse_mode="HTML", disable_web_page_preview=True)
-    await query.message.edit_reply_markup(reply_murkup=other_back_kb())
+    await query.message.edit_reply_markup(reply_markup=other_back_kb())
 
 
-# Допомога 🛠
 @router.callback_query(F.data == "Допомога 🛠")
-async def help(query: types.CallbackQuery) -> None:
-    help = "Пишіть сюди : @botadmincat"
-    await query.message.edit_text(help)
-    await query.message.edit_reply_markup(reply_murkup=other_back_kb())
+async def get_help(query: types.CallbackQuery) -> None:
+    help_text = "Пишіть сюди : @botadmincat"
+    await query.message.edit_text(help_text)
+    await query.message.edit_reply_markup(reply_markup=other_back_kb())
 
 
-# Час роботи 📅
 @router.callback_query(F.data == "Час роботи 📅")
 async def time_work(query: types.CallbackQuery) -> None:
-    time_work = "Час роботи ⌚️\n" "Понеділок - П'ятниця: 8:00–17:00.\n" "Субота - Неділя: Зачинено."
-    await query.message.edit_text(text=time_work)
-    await query.message.edit_reply_markup(reply_murkup=other_back_kb())
+    time_work_text = (
+        "Час роботи ⌚️\n" "Понеділок - П'ятниця: 8:00–17:00.\n" "Субота - Неділя: Зачинено."
+    )
+    await query.message.edit_text(text=time_work_text)
+    await query.message.edit_reply_markup(reply_markup=other_back_kb())
 
 
-# Фото кота 🖼
 @router.callback_query(F.data == "Фото кота 🖼")
 async def send_random_cat_photo(query: types.CallbackQuery) -> None:
     await query.message.delete()
@@ -94,12 +107,11 @@ async def send_random_cat_photo(query: types.CallbackQuery) -> None:
     try:
         photo_path = await choose_random_photo()
         file_path = types.FSInputFile(photo_path)
-        await query.message.answer_photo(file_path, reply_murkup=other_back_kb())
+        await query.message.answer_photo(file_path, reply_markup=other_back_kb())
     except:
-        await query.message.answer("Фото кота ще не додано 😿", reply_murkup=other_back_kb())
+        await query.message.answer("Фото кота ще не додано 😿", reply_markup=other_back_kb())
 
 
-# Донат 🫡
 @router.callback_query(F.data == "Донат 🫡")
 async def donate(query: types.CallbackQuery) -> None:
     text = (
@@ -111,25 +123,9 @@ async def donate(query: types.CallbackQuery) -> None:
     )
 
     await query.message.edit_text(text, parse_mode="HTML", disable_web_page_preview=True)
-    await query.message.edit_reply_markup(reply_murkup=url_card_kb())
+    await query.message.edit_reply_markup(reply_markup=url_card_kb())
 
 
-# ==============================================
-# Для абітурієнта 🧑‍💻
-@router.message(F.text == "Для абітурієнта 🧑‍💻", F.chat.type == "private")
-async def for_applicant(message: types.Message) -> None:
-    await message.delete()
-    await message.answer("Інформація для абітурієнта 😵‍💫", reply_murkup=applicant_kb())
-
-
-# Для абітурієнта 🧑‍💻
-@router.callback_query(F.data == "applicant_inline")
-async def for_applicant_inline(query: types.CallbackQuery) -> None:
-    await query.message.delete()
-    await query.message.answer("Інформація для абітурієнта 😵‍💫", reply_murkup=applicant_kb())
-
-
-# Вступ 📗
 @router.callback_query(F.data == "Вступ 📗")
 async def introduction(query: types.CallbackQuery) -> None:
     photo_path = "photo/introduction.jpg"
@@ -139,12 +135,11 @@ async def introduction(query: types.CallbackQuery) -> None:
     await query.message.answer_photo(
         photo=file_path,
         caption="<b><code>Інформація для вступника 2023 👩‍🎓</code></b>",
-        reply_murkup=url_introduction_kb(),
+        reply_markup=url_introduction_kb(),
         parse_mode="HTML",
     )
 
 
-# Про коледж 🛡
 @router.callback_query(F.data == "Про коледж 🛡")
 async def about_collasge(query: types.CallbackQuery) -> None:
     photo_path = "photo/about_collage.jpg"
@@ -156,11 +151,10 @@ async def about_collasge(query: types.CallbackQuery) -> None:
         photo=file_path,
         caption=f"<code><b>{text}</b></code>",
         parse_mode="HTML",
-        reply_murkup=url_about_college_kb(),
+        reply_markup=url_about_college_kb(),
     )
 
 
-# Адреса 📫
 @router.callback_query(F.data == "Адреса 📫")
 async def addres(query: types.CallbackQuery) -> None:
     location = (
@@ -171,10 +165,9 @@ async def addres(query: types.CallbackQuery) -> None:
         "•Вул. Устилузька 42 🛣"
     )
     await query.message.edit_text(location)
-    await query.message.edit_reply_markup(reply_murkup=applicant_back_kb())
+    await query.message.edit_reply_markup(reply_markup=applicant_back_kb())
 
 
-# Контакти 📘
 @router.callback_query(F.data == "Контакти 📘")
 async def contact(query: types.CallbackQuery) -> None:
     contacts = (
@@ -185,10 +178,9 @@ async def contact(query: types.CallbackQuery) -> None:
         "    - E-mail: post@vvpc.com.ua"
     )
     await query.message.edit_text(text=contacts)
-    await query.message.edit_reply_markup(reply_murkup=url_contact_kb())
+    await query.message.edit_reply_markup(reply_markup=url_contact_kb())
 
 
-# Реквізити 💳
 @router.callback_query(F.data == "Реквізити 💳")
 async def score(query: types.CallbackQuery) -> None:
     text = (
@@ -208,33 +200,29 @@ async def score(query: types.CallbackQuery) -> None:
         f"Вказати прізвище студента, курс та групу"
     )
     await query.message.edit_text(text=text, parse_mode="HTML")
-    await query.message.edit_reply_markup(reply_murkup=url_score_kb())
+    await query.message.edit_reply_markup(reply_markup=url_score_kb())
 
 
-# Офіційний сайт 🌎
 @router.callback_query(F.data == "Офіційний сайт 🌎")
 async def official_site(query: types.CallbackQuery) -> None:
     await query.message.edit_text("Офіційний сайт ВПК 📰")
-    await query.message.edit_reply_markup(reply_murkup=url_official_site_kb())
+    await query.message.edit_reply_markup(reply_markup=url_official_site_kb())
 
 
-# Спеціальності 📜
 @router.callback_query(F.data == "Спеціальності 📜")
 async def specialty(query: types.CallbackQuery) -> None:
     await query.message.edit_text("Cпеціальності 📜 ВВПФК")
-    await query.message.edit_reply_markup(reply_murkup=url_speciality_kb())
+    await query.message.edit_reply_markup(reply_markup=url_speciality_kb())
 
 
-# ===============================================
-# Допоміжні функції
 async def menu(message: types.Message) -> None:
     db = await Database.setup()
     if await db.admin_exists(message.from_user.id):
-        await message.answer("⬇️Головне меню⬇️", reply_murkup=start_admin_kb())
+        await message.answer("⬇️Головне меню⬇️", reply_markup=start_admin_kb())
     elif await db.student_exists(message.from_user.id):
-        await message.answer("⬇️Головне меню⬇️", reply_murkup=start_student_kb())
+        await message.answer("⬇️Головне меню⬇️", reply_markup=start_student_kb())
     else:
-        await message.answer("⬇️Головне меню⬇️", reply_murkup=start_all_kb())
+        await message.answer("⬇️Головне меню⬇️", reply_markup=start_all_kb())
 
 
 async def check_user(user_id: int) -> tuple[str, str]:
@@ -252,7 +240,7 @@ async def check_user(user_id: int) -> tuple[str, str]:
     return admin, student
 
 
-async def check_all(message: types.Message) -> bool:
+async def check_who(message: types.Message) -> bool:
     db = await Database.setup()
     user_id = message.from_user.id
     if await db.student_exists(user_id):
