@@ -1,7 +1,8 @@
 from aiogram import F, Router, types
 
-from src.data_base import Database
+
 from src.keyboards import *
+from src.data_base import Database
 
 router = Router()
 
@@ -25,6 +26,6 @@ async def stats_all_query(query: types.CallbackQuery) -> None:
     )
 
     try:
-        await query.message.edit_text(text=stats, reply_murkup=update_kb(), parse_mode="HTML")
+        await query.message.edit_text(text=stats, reply_markup=update_kb(), parse_mode="HTML")
     except:
         await query.answer(text=error, show_alert=True)

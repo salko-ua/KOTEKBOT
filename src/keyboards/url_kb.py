@@ -3,7 +3,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 
 # 🖤 card
-def url_card_kb(self) -> InlineKeyboardMarkup:
+def url_card_kb() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     url_card = "https://send.monobank.ua/jar/5uzN1NcwYA"
 
@@ -14,7 +14,7 @@ def url_card_kb(self) -> InlineKeyboardMarkup:
 
 
 # 📘 contact
-def url_contact_kb(self) -> InlineKeyboardMarkup:
+def url_contact_kb() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     url_contact = "https://vvpc.com.ua/contacts"
 
@@ -25,7 +25,7 @@ def url_contact_kb(self) -> InlineKeyboardMarkup:
 
 
 # 💳 score
-def url_score_kb(self) -> InlineKeyboardMarkup:
+def url_score_kb() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     url_score = "https://vvpc.com.ua/node/980"
 
@@ -36,7 +36,7 @@ def url_score_kb(self) -> InlineKeyboardMarkup:
 
 
 # 🌎 official site
-def url_official_site_kb(self) -> InlineKeyboardMarkup:
+def url_official_site_kb() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     url_official_site = "https://vvpc.com.ua/"
 
@@ -47,7 +47,7 @@ def url_official_site_kb(self) -> InlineKeyboardMarkup:
 
 
 # 📗 introduction
-def url_introduction_kb(self) -> InlineKeyboardMarkup:
+def url_introduction_kb() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     url_introduction = "https://vvpc.com.ua/vstup"
 
@@ -58,7 +58,7 @@ def url_introduction_kb(self) -> InlineKeyboardMarkup:
 
 
 # 🛡 about college
-def url_about_college_kb(self) -> InlineKeyboardMarkup:
+def url_about_college_kb() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     url_about_college = "https://vvpc.com.ua/node/948"
 
@@ -69,7 +69,7 @@ def url_about_college_kb(self) -> InlineKeyboardMarkup:
 
 
 # 📜 speciality
-def url_speciality_kb(self) -> InlineKeyboardMarkup:
+def url_speciality_kb() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     url_speciality = "https://padlet.com/VasylT/padlet-2ppk483bi2mgsg3h"
 

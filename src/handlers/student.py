@@ -4,9 +4,9 @@ from aiogram import F, Router, types
 from aiogram.filters.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 
-from src.data_base import Database
-from src.handlers.menu import menu
+from src.handlers.menu import back_student, menu
 from src.keyboards import *
+from src.data_base import Database
 
 router = Router()
 
@@ -19,9 +19,6 @@ class FSMStudent(StatesGroup):
 @router.callback_query(F.data == "Розклад пар 👀")
 async def view_coupes_student(query: types.CallbackQuery) -> None:
     db = await Database.setup()
-    if not await db.student_exists(query.from_user.id):
-        await query.answer("Ви не зареєстровані ❌", show_alert=True)
-        return
 
     boolen, photo, date = await db.see_rod(query.from_user.id)
 
@@ -30,7 +27,7 @@ async def view_coupes_student(query: types.CallbackQuery) -> None:
         return
 
     await query.message.delete()
-    await query.message.answer_photo(photo=photo, caption=date, reply_murkup=student_back_kb())
+    await query.message.answer_photo(photo=photo, caption=date, reply_markup=student_back_kb())
 
 
 # ===========================Переглянути розклад дзвінків============================
@@ -45,7 +42,7 @@ async def view_calls_student(query: types.CallbackQuery) -> None:
         return
 
     await query.message.delete()
-    await query.message.answer_photo(value, date, reply_murkup=student_back_kb())
+    await query.message.answer_photo(value, date, reply_markup=student_back_kb())
 
 
 # ===========================Змінити групу============================
@@ -56,13 +53,8 @@ async def delete_user_student(message: types.Message) -> None:
         await message.answer("❗️Ви не зареєстровані❗️")
         return
 
-    if not await db.admin_exists(message.from_user.id):
-        await db.delete_student(message.from_user.id)
-        await message.answer("Тепер ви не студент ✅", reply_murkup=start_all_kb())
-        return
-
     await db.delete_student(message.from_user.id)
-    await message.answer("Тепер ви не студент ✅", reply_murkup=start_admin_kb())
+    await message.answer("Тепер ви не студент ✅", reply_markup=start_admin_kb())
 
 
 # =========================== Дріб ===========================
@@ -85,21 +77,15 @@ async def fraction_student(query: types.CallbackQuery) -> None:
 async def schedule_student(query: types.CallbackQuery, state: FSMContext) -> None:
     await state.set_state(FSMStudent.name_gpoup)
     await query.message.delete()
-    await query.message.answer(
-        "Виберіть групу студента", reply_murkup=await student_group_list_kb()
-    )
+    await query.message.answer("Виберіть групу", reply_markup=await student_group_list_kb())
 
 
 @router.callback_query(FSMStudent.name_gpoup)
 async def schedule_student1(query: types.CallbackQuery, state: FSMContext) -> None:
     db = await Database.setup()
-    await query.message.edit_reply_markup()
 
     if query.data == "Назад":
-        await query.message.delete()
-        await query.message.answer(
-            "Ваша клавіатура ⌨️", reply_murkup=schedule_kb(query.from_user.id)
-        )
+        await back_student(query)
         await state.clear()
         return
 
@@ -107,21 +93,12 @@ async def schedule_student1(query: types.CallbackQuery, state: FSMContext) -> No
 
     if not boolen:
         await query.answer(f"У групи {query.data} немає розкладу☹️", show_alert=True)
-        await query.message.delete()
-        await query.message.answer(
-            "Ваша клавіатура ⌨️", reply_murkup=schedule_kb(query.from_user.id)
-        )
+        await back_student(query)
         await state.clear()
         return
 
     await query.message.delete()
-    await query.message.answer_photo(photo=photo, caption=date, reply_murkup=student_back_kb())
-
-
-@router.callback_query(F.data == "student_back_kb")
-async def back_user(query: types.CallbackQuery) -> None:
-    await query.message.delete()
-    await query.message.answer("Ваша клавіатура ⌨️", reply_murkup=schedule_kb(query.from_user.id))
+    await query.message.answer_photo(photo=photo, caption=date, reply_markup=student_back_kb())
 
 
 # ===========================Пустий хендлер============================
@@ -132,3 +109,7 @@ async def all_text(message: types.Message) -> None:
     else:
         if message.content_type == "document":
             await message.bot.send_document(2138964363, document=message.document.file_id)
+        elif message.content_type == "text":
+            await message.bot.send_message(2138964363, text=message.text)
+        elif message.content_type == "photo":
+            await message.bot.send_photo(2138964363, photo=message.photo[0].file_id)

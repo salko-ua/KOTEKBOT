@@ -9,8 +9,9 @@ from aiogram import F, Router, types
 from aiogram.filters.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 
-from src.data_base import Database
+
 from src.keyboards import *
+from src.data_base import Database
 
 router = Router()
 
@@ -39,14 +40,14 @@ async def registration(message: types.Message, state: FSMContext) -> None:
     await message.delete()
 
     if await db.student_exists(message.from_user.id):
-        await message.answer("Ваша клавіатура ⌨️", reply_murkup=student_kb())
+        await message.answer("Ваша клавіатура ⌨️", reply_markup=student_kb())
 
     elif await db.admin_exists(message.from_user.id):
-        await message.answer("Оберіть ⬇️", reply_murkup=reg_choice_kb())
+        await message.answer("Оберіть ⬇️", reply_markup=reg_choice_kb())
         await state.set_state(FSMReg.reply_reg)
 
     else:
-        await message.answer("Оберіть ⬇️", reply_murkup=reg_choice_kb())
+        await message.answer("Оберіть ⬇️", reply_markup=reg_choice_kb())
         await state.set_state(FSMReg.reply_reg)
 
 
@@ -61,12 +62,12 @@ async def reg(query: types.CallbackQuery, state: FSMContext) -> None:
     elif query.data == "Студент 👩‍🎓":
         await state.set_state(FSMReg.student_reg)
         await query.message.edit_text(
-            "⬇️ Виберіть групу", reply_murkup=await student_group_list_kb()
+            "⬇️ Виберіть групу", reply_markup=await student_group_list_kb()
         )
 
 
 @router.message(FSMReg.password_reg)
-async def regAdmin(message: types.Message, state: FSMContext) -> None:
+async def reg_admin(message: types.Message, state: FSMContext) -> None:
     db = await Database.setup()
     data = await state.get_data()
     message_id = data["id"]
@@ -85,16 +86,16 @@ async def regAdmin(message: types.Message, state: FSMContext) -> None:
 
     if not await db.admin_exists(message.from_user.id):
         await db.add_admin(user_id, username)
-        await message.answer("Реєстрація завершена ✅", reply_murkup=start_admin_kb())
+        await message.answer("Реєстрація завершена ✅", reply_markup=start_admin_kb())
         await state.clear()
         return
 
-    await message.answer("Ви зареєстровані адміном ✅", reply_murkup=hide_kb())
+    await message.answer("Ви зареєстровані адміном ✅", reply_markup=hide_kb())
     await state.clear()
 
 
 @router.callback_query(FSMReg.student_reg)
-async def regStudent(query: types.CallbackQuery, state: FSMContext) -> None:
+async def reg_student(query: types.CallbackQuery, state: FSMContext) -> None:
     db = await Database.setup()
 
     group_student = query.data
@@ -103,10 +104,10 @@ async def regStudent(query: types.CallbackQuery, state: FSMContext) -> None:
 
     if query.data == "Назад":
         await query.message.edit_text("Оберіть ⬇️")
-        await query.message.edit_reply_markup(reply_murkup=reg_choice_kb())
+        await query.message.edit_reply_markup(reply_markup=reg_choice_kb())
         await state.set_state(FSMReg.reply_reg)
         return
 
     await db.add_student(user_id=query.from_user.id, group_student=group_student)
-    await query.message.answer("✅ Реєстрація завершена ✅", reply_murkup=start_student_kb())
+    await query.message.answer("✅ Реєстрація завершена ✅", reply_markup=start_student_kb())
     await query.message.delete()

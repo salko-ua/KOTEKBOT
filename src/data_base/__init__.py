@@ -14,10 +14,10 @@ class Database(AddDB, DeleteDB, ExistDB, SelectDB, UpdateDB):
     @classmethod
     @asyncache.cached({})
     async def setup(cls):
-        if not os.path.exists("./data"):
-            os.mkdir("./data")
+        if not os.path.exists("src/data"):
+            os.mkdir("src/data")
 
-        base = await aiosqlite.connect("data/database.db")
+        base = await aiosqlite.connect("src/data/database.db")
         cur = await base.cursor()
 
         if base:
@@ -69,7 +69,7 @@ class Database(AddDB, DeleteDB, ExistDB, SelectDB, UpdateDB):
         )
         await base.execute(
             """
-            CREATE TABLE Voting (
+            CREATE TABLE IF NOT EXISTS voting (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 title TEXT NOT NULL,
                 result TEXT NOT NULL, --json

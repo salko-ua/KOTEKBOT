@@ -1,11 +1,7 @@
-from aiogram.utils.keyboard import (
-    InlineKeyboardBuilder,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-    KeyboardButton,
-    ReplyKeyboardBuilder,
-    ReplyKeyboardMarkup,
-)
+from aiogram.utils.keyboard import (InlineKeyboardBuilder,
+                                    InlineKeyboardButton, InlineKeyboardMarkup,
+                                    KeyboardButton, ReplyKeyboardBuilder,
+                                    ReplyKeyboardMarkup)
 
 from src.data_base import Database
 
