@@ -11,7 +11,9 @@ class SelectDB(BaseDBPart):
         return len(list(await counts.fetchall()))
 
     async def list_id_student_agreed_news(self):
-        result = await self.cur.execute("SELECT `user_id` FROM `student` WHERE send_news = ?", (1,))
+        result = await self.cur.execute(
+            "SELECT `user_id` FROM `student` WHERE send_news = ?", (1,)
+        )
         return await result.fetchall()
 
     async def list_id_student_agreed_alert(self):
@@ -75,7 +77,7 @@ class SelectDB(BaseDBPart):
         ).fetchone()
         try:
             lens = len(photo[0])
-        except TypeError:
+        except:
             lens = 1
         if lens <= 5:
             return False, None, None
@@ -87,7 +89,8 @@ class SelectDB(BaseDBPart):
     async def see_photo(self, name_photo):
         result = await (
             await self.cur.execute(
-                "SELECT id_photo, date_photo FROM photo WHERE name_photo = ?", (name_photo,)
+                "SELECT id_photo, date_photo FROM photo WHERE name_photo = ?",
+                (name_photo,),
             )
         ).fetchone()
         try:
@@ -99,5 +102,7 @@ class SelectDB(BaseDBPart):
         return True, id_photo, date_photo
 
     async def user_show_data(self, user_id):
-        result = await self.cur.execute("SELECT * FROM user WHERE user_id = ?", (user_id,))
+        result = await self.cur.execute(
+            "SELECT * FROM user WHERE user_id = ?", (user_id,)
+        )
         return await result.fetchall()
