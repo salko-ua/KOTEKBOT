@@ -11,9 +11,7 @@ class SelectDB(BaseDBPart):
         return len(list(await counts.fetchall()))
 
     async def list_id_student_agreed_news(self):
-        result = await self.cur.execute(
-            "SELECT `user_id` FROM `student` WHERE send_news = ?", (1,)
-        )
+        result = await self.cur.execute("SELECT `user_id` FROM `student` WHERE send_news = ?", (1,))
         return await result.fetchall()
 
     async def list_id_student_agreed_alert(self):
@@ -103,6 +101,7 @@ class SelectDB(BaseDBPart):
 
     async def user_show_data(self, user_id):
         result = await self.cur.execute(
-            "SELECT * FROM user WHERE user_id = ?", (user_id,)
+            "SELECT * FROM user WHERE user_id = ?",
+            (user_id,),
         )
         return await result.fetchall()

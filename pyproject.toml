@@ -19,6 +19,7 @@ apscheduler = "^3.10.4"
 sentry-sdk = "^1.39.2"
 loguru = "^0.7.2"
 black = "^23.12.1"
+sqlalchemy = "^2.0.25"
 
 [tool.poetry.group.docker]
 optional = true

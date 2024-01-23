@@ -2,7 +2,7 @@ import asyncache
 import cachetools
 
 from src.data_base.create_db import BaseDBPart
-from src.utils import exist
+from src.data_base.middleprocess import exist
 
 
 class ExistDB(BaseDBPart):
