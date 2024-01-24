@@ -29,11 +29,11 @@ async def any_functon():
 
 You can check if something exists by id or user_id
 
-- [Function exist in this file](src/data_base/exist.py)
-- [Function add in this file](src/data_base/add.py)
-- [Function delete in this file](src/data_base/delete.py)
-- [Function select in this file](src/data_base/select.py)
-- [Function update in this file](src/data_base/update.py)
+- [Function exist in this file](src/data_base/exists.py)
+- [Function add in this file](src/data_base/adds.py)
+- [Function delete in this file](src/data_base/deletes.py)
+- [Function select in this file](src/data_base/selects.py)
+- [Function update in this file](src/data_base/updates.py)
 
 ## Utils
 

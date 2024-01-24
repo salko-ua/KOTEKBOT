@@ -3,11 +3,11 @@ import os
 import aiosqlite
 import asyncache
 
-from src.data_base.add import AddDB
-from src.data_base.delete import DeleteDB
-from src.data_base.exist import ExistDB
-from src.data_base.select import SelectDB
-from src.data_base.update import UpdateDB
+from src.data_base.adds import AddDB
+from src.data_base.exists import ExistDB
+from src.data_base.deletes import DeleteDB
+from src.data_base.selects import SelectDB
+from src.data_base.updates import UpdateDB
 
 
 class Database(AddDB, DeleteDB, ExistDB, SelectDB, UpdateDB):
