@@ -79,9 +79,9 @@ async def fraction_student(query: types.CallbackQuery):
     mouth = int(todays.strftime("%m"))
     today = datetime.date(year=years, month=mouth, day=days)
     week_number = today.isocalendar()[1]
-    if week_number % 2 != 0:
+    if week_number % 2 == 0:
         await query.answer("Цей тиждень - знаменник 🫡", show_alert=True)
-    elif week_number % 2 == 0:
+    elif week_number % 2 != 0:
         await query.answer("Цей тиждень - чисельник 🫡", show_alert=True)
 
 
