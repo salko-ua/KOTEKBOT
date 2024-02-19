@@ -14,10 +14,10 @@ class Database(AddDB, DeleteDB, ExistDB, SelectDB, UpdateDB):
     @classmethod
     @asyncache.cached({})
     async def setup(cls):
-        if not os.path.exists("src/data"):
-            os.mkdir("src/data")
+        if not os.path.exists("data"):
+            os.mkdir("data")
 
-        base = await aiosqlite.connect("src/data/database.db")
+        base = await aiosqlite.connect("data/database.db")
         cur = await base.cursor()
 
         if base:
@@ -52,7 +52,6 @@ class Database(AddDB, DeleteDB, ExistDB, SelectDB, UpdateDB):
                 user_id       INTEGER UNIQUE,
                 group_student TEXT,
                 send_news     BOOLEAN DEFAULT 1,
-                send_write    BOOLEAN DEFAULT 1,
                 send_alert    BOOLEAN DEFAULT 1
             )
             """
