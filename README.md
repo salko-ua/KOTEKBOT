@@ -27,7 +27,7 @@ async def any_functon():
         ... # code
 ```
 
-You can check if something exists by id or user_id
+You can check if something exists by user_id
 
 - [Function exist in this file](src/data_base/exists.py)
 - [Function add in this file](src/data_base/adds.py)
