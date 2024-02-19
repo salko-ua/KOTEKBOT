@@ -3,7 +3,6 @@ import random
 
 from aiogram import F, Router, types
 
-
 from src.keyboards import *
 from src.data_base import Database
 
@@ -16,17 +15,19 @@ async def schedule(message: types.Message) -> None:
     telegram_id = message.from_user.id
 
     if not await check_who(message):
-        await message.answer("Ви повинні бути зарєстровані❗️", reply_markup=hide_kb())
+        await message.answer(text="Ви повинні бути зарєстровані❗️", reply_markup=hide_kb())
         return
 
-    await message.answer("Перегляд розкладу ⬇️", reply_markup=await schedule_kb(telegram_id))
+    await message.answer(text="Перегляд розкладу ⬇️", reply_markup=await schedule_kb(telegram_id))
 
 
 @router.callback_query(F.data == "student_back_kb")
 async def back_student(query: types.CallbackQuery) -> None:
     telegram_id = query.from_user.id
     await query.message.delete()
-    await query.message.answer("Ваша клавіатура ⌨️", reply_markup=await schedule_kb(telegram_id))
+    await query.message.answer(
+        text="Ваша клавіатура ⌨️", reply_markup=await schedule_kb(telegram_id)
+    )
 
 
 @router.message(F.text == "Інше 📌")
@@ -34,11 +35,11 @@ async def back_student(query: types.CallbackQuery) -> None:
 async def others(event: types.Message | types.CallbackQuery) -> None:
     if not isinstance(event, types.Message):
         await event.message.delete()
-        await event.message.answer("Інша інформація 🤯", reply_markup=other_kb())
+        await event.message.answer(text="Інша інформація 🤯", reply_markup=other_kb())
         return
 
     await event.delete()
-    await event.answer("Інша інформація 🤯", reply_markup=other_kb())
+    await event.answer(text="Інша інформація 🤯", reply_markup=other_kb())
 
 
 @router.message(F.text == "Для абітурієнта 🧑‍💻")
@@ -46,11 +47,13 @@ async def others(event: types.Message | types.CallbackQuery) -> None:
 async def for_applicant(event: types.Message | types.CallbackQuery) -> None:
     if not isinstance(event, types.Message):
         await event.message.delete()
-        await event.message.answer("Інформація для абітурієнта 😵‍💫", reply_markup=applicant_kb())
+        await event.message.answer(
+            text="Інформація для абітурієнта 😵‍💫", reply_markup=applicant_kb()
+        )
         return
 
     await event.delete()
-    await event.answer("Інформація для абітурієнта 😵‍💫", reply_markup=applicant_kb())
+    await event.answer(text="Інформація для абітурієнта 😵‍💫", reply_markup=applicant_kb())
 
 
 @router.callback_query(F.data == "Про бота 🖇")
@@ -108,8 +111,8 @@ async def send_random_cat_photo(query: types.CallbackQuery) -> None:
         photo_path = await choose_random_photo()
         file_path = types.FSInputFile(photo_path)
         await query.message.answer_photo(file_path, reply_markup=other_back_kb())
-    except:
-        await query.message.answer("Фото кота ще не додано 😿", reply_markup=other_back_kb())
+    except Exception:
+        await query.message.answer(text="Фото кота ще не додано 😿", reply_markup=other_back_kb())
 
 
 @router.callback_query(F.data == "Донат 🫡")
@@ -218,11 +221,11 @@ async def specialty(query: types.CallbackQuery) -> None:
 async def menu(message: types.Message) -> None:
     db = await Database.setup()
     if await db.admin_exists(message.from_user.id):
-        await message.answer("⬇️Головне меню⬇️", reply_markup=start_admin_kb())
+        await message.answer(text="⬇️Головне меню⬇️", reply_markup=start_admin_kb())
     elif await db.student_exists(message.from_user.id):
-        await message.answer("⬇️Головне меню⬇️", reply_markup=start_student_kb())
+        await message.answer(text="⬇️Головне меню⬇️", reply_markup=start_student_kb())
     else:
-        await message.answer("⬇️Головне меню⬇️", reply_markup=start_all_kb())
+        await message.answer(text="⬇️Головне меню⬇️", reply_markup=start_all_kb())
 
 
 async def check_user(user_id: int) -> tuple[str, str]:

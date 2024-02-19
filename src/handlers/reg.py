@@ -40,14 +40,14 @@ async def registration(message: types.Message, state: FSMContext) -> None:
     await message.delete()
 
     if await db.student_exists(message.from_user.id):
-        await message.answer("Ваша клавіатура ⌨️", reply_markup=student_kb())
+        await message.answer(text="Ваша клавіатура ⌨️", reply_markup=student_kb())
 
     elif await db.admin_exists(message.from_user.id):
-        await message.answer("Оберіть ⬇️", reply_markup=reg_choice_kb())
+        await message.answer(text="Оберіть ⬇️", reply_markup=reg_choice_kb())
         await state.set_state(FSMReg.reply_reg)
 
     else:
-        await message.answer("Оберіть ⬇️", reply_markup=reg_choice_kb())
+        await message.answer(text="Оберіть ⬇️", reply_markup=reg_choice_kb())
         await state.set_state(FSMReg.reply_reg)
 
 
@@ -80,17 +80,17 @@ async def reg_admin(message: types.Message, state: FSMContext) -> None:
     await message.bot.delete_message(message_id=message_id, chat_id=chat_id)
 
     if not message.text == await password_for_admin():
-        await message.answer("Пароль невірний ☹️")
+        await message.answer(text="Пароль невірний ☹️")
         await state.clear()
         return
 
     if not await db.admin_exists(message.from_user.id):
         await db.add_admin(user_id, username)
-        await message.answer("Реєстрація завершена ✅", reply_markup=start_admin_kb())
+        await message.answer(text="Реєстрація завершена ✅", reply_markup=start_admin_kb())
         await state.clear()
         return
 
-    await message.answer("Ви зареєстровані адміном ✅", reply_markup=hide_kb())
+    await message.answer(text="Ви зареєстровані адміном ✅", reply_markup=hide_kb())
     await state.clear()
 
 
@@ -109,5 +109,5 @@ async def reg_student(query: types.CallbackQuery, state: FSMContext) -> None:
         return
 
     await db.add_student(user_id=query.from_user.id, group_student=group_student)
-    await query.message.answer("✅ Реєстрація завершена ✅", reply_markup=start_student_kb())
+    await query.message.answer(text="✅ Реєстрація завершена ✅", reply_markup=start_student_kb())
     await query.message.delete()

@@ -37,7 +37,6 @@ class SelectDB(BaseDBPart):
         return keys
 
     async def see_rod(self, user_id):
-        # назва групи користувача
         groups = await self.cur.execute(
             "SELECT `group_student` FROM `student` WHERE `user_id` = ?", (user_id,)
         )

@@ -32,7 +32,7 @@ async def admin(message: Message) -> None:
     db = await Database.setup()
     if await db.admin_exists(message.from_user.id):
         await message.delete()
-        await message.answer("Клавіатура адміна", reply_markup=admin_kb())
+        await message.answer(text="Клавіатура адміна", reply_markup=admin_kb())
 
 
 # ===========================Видалити акаунт============================
@@ -40,7 +40,7 @@ async def admin(message: Message) -> None:
 async def delete_admin(message: Message) -> None:
     db = await Database.setup()
     if not await db.admin_exists(message.from_user.id):
-        await message.answer("Ви не адмін :D", reply_markup=start_all_kb())
+        await message.answer(text="Ви не адмін :D", reply_markup=start_all_kb())
         return
 
     await db.delete_admins(message.from_user.id)
@@ -110,7 +110,7 @@ async def send_photo_news1(message: Message, state: FSMContext) -> None:
     await asyncio.gather(
         *map(send_notification(bot=message.bot, what_send=1, text="", photo=photo), user_ids)
     )
-    await message.answer("Надсилання закінчено!")
+    await message.answer(text="Надсилання закінчено!")
 
 
 @router.message(FSMAdmin.text, F.text)
@@ -123,12 +123,12 @@ async def send_message_news1(message: Message, state: FSMContext) -> None:
     await asyncio.gather(
         *map(send_notification(bot=message.bot, what_send=2, text=text, photo=""), user_ids)
     )
-    await message.answer("Надсилання закінчено!")
+    await message.answer(text="Надсилання закінчено!")
 
 
 @router.message(FSMAdmin.mixed_text, F.text)
 async def send_mixed_news1(message: Message, state: FSMContext) -> None:
-    await message.answer("Надішліть фото 🖼", reply_markup=admin_back_kb())
+    await message.answer(text="Надішліть фото 🖼", reply_markup=admin_back_kb())
     await state.update_data(text=message.text)
     await state.set_state(FSMAdmin.mixed_photo)
 
@@ -145,7 +145,7 @@ async def send_mixed_news2(message: Message, state: FSMContext) -> None:
     await asyncio.gather(
         *map(send_notification(bot=message.bot, what_send=3, text=text, photo=photo), user_ids)
     )
-    await message.answer("Надсилання закінчено!")
+    await message.answer(text="Надсилання закінчено!")
 
 
 def send_notification(bot: Bot, what_send: int, text: str, photo: str) -> Any:

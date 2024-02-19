@@ -26,21 +26,20 @@ async def versions(message: types.Message) -> None:
 
 @router.message(Command("schedule"))
 async def schedule(message: types.Message) -> None:
+    telegram_id = message.from_user.id
     await message.delete()
 
     if not await check_who(message):
-        await message.answer("Ви повинні бути зарєстровані❗️", reply_markup=hide_kb())
+        await message.answer(text="Ви повинні бути зарєстровані❗️", reply_markup=hide_kb())
         return
 
-    await message.answer(
-        "Перегляд розкладу ⬇️", reply_markup=await schedule_kb(message.from_user.id)
-    )
+    await message.answer(text="Перегляд розкладу ⬇️", reply_markup=await schedule_kb(telegram_id))
 
 
 @router.message(Command("applicant"))
 async def for_applicant(message: types.Message) -> None:
     await message.delete()
-    await message.answer("Інформація для абітурієнта 😵‍💫", reply_markup=applicant_kb())
+    await message.answer(text="Інформація для абітурієнта 😵‍💫", reply_markup=applicant_kb())
 
 
 """ список для BotFather

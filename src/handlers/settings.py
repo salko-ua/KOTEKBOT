@@ -21,11 +21,12 @@ async def settings(message: types.Message) -> None:
     await message.delete()
 
     if not await db.student_exists(user_id):
-        await message.answer("Ви не зареєстровані! ❌", reply_markup=hide_kb())
+        await message.answer(text="Ви не зареєстровані! ❌", reply_markup=hide_kb())
         return
 
     await message.answer(
-        "Налаштуйте свій акаунт в боті:", reply_markup=await settings_inile_kb(user_id)
+        text="Налаштуйте свій акаунт в боті:",
+        reply_markup=await settings_inile_kb(user_id),
     )
 
 
@@ -46,20 +47,20 @@ async def change_student_group1(query: types.CallbackQuery, state: FSMContext) -
         await state.clear()
         await query.message.delete()
         await query.message.answer(
-            "Зміну групи відмінено ✅\n\nНалаштуйте свій акаунт в боті:",
+            text="Зміну групи відмінено ✅\n\nНалаштуйте свій акаунт в боті:",
             reply_markup=await settings_inile_kb(user_id),
         )
         return
 
     if not await db.student_group_exists(query.data):
-        await query.answer(f"Не існує групи {query.data}", show_alert=True)
+        await query.answer(text=f"Не існує групи {query.data}", show_alert=True)
         await state.clear()
         return
 
     await db.update_student(user_id=user_id, group_student=query.data)
     await query.message.delete()
     await query.message.answer(
-        "Групу оновлено ✅\n\nНалаштуйте свій акаунт в боті:",
+        text="Групу оновлено ✅\n\nНалаштуйте свій акаунт в боті:",
         reply_markup=await settings_inile_kb(user_id),
     )
     await state.clear()
@@ -74,7 +75,7 @@ async def change_news_agreed(query: types.CallbackQuery) -> None:
     if await db.student_exists(user_id):
         await db.student_change_news(True, user_id)
         await query.message.edit_reply_markup(reply_markup=await settings_inile_kb(user_id))
-        await query.answer("Ви отримуватимите\nсповіщення про новини", show_alert=True)
+        await query.answer(text="Ви отримуватимите\nсповіщення про новини", show_alert=True)
         return
 
 
@@ -86,7 +87,7 @@ async def change_alert_agreed(query: types.CallbackQuery) -> None:
     if await db.student_exists(user_id):
         await db.student_change_alert(True, user_id)
         await query.message.edit_reply_markup(reply_markup=await settings_inile_kb(user_id))
-        await query.answer("Ви отримуватимите\nсповіщення про тривоги", show_alert=True)
+        await query.answer(text="Ви отримуватимите\nсповіщення про тривоги", show_alert=True)
         return
 
 
@@ -98,7 +99,7 @@ async def change_news_not_agreed(query: types.CallbackQuery) -> None:
     if await db.student_exists(user_id):
         await db.student_change_news(False, user_id)
         await query.message.edit_reply_markup(reply_markup=await settings_inile_kb(user_id))
-        await query.answer("Ви не отримуватимите\nновин від бота", show_alert=True)
+        await query.answer(text="Ви не отримуватимите\nновин від бота", show_alert=True)
         return
 
 
@@ -110,5 +111,5 @@ async def change_alert_not_agreed(query: types.CallbackQuery) -> None:
     if await db.student_exists(user_id):
         await db.student_change_alert(False, user_id)
         await query.message.edit_reply_markup(reply_markup=await settings_inile_kb(user_id))
-        await query.answer("Ви не отримуватимите\nсповіщення про тривоги", show_alert=True)
+        await query.answer(text="Ви не отримуватимите\nсповіщення про тривоги", show_alert=True)
         return

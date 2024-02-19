@@ -23,7 +23,7 @@ async def view_coupes_student(query: types.CallbackQuery) -> None:
     boolen, photo, date = await db.see_rod(query.from_user.id)
 
     if not boolen:
-        await query.answer("Розкладу ще немає ☹️", show_alert=True)
+        await query.answer(text="Розкладу ще немає ☹️", show_alert=True)
         return
 
     await query.message.delete()
@@ -38,7 +38,7 @@ async def view_calls_student(query: types.CallbackQuery) -> None:
     check, value, date = await db.see_photo("calls")
 
     if not check:
-        await query.answer("Дзвінки ще немає ☹️", show_alert=True)
+        await query.answer(text="Дзвінки ще немає ☹️", show_alert=True)
         return
 
     await query.message.delete()
@@ -50,11 +50,11 @@ async def view_calls_student(query: types.CallbackQuery) -> None:
 async def delete_user_student(message: types.Message) -> None:
     db = await Database.setup()
     if not await db.student_exists(message.from_user.id):
-        await message.answer("❗️Ви не зареєстровані❗️")
+        await message.answer(text="❗️Ви не зареєстровані❗️")
         return
 
     await db.delete_student(message.from_user.id)
-    await message.answer("Тепер ви не студент ✅", reply_markup=start_admin_kb())
+    await message.answer(text="Тепер ви не студент ✅", reply_markup=start_admin_kb())
 
 
 # =========================== Дріб ===========================
@@ -68,16 +68,16 @@ async def fraction_student(query: types.CallbackQuery) -> None:
     today = datetime.date(year=years, month=mouth, day=days)
     week_number = today.isocalendar()[1]
     if week_number % 2 == 0:
-        await query.answer("Цей тиждень - знаменник 🫡", show_alert=True)
+        await query.answer(text="Цей тиждень - знаменник 🫡", show_alert=True)
     elif week_number % 2 != 0:
-        await query.answer("Цей тиждень - чисельник 🫡", show_alert=True)
+        await query.answer(text="Цей тиждень - чисельник 🫡", show_alert=True)
 
 
 @router.callback_query(F.data == "Розклад студ. 🧑‍🎓")
 async def schedule_student(query: types.CallbackQuery, state: FSMContext) -> None:
     await state.set_state(FSMStudent.name_gpoup)
     await query.message.delete()
-    await query.message.answer("Виберіть групу", reply_markup=await student_group_list_kb())
+    await query.message.answer(text="Виберіть групу", reply_markup=await student_group_list_kb())
 
 
 @router.callback_query(FSMStudent.name_gpoup)
