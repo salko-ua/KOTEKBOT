@@ -57,9 +57,9 @@ async def for_applicant(event: types.Message | types.CallbackQuery) -> None:
 async def about_bot(query: types.CallbackQuery) -> None:
     about_bot_text = (
         f"🤖 БОТ ВПФК ПЕДКІТ\n"
-        f"🆙 Версія : release 2.0\n"
+        f"🆙 Версія : 2.1\n"
         f"👨‍💻 Розробник: <a href='https://t.me/salkooua'>Salo</a>\n"
-        f"🎨 Дизайн ави: <a href='https://t.me/rchpsd'>Коновалець Юра</a>\n\n"
+        f"🎨 Дизайн ави: <a href='https://t.me/pupqwert'>Reloadddddd</a>\n\n"
         f"📅 Початок розробки : Січень 2023-го року\n\n"
         f"Бот створено для спрощення\n"
         f"виконання будь-яких речей,\n"

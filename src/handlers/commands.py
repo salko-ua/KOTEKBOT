@@ -18,7 +18,7 @@ async def versions(message: types.Message) -> None:
     await message.delete()
 
     version = (
-        "🤖 Версія бота : release 2.0\n" "🐍 Версія Python : 3.11.2\n" "🤖 Версія Aiogram : 3.0.0b7\n"
+        "🤖 Версія бота : release 2.1\n" "🐍 Версія Python : 3.12.1\n" "🤖 Версія Aiogram : 3.4.1\n"
     )
 
     await message.answer(version, reply_markup=hide_kb())
