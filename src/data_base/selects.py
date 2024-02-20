@@ -1,14 +1,15 @@
 from src.data_base.create_db import BaseDBPart
+from src.data_base.middleprocess import get_number
 
 
 class SelectDB(BaseDBPart):
     async def count_user(self):
-        counts = await self.cur.execute("SELECT `user_id` FROM user")
-        return len(list(await counts.fetchall()))
+        counts = await self.cur.execute("SELECT COUNT(user_id) FROM user")
+        return get_number(counts)
 
     async def count_student(self):
-        counts = await self.cur.execute("SELECT `user_id` FROM student")
-        return len(list(await counts.fetchall()))
+        counts = await self.cur.execute("SELECT COUNT(user_id) FROM student")
+        return get_number(counts)
 
     async def list_id_student_agreed_news(self):
         result = await self.cur.execute("SELECT `user_id` FROM `student` WHERE send_news = ?", (1,))
