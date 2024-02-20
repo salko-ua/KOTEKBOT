@@ -39,3 +39,4 @@ You can check if something exists by user_id
 
 - All utils write in `utils.py` (Functions that have frequent use)
 - Do not write single-use functions there
+- path to [utils.py](src/utils.py) write right
