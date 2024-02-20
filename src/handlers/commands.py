@@ -1,7 +1,7 @@
 from aiogram import Router, types
 from aiogram.filters import Command
 
-from src.handlers.menu import check_who, menu
+from src.utils import check_who, menu
 from src.keyboards import *
 
 router = Router()

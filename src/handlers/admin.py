@@ -6,7 +6,7 @@ from aiogram.filters.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
-from src.handlers.menu import menu
+from src.utils import menu
 from src.keyboards import *
 
 

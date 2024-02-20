@@ -1,10 +1,7 @@
-# import
-from random import choice
-
 import asyncache
 import cachetools
 
-# from import
+from random import choice
 from aiogram import F, Router, types
 from aiogram.filters.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
