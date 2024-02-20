@@ -1,5 +1,5 @@
 from src.data_base.create_db import BaseDBPart
-from src.data_base.middleprocess import get_number, get_text
+from src.data_base.middleprocess import get_number, get_text, get_list
 
 
 class SelectDB(BaseDBPart):
@@ -13,28 +13,23 @@ class SelectDB(BaseDBPart):
 
     async def list_id_student_agreed_news(self):
         result = await self.cur.execute("SELECT `user_id` FROM `student` WHERE send_news = ?", (1,))
-        return await result.fetchall()
+        return get_list(result)
 
     async def list_id_student_agreed_alert(self):
         result = await self.cur.execute(
             "SELECT `user_id` FROM `student` WHERE send_alert = ?", (1,)
         )
-        return await result.fetchall()
+        return get_list(result)
 
     async def group_for_student_id(self, user_id):
-        groups = await self.cur.execute(
+        name = await self.cur.execute(
             "SELECT `group_student` FROM `student` WHERE `user_id` = ?", (user_id,)
         )
-        return get_text(groups)
+        return get_text(name)
 
     async def student_group_list(self):
-        keys = []
-        reslt = await self.cur.execute("SELECT `name_group` FROM `student_group`")
-        reslt = await reslt.fetchall()
-        for i in reslt:
-            keys.append(i[0])
-        keys.sort()
-        return keys
+        reslut = await self.cur.execute("SELECT `name_group` FROM `student_group`")
+        return sorted(get_list(reslut))
 
     async def see_rod(self, user_id):
         groups = await self.cur.execute(

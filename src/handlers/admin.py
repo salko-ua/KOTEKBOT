@@ -102,7 +102,7 @@ async def send_photo_news1(message: Message, state: FSMContext) -> None:
     data = await state.get_data()
     query: CallbackQuery = data["query"]
     photo = message.photo[0].file_id
-    user_ids = map(lambda e: e[0], await db.list_id_student_agreed_news())
+    user_ids = await db.list_id_student_agreed_news()
 
     await state.clear()
     await message.delete()
@@ -117,7 +117,7 @@ async def send_photo_news1(message: Message, state: FSMContext) -> None:
 async def send_message_news1(message: Message, state: FSMContext) -> None:
     db = await Database.setup()
     text = message.text
-    user_ids = map(lambda e: e[0], await db.list_id_student_agreed_news())
+    user_ids = await db.list_id_student_agreed_news()
 
     await state.clear()
     await asyncio.gather(
@@ -139,7 +139,7 @@ async def send_mixed_news2(message: Message, state: FSMContext) -> None:
     data = await state.get_data()
     text = data["text"]
     photo = message.photo[0].file_id
-    user_ids = map(lambda e: e[0], await db.list_id_student_agreed_news())
+    user_ids = await db.list_id_student_agreed_news()
 
     await state.clear()
     await asyncio.gather(
