@@ -1,5 +1,5 @@
 from src.data_base.create_db import BaseDBPart
-from src.data_base.middleprocess import get_number
+from src.data_base.middleprocess import get_number, get_text
 
 
 class SelectDB(BaseDBPart):
@@ -25,8 +25,7 @@ class SelectDB(BaseDBPart):
         groups = await self.cur.execute(
             "SELECT `group_student` FROM `student` WHERE `user_id` = ?", (user_id,)
         )
-        result = await groups.fetchone()
-        return result[0]
+        return get_text(groups)
 
     async def student_group_list(self):
         keys = []

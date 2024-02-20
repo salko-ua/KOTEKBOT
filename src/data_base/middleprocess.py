@@ -1,17 +1,18 @@
 from aiosqlite import Cursor, Row
 
 
-async def exist(exist_cur: Cursor) -> bool:
-    exists: Row = await exist_cur.fetchone()
-    if not exists:
-        return False
+async def get_text(exist_cur: Cursor) -> bool:
+    text: Row = await exist_cur.fetchone()
 
-    return bool(exists[0])
+    if not text:
+        return ""
+
+    return text[0]
 
 
 async def get_number(exist_cur: Cursor) -> bool:
-    exists: Row = await exist_cur.fetchone()
-    if not exists:
+    number: Row = await exist_cur.fetchone()
+    if not number:
         return 0
 
-    return exists[0]
+    return number[0]
