@@ -57,7 +57,7 @@ class SelectDB(BaseDBPart):
         try:
             id_photo = result[0]
             date_photo = result[1]
-        except:
+        except Exception:
             return False, None, None
 
         return True, id_photo, date_photo

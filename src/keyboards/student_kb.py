@@ -1,5 +1,4 @@
-from aiogram.utils.keyboard import (InlineKeyboardBuilder,
-                                    InlineKeyboardButton, InlineKeyboardMarkup)
+from aiogram.utils.keyboard import InlineKeyboardBuilder, InlineKeyboardButton, InlineKeyboardMarkup
 
 from src.data_base import Database
 

@@ -1,4 +1,3 @@
-
 from aiogram import F, Router, types
 
 from src.keyboards import *
@@ -214,6 +213,3 @@ async def official_site(query: types.CallbackQuery) -> None:
 async def specialty(query: types.CallbackQuery) -> None:
     await query.message.edit_text("Cпеціальності 📜 ВВПФК")
     await query.message.edit_reply_markup(reply_markup=url_speciality_kb())
-
-
-
