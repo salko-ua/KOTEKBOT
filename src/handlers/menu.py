@@ -1,8 +1,8 @@
 
 from aiogram import F, Router, types
 
-from src.utils import check_who, get_about_me, choose_random_photo
 from src.keyboards import *
+from src.utils import check_who, choose_random_photo, get_about_me
 
 router = Router()
 

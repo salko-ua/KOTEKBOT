@@ -2,7 +2,6 @@ from aiogram import F, Router, types
 from aiogram.filters.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 
-
 from src.keyboards import *
 from src.data_base import Database
 

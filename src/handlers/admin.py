@@ -6,8 +6,8 @@ from aiogram.filters.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
-from src.utils import menu
 from src.keyboards import *
+from src.utils import menu
 
 
 class FSMAdmin(StatesGroup):

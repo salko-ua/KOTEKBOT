@@ -1,14 +1,14 @@
+from random import choice
+
 import asyncache
 import cachetools
-
-from random import choice
 from aiogram import F, Router, types
 from aiogram.filters.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 
-
 from src.keyboards import *
 from src.data_base import Database
+
 
 router = Router()
 

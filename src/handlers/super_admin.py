@@ -4,11 +4,11 @@ from aiogram.filters.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 from aiogram.types import ReplyKeyboardRemove
 
-from src.config import SUPER_ADMIN
-from src.handlers.reg import password_for_admin
 from src.keyboards import *
-from src.utils import get_current_date
+from src.config import SUPER_ADMIN
 from src.data_base import Database
+from src.handlers.reg import password_for_admin
+from src.utils import get_current_date
 
 router = Router()
 

@@ -7,8 +7,12 @@ import sentry_sdk
 from aiogram import Bot, Dispatcher
 
 from src.config import KUMA_TOKEN, TOKEN, TOKEN_SENTRY
-from src.handlers import admin, commands, menu, reg, settings, stats, student, super_admin, user
-from src.middleware.UpdateUserInfo import CallbackQueryMiddleware, MessageMiddleware
+from src.handlers import (
+    admin, commands, menu,
+    reg, settings, stats,
+    student, super_admin, user)
+from src.middleware.UpdateUserInfo import (CallbackQueryMiddleware,
+                                           MessageMiddleware)
 from src.task.alarm import Alerts
 
 if TOKEN_SENTRY != "":

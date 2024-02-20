@@ -4,10 +4,10 @@ from aiogram import F, Router, types
 from aiogram.filters.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 
-from src.utils import menu
-from src.handlers.menu import back_student
 from src.keyboards import *
+from src.utils import menu
 from src.data_base import Database
+from src.handlers.menu import back_student
 
 router = Router()
 
