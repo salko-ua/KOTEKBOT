@@ -22,5 +22,5 @@ async def get_list(lists: Cursor) -> list:
     lists: Row = await lists.fetchall()
     if not lists:
         return []
-    print(list(map(lambda e: e[0], lists)))
+
     return list(map(lambda e: e[0], lists))

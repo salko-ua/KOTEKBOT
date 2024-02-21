@@ -41,9 +41,8 @@ class SelectDB(BaseDBPart):
             "SELECT `date`, `photo` FROM student_group WHERE name_group = ?", (name_group,)
         )
         data = await get_list(data_photo)
-
         if not data:
-            return None, None
+            return []
 
         return data[1], data[0]
 
