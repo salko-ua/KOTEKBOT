@@ -41,7 +41,19 @@ class SelectDB(BaseDBPart):
             "SELECT photo, date FROM student_group WHERE name_group = ?", (name_group,)
         )
         data = await get_all_in_list(data_photo)
-        print(data)
+
+        if not data:
+            return []
+
+        return data[0], data[1]
+
+    async def see_schedule_for_group(self, name_group):
+        data_photo = await self.cur.execute(
+            "SELECT photo, date FROM student_group WHERE name_group = ?", (name_group,)
+        )
+
+        data = await get_all_in_list(data_photo)
+
         if not data:
             return []
 

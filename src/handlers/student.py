@@ -94,7 +94,7 @@ async def schedule_student1(query: types.CallbackQuery, state: FSMContext) -> No
         await state.clear()
         return
 
-    data_photo = await db.see_schedule_student(query.data)
+    data_photo = await db.see_schedule_for_group(query.data)
 
     if not data_photo:
         await query.answer(f"У групи {query.data} немає розкладу☹️", show_alert=True)
