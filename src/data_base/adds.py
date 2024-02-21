@@ -18,10 +18,10 @@ class AddDB(BaseDBPart):
         )
         return await self.base.commit()
 
-    async def add_photo(self, name_photo, id_photo, date_photo):
+    async def add_photo(self, name_photo, photo, date_photo):
         await self.cur.execute(
-            "INSERT INTO photo (name_photo, id_photo, date_photo) VALUES (?,?,?)",
-            (name_photo, id_photo, date_photo),
+            "INSERT INTO photo (name_photo, photo, date_photo) VALUES (?,?,?)",
+            (name_photo, photo, date_photo),
         )
         return await self.base.commit()
 
