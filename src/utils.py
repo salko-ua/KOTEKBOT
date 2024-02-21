@@ -5,6 +5,7 @@ from datetime import datetime
 from aiogram import types
 from translate import Translator
 
+from src.keyboards import *
 from src.data_base import Database
 
 

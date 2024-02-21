@@ -36,7 +36,7 @@ async def start_bot() -> None:
     if KUMA_TOKEN != "":
         await apykuma.start(url=KUMA_TOKEN, delay=15)
 
-    bot = Bot(token=TOKEN, parse_mode="HTML")
+    bot = Bot(token=TOKEN)
     dispatcher = Dispatcher()
     Alerts(bot)
 
