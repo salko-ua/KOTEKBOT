@@ -66,8 +66,5 @@ class SelectDB(BaseDBPart):
         return get_list(result)
 
     async def user_show_data(self, user_id):
-        result = await self.cur.execute(
-            "SELECT * FROM user WHERE user_id = ?",
-            (user_id,),
-        )
-        return await result.fetchall()
+        result = await self.cur.execute("SELECT * FROM user WHERE user_id = ?", (user_id,))
+        return await get_all_in_list(result)

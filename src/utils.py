@@ -56,15 +56,14 @@ async def get_about_me(user_id, url) -> str:
     db = await Database.setup()
 
     data = await db.user_show_data(user_id)
-    data = data[0]
-    data_group = await check_user(user_id)
+    admin, student = await check_user(user_id)
 
     message_text = (
         f"<b>👤 Ім'я: <a href='{url}'>{data[1]}</a> | {data[0]}</b>\n"
         f"<b>📅 Дата реєстації: {data[4]}</b>\n\n"
         f"<b>📊 Кількість взаємодій: {data[5]}</b>\n\n"
-        f"<b>👨‍💼 Адмін:</b> {data_group[0]}\n\n"
-        f"<b>👩‍🎓 Студент:</b> {data_group[1]}\n\n"
+        f"<b>👨‍💼 Адмін:</b> {admin}\n\n"
+        f"<b>👩‍🎓 Студент:</b> {student}\n\n"
         f"<b>⌛️ Остання взаємодія з\n"
         f"ботом: {data[6]}</b>\n"
         f"(ця не враховується)\n"
