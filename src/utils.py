@@ -1,12 +1,16 @@
 import os
 import random
-from datetime import datetime
+import asyncache
+import cachetools
 
+from random import choice
 from aiogram import types
+from datetime import datetime
 from translate import Translator
 
 from src.keyboards import *
 from src.data_base import Database
+from src.config import SUPER_ADMIN
 
 
 async def get_current_date() -> str:
@@ -14,6 +18,22 @@ async def get_current_date() -> str:
     now = datetime.now()
     now = now.strftime("%d - %B, %A")
     return translator.translate(now)
+
+
+@asyncache.cached(cachetools.TTLCache(1, 120))
+async def password_for_admin():
+    password = ""
+    for x in range(8):
+        password += choice(list("1234567890ABCDEFGHIGKLMNOPQRSTUVYXWZ"))
+    return password
+
+
+async def is_super_admin(message: types.Message) -> bool:
+    user_id = message.from_user.id
+    if user_id in SUPER_ADMIN:
+        return True
+    else:
+        return False
 
 
 async def menu(message: types.Message) -> None:

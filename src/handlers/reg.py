@@ -1,14 +1,10 @@
-from random import choice
-
-import asyncache
-import cachetools
 from aiogram import F, Router, types
 from aiogram.filters.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 
 from src.keyboards import *
 from src.data_base import Database
-
+from src.utils import password_for_admin
 
 router = Router()
 
@@ -18,14 +14,6 @@ class FSMReg(StatesGroup):
     student_reg = State()
     password_reg = State()
     reply_reg = State()
-
-
-@asyncache.cached(cachetools.TTLCache(1, 120))
-async def password_for_admin():
-    password = ""
-    for x in range(8):
-        password += choice(list("1234567890ABCDEFGHIGKLMNOPQRSTUVYXWZ"))
-    return password
 
 
 @router.message(F.text == "Реєстрація 📝")

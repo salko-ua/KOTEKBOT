@@ -2,7 +2,7 @@ from aiogram import Router, types
 from aiogram.filters import Command
 
 from src.keyboards import *
-from src.utils import check_who, menu
+from src.utils import check_who, menu, is_super_admin
 
 router = Router()
 
@@ -11,6 +11,14 @@ router = Router()
 async def start(message: types.Message) -> None:
     await message.delete()
     await menu(message)
+
+
+@router.message(Command("sadmin"))
+async def super_admin(message: types.Message) -> None:
+    if not await is_super_admin(message):
+        return
+
+    await message.answer(text="Клавіатура власника", reply_markup=super_admin_kb())
 
 
 @router.message(Command("version"))
