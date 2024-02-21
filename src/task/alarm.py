@@ -49,7 +49,7 @@ class Alerts:
             self.wait_finish_alarm, "interval", seconds=20, id="wait_finish_alarm"
         )
 
-        all_user_ids = map(lambda e: e[0], await db.list_id_student_agreed_alert())
+        all_user_ids = await db.list_id_student_agreed_alert()
         await asyncio.gather(*map(self.send_notification(is_active=is_active), all_user_ids))
 
     async def wait_finish_alarm(self):
@@ -62,7 +62,7 @@ class Alerts:
         self.scheduler.remove_job("wait_finish_alarm")
         self.scheduler.add_job(self.wait_start_alarm, "interval", seconds=20, id="wait_start_alarm")
 
-        all_user_ids = map(lambda e: e[0], await db.list_id_student_agreed_alert())
+        all_user_ids = await db.list_id_student_agreed_alert()
         await asyncio.gather(*map(self.send_notification(is_active=is_active), all_user_ids))
 
     def send_notification(self, is_active: bool):
@@ -70,7 +70,7 @@ class Alerts:
             try:
                 text = "Тривога! 🔴" if is_active else "Відбій! 🟢"
                 await self.bot.send_message(chat_id=user_id, text=text)
-            except:
-                await self.bot.send_message(chat_id=2138964363, text=f"{user_id} blocked bot")
+            except Exception:
+                pass
 
         return wrapped

@@ -31,7 +31,7 @@ class SelectDB(BaseDBPart):
         reslut = await self.cur.execute("SELECT `name_group` FROM `student_group`")
         return sorted(await get_list(reslut))
 
-    async def see_rod(self, user_id):
+    async def see_schedule_student(self, user_id):
         groups = await self.cur.execute(
             "SELECT `group_student` FROM `student` WHERE `user_id` = ?", (user_id,)
         )
@@ -48,19 +48,10 @@ class SelectDB(BaseDBPart):
         return data[1], data[0]
 
     async def see_photo(self, name_photo):
-        result = await (
-            await self.cur.execute(
-                "SELECT id_photo, date_photo FROM photo WHERE name_photo = ?",
-                (name_photo,),
-            )
-        ).fetchone()
-        try:
-            id_photo = result[0]
-            date_photo = result[1]
-        except Exception:
-            return False, None, None
-
-        return True, id_photo, date_photo
+        result = await self.cur.execute(
+            "SELECT photo, date_photo FROM photo WHERE name_photo = ?", (name_photo,)
+        )
+        return get_list(result)
 
     async def user_show_data(self, user_id):
         result = await self.cur.execute(

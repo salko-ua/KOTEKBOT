@@ -80,8 +80,8 @@ class Database(AddDB, DeleteDB, ExistDB, SelectDB, UpdateDB):
         await base.execute(
             """
             CREATE TABLE IF NOT EXISTS photo(
-                id_photo   TEXT UNIQUE,
                 name_photo TEXT,
+                photo TEXT,
                 date_photo TEXT
             )
             """

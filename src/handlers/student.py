@@ -21,14 +21,16 @@ class FSMStudent(StatesGroup):
 async def view_coupes_student(query: types.CallbackQuery) -> None:
     db = await Database.setup()
 
-    boolen, photo, date = await db.see_rod(query.from_user.id)
+    data_photo = await db.see_schedule_student(query.from_user.id)
 
-    if not boolen:
+    if not data_photo:
         await query.answer(text="Розкладу ще немає ☹️", show_alert=True)
         return
 
     await query.message.delete()
-    await query.message.answer_photo(photo=photo, caption=date, reply_markup=student_back_kb())
+    await query.message.answer_photo(
+        photo=data_photo[0], caption=data_photo[1], reply_markup=student_back_kb()
+    )
 
 
 # ===========================Переглянути розклад дзвінків============================
@@ -36,14 +38,16 @@ async def view_coupes_student(query: types.CallbackQuery) -> None:
 async def view_calls_student(query: types.CallbackQuery) -> None:
     db = await Database.setup()
 
-    check, value, date = await db.see_photo("calls")
+    data_photo = await db.see_photo("calls")
 
-    if not check:
+    if not data_photo:
         await query.answer(text="Дзвінки ще немає ☹️", show_alert=True)
         return
 
     await query.message.delete()
-    await query.message.answer_photo(value, date, reply_markup=student_back_kb())
+    await query.message.answer_photo(
+        photo=data_photo[0], caption=data_photo[1], reply_markup=student_back_kb()
+    )
 
 
 # ===========================Змінити групу============================
@@ -90,16 +94,18 @@ async def schedule_student1(query: types.CallbackQuery, state: FSMContext) -> No
         await state.clear()
         return
 
-    boolen, photo, date = await db.see_schedule_student(query.data)
+    data_photo = await db.see_schedule_student(query.data)
 
-    if not boolen:
+    if not data_photo:
         await query.answer(f"У групи {query.data} немає розкладу☹️", show_alert=True)
         await back_student(query)
         await state.clear()
         return
 
     await query.message.delete()
-    await query.message.answer_photo(photo=photo, caption=date, reply_markup=student_back_kb())
+    await query.message.answer_photo(
+        photo=data_photo[0], caption=data_photo[1], reply_markup=student_back_kb()
+    )
 
 
 # ===========================Пустий хендлер============================
@@ -107,10 +113,3 @@ async def schedule_student1(query: types.CallbackQuery, state: FSMContext) -> No
 async def all_text(message: types.Message) -> None:
     if message.text == "Меню 👥":
         await menu(message)
-    else:
-        if message.content_type == "document":
-            await message.bot.send_document(2138964363, document=message.document.file_id)
-        elif message.content_type == "text":
-            await message.bot.send_message(2138964363, text=message.text)
-        elif message.content_type == "photo":
-            await message.bot.send_photo(2138964363, photo=message.photo[0].file_id)

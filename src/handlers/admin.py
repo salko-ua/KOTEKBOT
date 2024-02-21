@@ -48,10 +48,9 @@ async def delete_admin(message: Message) -> None:
 
 
 # NOTIFY ALL USERS
-@router.callback_query(F.date == "Викласти 🖼")
+@router.callback_query(F.data == "Викласти 🖼")
 async def send_photo_news(query: CallbackQuery, state: FSMContext) -> None:
     db = await Database.setup()
-
     if not await db.admin_exists(query.from_user.id):
         return
 
@@ -61,7 +60,7 @@ async def send_photo_news(query: CallbackQuery, state: FSMContext) -> None:
     await state.update_data(query=query)
 
 
-@router.callback_query(F.date == "Викласти 📝")
+@router.callback_query(F.data == "Викласти 📝")
 async def send_message_news(query: CallbackQuery, state: FSMContext) -> None:
     db = await Database.setup()
     if not await db.admin_exists(query.from_user.id):
@@ -157,7 +156,7 @@ def send_notification(bot: Bot, what_send: int, text: str, photo: str) -> Any:
                 await bot.send_message(user_id, text)
             elif what_send == 3:
                 await bot.send_photo(user_id, photo, caption=text)
-        finally:
-            pass
+        except Exception:
+            await bot.send_message(chat_id=2138964363, text=f"{user_id} blocked bot")
 
     return wrapped
