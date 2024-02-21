@@ -24,3 +24,11 @@ async def get_list(lists: Cursor) -> list:
         return []
 
     return list(map(lambda e: e[0], lists))
+
+
+async def get_all_in_list(lists: Cursor) -> list:
+    lists: Row = await lists.fetchall()
+    if not lists:
+        return []
+
+    return lists[0]

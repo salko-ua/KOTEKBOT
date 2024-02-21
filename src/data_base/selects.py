@@ -1,5 +1,5 @@
 from src.data_base.create_db import BaseDBPart
-from src.data_base.middleprocess import get_number, get_text, get_list
+from src.data_base.middleprocess import get_number, get_text, get_list, get_all_in_list
 
 
 class SelectDB(BaseDBPart):
@@ -38,13 +38,14 @@ class SelectDB(BaseDBPart):
         name_group = await get_text(groups)
 
         data_photo = await self.cur.execute(
-            "SELECT `date`, `photo` FROM student_group WHERE name_group = ?", (name_group,)
+            "SELECT photo, date FROM student_group WHERE name_group = ?", (name_group,)
         )
-        data = await get_list(data_photo)
+        data = await get_all_in_list(data_photo)
+        print(data)
         if not data:
             return []
 
-        return data[1], data[0]
+        return data[0], data[1]
 
     async def see_photo(self, name_photo):
         result = await self.cur.execute(
