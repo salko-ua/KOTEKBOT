@@ -28,7 +28,7 @@ async def password_for_admin():
     return password
 
 
-async def is_super_admin(message: types.Message) -> bool:
+async def is_super_admin(message: types.Message | types.CallbackQuery) -> bool:
     user_id = message.from_user.id
     if user_id in SUPER_ADMIN:
         return True

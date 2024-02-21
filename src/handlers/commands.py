@@ -17,8 +17,12 @@ async def start(message: types.Message) -> None:
 async def super_admin(message: types.Message) -> None:
     if not await is_super_admin(message):
         return
-
-    await message.answer(text="Клавіатура власника", reply_markup=super_admin_kb())
+    text = (
+        f"панель керування ботом 🎛\n"
+        f"• Розклад - налаштування розкладу\n"
+        f"• Групи - налаштуванняя груп\n"
+    )
+    await message.answer(text=text, reply_markup=super_admin_kb())
 
 
 @router.message(Command("version"))
