@@ -1,9 +1,15 @@
 from aiogram import F, Router, types
+from aiogram.filters.state import State, StatesGroup
+from aiogram.fsm.context import FSMContext
 from src.keyboards import *
 from src.data_base import Database
 from src.utils import is_super_admin, password_for_admin
 
 router = Router()
+
+
+class FSMSuperAdminPanel(StatesGroup):
+    add_or_change_calls = State()
 
 
 @router.message(F.text == "password")
@@ -61,3 +67,7 @@ async def choise_in_panel1(query: types.CallbackQuery):
     text = f"Панель керування Розкладом 🎛\n" f"• Додати групу 👥\n" f"• Видалити групу 👥\n"
 
     await query.message.edit_text(text=text, reply_markup=super_admin_group())
+
+
+@router.callback_query(F.data == "Додати/Змінити 🔔")
+async def add_or_change_calls(): ...

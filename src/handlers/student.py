@@ -38,7 +38,7 @@ async def view_coupes_student(query: types.CallbackQuery) -> None:
 async def view_calls_student(query: types.CallbackQuery) -> None:
     db = await Database.setup()
 
-    data_photo = await db.see_photo("calls")
+    data_photo = await db.see_photo(name_photo="calls")
 
     if not data_photo:
         await query.answer(text="Дзвінки ще немає ☹️", show_alert=True)

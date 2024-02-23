@@ -56,7 +56,7 @@ class SelectDB(BaseDBPart):
 
         if None in data or not data:
             return []
-        print(data)
+
         return data[0], data[1]
 
     async def see_photo(self, name_photo):
@@ -65,7 +65,7 @@ class SelectDB(BaseDBPart):
         )
 
         data = await get_all_in_list(data_photo)
-
+        print(data)
         if None in data or not data:
             return []
 
