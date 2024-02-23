@@ -24,7 +24,7 @@ class MessageMiddleware(BaseMiddleware):
                 message.from_user.username,
             )
 
-        return await handler(message, data)
+            return await handler(message, data)
 
 
 class CallbackQueryMiddleware(BaseMiddleware):
