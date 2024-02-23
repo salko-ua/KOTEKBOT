@@ -60,10 +60,16 @@ class SelectDB(BaseDBPart):
         return data[0], data[1]
 
     async def see_photo(self, name_photo):
-        result = await self.cur.execute(
+        data_photo = await self.cur.execute(
             "SELECT photo, date_photo FROM photo WHERE name_photo = ?", (name_photo,)
         )
-        return get_list(result)
+
+        data = await get_all_in_list(data_photo)
+
+        if None in data or not data:
+            return []
+
+        return data[0], data[1]
 
     async def user_show_data(self, user_id):
         result = await self.cur.execute("SELECT * FROM user WHERE user_id = ?", (user_id,))
