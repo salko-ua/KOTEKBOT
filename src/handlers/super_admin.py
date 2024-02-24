@@ -1,3 +1,5 @@
+import datetime
+
 from aiogram import F, Router, types
 from aiogram.filters.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
@@ -70,4 +72,19 @@ async def choise_in_panel1(query: types.CallbackQuery):
 
 
 @router.callback_query(F.data == "Додати/Змінити 🔔")
-async def add_or_change_calls(): ...
+async def add_or_change_calls1(query: types.CallbackQuery, state: FSMContext):
+    await query.message.edit_text("Надішліть фото 🖼\nЗ увімкнутим стисненням", reply_markup=None)
+    await state.set_state(FSMSuperAdminPanel.add_or_change_calls)
+
+
+@router.message(F.photo, FSMSuperAdminPanel.add_or_change_calls)
+async def add_or_change_calls2(message: types.Message):
+    db = await Database.setup()
+
+    if await db.photo_exists("calls"):
+        ...
+        return
+
+    await db.add_photo(
+        name_photo="calls", photo=message.photo[0].id, date_photo=datetime.datetime.today()
+    )
