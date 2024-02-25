@@ -16,7 +16,7 @@ from src.config import SUPER_ADMIN
 async def get_current_date() -> str:
     translator = Translator(to_lang="uk")
     now = datetime.now()
-    now = now.strftime("%d - %B, %A")
+    now = now.strftime("%d %B, %Y")
     return translator.translate(now)
 
 

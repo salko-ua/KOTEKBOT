@@ -1,11 +1,9 @@
-import datetime
-
 from aiogram import F, Router, types
 from aiogram.filters.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 from src.keyboards import *
 from src.data_base import Database
-from src.utils import is_super_admin, password_for_admin
+from src.utils import is_super_admin, password_for_admin, get_current_date
 
 router = Router()
 
@@ -66,7 +64,7 @@ async def choise_in_panel1(query: types.CallbackQuery):
     if not await is_super_admin(query):
         return
 
-    text = f"Панель керування Розкладом 🎛\n" f"• Додати групу 👥\n" f"• Видалити групу 👥\n"
+    text = f"Панель керування Групами 🎛\n" f"• Додати групу 👥\n" f"• Видалити групу 👥\n"
 
     await query.message.edit_text(text=text, reply_markup=super_admin_group())
 
@@ -75,16 +73,21 @@ async def choise_in_panel1(query: types.CallbackQuery):
 async def add_or_change_calls1(query: types.CallbackQuery, state: FSMContext):
     await query.message.edit_text("Надішліть фото 🖼\nЗ увімкнутим стисненням", reply_markup=None)
     await state.set_state(FSMSuperAdminPanel.add_or_change_calls)
+    await state.update_data(message=query.message)
 
 
 @router.message(F.photo, FSMSuperAdminPanel.add_or_change_calls)
-async def add_or_change_calls2(message: types.Message):
+async def add_or_change_calls2(message: types.Message, state: FSMContext):
+    await message.delete()
     db = await Database.setup()
+    old_message: types.Message = (await state.get_data())["message"]
+    date = f"Зміненно: {await get_current_date()}"
+    await message.answer("Фото дзвінків зміненно ✅", reply_markup=super_admin_schedule())
+    await old_message.delete()
+    await state.clear()
 
     if await db.photo_exists("calls"):
-        ...
+        await db.update_photo(name_photo="calls", photo=message.photo[0].file_id, date_photo=date)
         return
 
-    await db.add_photo(
-        name_photo="calls", photo=message.photo[0].id, date_photo=datetime.datetime.today()
-    )
+    await db.add_photo(name_photo="calls", photo=message.photo[0].file_id, date_photo=date)

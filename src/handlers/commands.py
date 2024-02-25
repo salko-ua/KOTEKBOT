@@ -23,6 +23,7 @@ async def super_admin(message: types.Message) -> None:
         f"• Групи - налаштуванняя груп\n"
     )
     await message.answer(text=text, reply_markup=super_admin_kb())
+    await message.delete()
 
 
 @router.message(Command("version"))

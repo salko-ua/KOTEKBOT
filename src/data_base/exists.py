@@ -21,7 +21,7 @@ class ExistDB(BaseDBPart):
 
     async def photo_exists(self, name_photo):
         exists = await self.cur.execute(
-            "SELECT COUNT(`id`) FROM `photo` WHERE `name_photo` = ?", (name_photo,)
+            "SELECT COUNT(`name_photo`) FROM `photo` WHERE `name_photo` = ?", (name_photo,)
         )
         return await get_number(exists)
 
