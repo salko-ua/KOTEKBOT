@@ -37,14 +37,14 @@ async def super_admin_back(query: types.CallbackQuery):
     text = (
         f"Панель керування ботом 🎛\n"
         f"• Розклад - налаштування розкладу\n"
-        f"• Групи - налаштуванняя груп\n"
+        f"• Групи - налаштування груп\n"
     )
 
     await query.message.edit_text(text=text, reply_markup=super_admin_kb())
 
 
 @router.callback_query(F.data == "Розклад 📝")
-async def choise_in_panel0(query: types.CallbackQuery):
+async def choice_in_panel0(query: types.CallbackQuery):
     if not await is_super_admin(query):
         return
 
@@ -60,7 +60,7 @@ async def choise_in_panel0(query: types.CallbackQuery):
 
 
 @router.callback_query(F.data == "Групи 👥")
-async def choise_in_panel1(query: types.CallbackQuery):
+async def choice_in_panel1(query: types.CallbackQuery):
     if not await is_super_admin(query):
         return
 
@@ -70,7 +70,7 @@ async def choise_in_panel1(query: types.CallbackQuery):
 
 
 @router.callback_query(F.data == "Інше 📕")
-async def choise_in_panel1(query: types.CallbackQuery):
+async def choice_in_panel1(query: types.CallbackQuery):
     if not await is_super_admin(query):
         return
 
@@ -92,10 +92,10 @@ async def add_or_change_calls1(query: types.CallbackQuery, state: FSMContext):
 @router.message(F.photo, FSMSuperAdminPanel.add_or_change_calls)
 async def add_or_change_calls2(message: types.Message, state: FSMContext):
     db = await Database.setup()
-    date = f"Зміненно: {await get_current_date()}"
+    date = f"Змінено: {await get_current_date()}"
     old_message: types.Message = (await state.get_data())["message"]
 
-    await message.answer("Фото дзвінків зміненно ✅", reply_markup=super_admin_schedule())
+    await message.answer("Фото дзвінків змінено ✅", reply_markup=super_admin_schedule())
     await old_message.delete()
     await message.delete()
     await state.clear()
