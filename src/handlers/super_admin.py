@@ -69,6 +69,19 @@ async def choise_in_panel1(query: types.CallbackQuery):
     await query.message.edit_text(text=text, reply_markup=super_admin_group())
 
 
+@router.callback_query(F.data == "Інше 📕")
+async def choise_in_panel1(query: types.CallbackQuery):
+    if not await is_super_admin(query):
+        return
+
+    text = (
+        f"Панель керування Іншим 🎛\n"
+        f"• Додати фото 🖼 - додайте фото у базу данних з її ім'ям. (calls - розклад дзвінків\n"
+    )
+
+    await query.message.edit_text(text=text, reply_markup=super_admin_group())
+
+
 @router.callback_query(F.data == "Додати/Змінити 🔔")
 async def add_or_change_calls1(query: types.CallbackQuery, state: FSMContext):
     await query.message.edit_text("Надішліть фото 🖼\nЗ увімкнутим стисненням", reply_markup=None)
@@ -78,12 +91,13 @@ async def add_or_change_calls1(query: types.CallbackQuery, state: FSMContext):
 
 @router.message(F.photo, FSMSuperAdminPanel.add_or_change_calls)
 async def add_or_change_calls2(message: types.Message, state: FSMContext):
-    await message.delete()
     db = await Database.setup()
-    old_message: types.Message = (await state.get_data())["message"]
     date = f"Зміненно: {await get_current_date()}"
+    old_message: types.Message = (await state.get_data())["message"]
+
     await message.answer("Фото дзвінків зміненно ✅", reply_markup=super_admin_schedule())
     await old_message.delete()
+    await message.delete()
     await state.clear()
 
     if await db.photo_exists("calls"):

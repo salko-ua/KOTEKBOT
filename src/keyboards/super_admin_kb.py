@@ -13,7 +13,7 @@ from src.data_base import Database
 def super_admin_kb() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
-    keyboard = ["Розклад 📝", "Групи 👥", "Сховати ❌"]
+    keyboard = ["Розклад 📝", "Групи 👥", "Інше 📕", "Сховати ❌"]
 
     for button in keyboard:
         builder.add(InlineKeyboardButton(text=button, callback_data=button))
@@ -43,6 +43,17 @@ def super_admin_group() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
     keyboard = ["Додати 👥", "Видалити 👥", "⬅️ Назад", "Сховати ❌"]
+
+    for button in keyboard:
+        builder.add(InlineKeyboardButton(text=button, callback_data=button))
+
+    return builder.adjust(2).as_markup(resize_keyboard=True)
+
+
+def super_admin_other() -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+
+    keyboard = ["Додати фото 🖼", "Сховати ❌"]
 
     for button in keyboard:
         builder.add(InlineKeyboardButton(text=button, callback_data=button))
