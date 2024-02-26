@@ -1,5 +1,5 @@
 from aiosqlite import Cursor, Row
-
+from typing import Iterable
 
 async def get_text(text: Cursor) -> str:
     text: Row = await text.fetchone()
@@ -19,7 +19,7 @@ async def get_number(number: Cursor) -> int:
 
 
 async def get_list(lists: Cursor) -> list:
-    lists: Row = await lists.fetchall()
+    lists: Iterable[Row] = await lists.fetchall()
     if not lists:
         return []
 
@@ -27,7 +27,7 @@ async def get_list(lists: Cursor) -> list:
 
 
 async def get_all_in_list(lists: Cursor) -> list:
-    lists: Row = await lists.fetchall()
+    lists: Iterable[Row] = await lists.fetchall()
     if not lists:
         return []
 

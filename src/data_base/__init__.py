@@ -28,7 +28,7 @@ class Database(AddDB, DeleteDB, ExistDB, SelectDB, UpdateDB):
             CREATE TABLE IF NOT EXISTS user(
                 user_id           INTEGER NOT NULL, -- ід користувача (int)
                 first_name        TEXT,             -- Ім'я користувача (str)
-                last_name         TEXT,             -- Призвіще користувача (str)
+                last_name         TEXT,             -- Приз віще користувача (str)
                 username          TEXT,             -- нікнейм користувача @ (str)
                 date_join         TEXT,             -- дата приєднання (дати від 1 вересня 2023) (str)
                 count_interaction INTEGER DEFAULT 0,-- кількість взаємодій боту (int)

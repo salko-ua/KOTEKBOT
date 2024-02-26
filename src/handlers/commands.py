@@ -20,7 +20,7 @@ async def super_admin(message: types.Message) -> None:
     text = (
         f"Панель керування ботом 🎛\n"
         f"• Розклад - налаштування розкладу\n"
-        f"• Групи - налаштуванняя груп\n"
+        f"• Групи - налаштування груп\n"
     )
     await message.answer(text=text, reply_markup=super_admin_kb())
     await message.delete()
@@ -43,7 +43,7 @@ async def schedule(message: types.Message) -> None:
     await message.delete()
 
     if not await check_who(message):
-        await message.answer(text="Ви повинні бути зарєстровані❗️", reply_markup=hide_kb())
+        await message.answer(text="Ви повинні бути зареєстровані❗️", reply_markup=hide_kb())
         return
 
     await message.answer(text="Перегляд розкладу ⬇️", reply_markup=await schedule_kb(telegram_id))

@@ -28,8 +28,8 @@ class SelectDB(BaseDBPart):
         return await get_text(name)
 
     async def student_group_list(self):
-        reslut = await self.cur.execute("SELECT `name_group` FROM `student_group`")
-        return sorted(await get_list(reslut))
+        result = await self.cur.execute("SELECT `name_group` FROM `student_group`")
+        return sorted(await get_list(result))
 
     async def see_schedule_student(self, user_id):
         groups = await self.cur.execute(

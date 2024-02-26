@@ -12,7 +12,7 @@ async def schedule(message: types.Message) -> None:
     telegram_id = message.from_user.id
 
     if not await check_who(message):
-        await message.answer(text="Ви повинні бути зарєстровані❗️", reply_markup=hide_kb())
+        await message.answer(text="Ви повинні бути зареєстровані❗️", reply_markup=hide_kb())
         return
 
     await message.answer(text="Перегляд розкладу ⬇️", reply_markup=await schedule_kb(telegram_id))
@@ -67,7 +67,7 @@ async def about_bot(query: types.CallbackQuery) -> None:
         f"є купа потрібних і не дуже\n"
         f"функцій, які розставлені в\n"
         f"зручних місцях. Використовуйте\n"
-        f"його для економлення часу!\n"
+        f"його для зекономлення часу!\n"
         f"🌐 <a href='https://vvpc.com.ua/'>Офіційний сайт ВПФК</a>\n"
     )
     await query.message.edit_text(about_bot_text, parse_mode="HTML", disable_web_page_preview=True)
@@ -141,7 +141,7 @@ async def introduction(query: types.CallbackQuery) -> None:
 
 
 @router.callback_query(F.data == "Про коледж 🛡")
-async def about_collasge(query: types.CallbackQuery) -> None:
+async def about_collage(query: types.CallbackQuery) -> None:
     photo_path = "photo/about_collage.jpg"
     file_path = types.FSInputFile(photo_path)
     text = "Інформація про Володимирський\nпедагогічний фаховий коледж\nімені А.Ю. Кримського\nВолинської обласної ради"
@@ -156,7 +156,7 @@ async def about_collasge(query: types.CallbackQuery) -> None:
 
 
 @router.callback_query(F.data == "Адреса 📫")
-async def addres(query: types.CallbackQuery) -> None:
+async def address(query: types.CallbackQuery) -> None:
     location = (
         "•Земля 🌍\n"
         "•Україна 🇺🇦\n"
@@ -187,13 +187,13 @@ async def score(query: types.CallbackQuery) -> None:
         f"❗️ Перевірте чи інформація актуальна ❗️\n"
         f"Це можна зробити кнопкою під повідомленням\n\n"
         f"<b>Реквізити оплати за навчання (станом на 15.05.22)</b>\n"
-        f"Банк ГУДКСУ Волинської області\n"
+        f"Банк ГУД КСУ Волинської області\n"
         f"Код ЄДРПОУ 02125941\n"
         f"Рахунок: <code>UA368201720314241003201023033</code>\n"
         f"Призначення платежу: плата за навчання\n"
         f"Вказати прізвище студента, курс та групу\n\n"
         f"<b>Реквізити оплати за гуртожиток (станом на 15.05.22)</b>\n"
-        f"Банк ГУДКСУ Волинської області\n"
+        f"Банк ГУД КСУ Волинської області\n"
         f"Код ЄДРПОУ 02125941\n"
         f"Рахунок: <code>UA378201720314211003202023033</code>\n"
         f"Призначення платежу: плата за гуртожиток\n"
@@ -211,5 +211,5 @@ async def official_site(query: types.CallbackQuery) -> None:
 
 @router.callback_query(F.data == "Спеціальності 📜")
 async def specialty(query: types.CallbackQuery) -> None:
-    await query.message.edit_text("Cпеціальності 📜 ВВПФК")
+    await query.message.edit_text("Спеціальності 📜 ВПФК")
     await query.message.edit_reply_markup(reply_markup=url_speciality_kb())

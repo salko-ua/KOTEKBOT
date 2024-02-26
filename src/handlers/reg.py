@@ -9,7 +9,6 @@ from src.utils import password_for_admin
 router = Router()
 
 
-# =========Класс машини стану=========
 class FSMReg(StatesGroup):
     student_reg = State()
     password_reg = State()
@@ -64,7 +63,7 @@ async def reg_admin(message: types.Message, state: FSMContext) -> None:
     await message.delete()
     await message.bot.delete_message(message_id=message_id, chat_id=chat_id)
 
-    if not message.text == await password_for_admin():
+    if not message.text == password_for_admin():
         await message.answer(text="Пароль невірний ☹️")
         await state.clear()
         return

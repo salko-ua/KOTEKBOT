@@ -13,7 +13,7 @@ from src.data_base import Database
 from src.config import SUPER_ADMIN
 
 
-async def get_current_date() -> str:
+def get_current_date() -> str:
     translator = Translator(to_lang="uk")
     now = datetime.now()
     now = now.strftime("%d %B, %Y")
@@ -21,7 +21,7 @@ async def get_current_date() -> str:
 
 
 @asyncache.cached(cachetools.TTLCache(1, 120))
-async def password_for_admin():
+def password_for_admin():
     password = ""
     for x in range(8):
         password += choice(list("1234567890ABCDEFGHIGKLMNOPQRSTUVYXWZ"))
@@ -80,7 +80,7 @@ async def get_about_me(user_id, url) -> str:
 
     message_text = (
         f"<b>👤 Ім'я: <a href='{url}'>{data[1]}</a> | {data[0]}</b>\n"
-        f"<b>📅 Дата реєстації: {data[4]}</b>\n\n"
+        f"<b>📅 Дата реєстрації: {data[4]}</b>\n\n"
         f"<b>📊 Кількість взаємодій: {data[5]}</b>\n\n"
         f"<b>👨‍💼 Адмін:</b> {admin}\n\n"
         f"<b>👩‍🎓 Студент:</b> {student}\n\n"
@@ -91,6 +91,7 @@ async def get_about_me(user_id, url) -> str:
     return message_text
 
 
+# TODO: Move all photo to database
 async def choose_random_photo() -> str:
     folder_path = "cat/"
     file_list = os.listdir(folder_path)

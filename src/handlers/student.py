@@ -13,7 +13,7 @@ router = Router()
 
 
 class FSMStudent(StatesGroup):
-    name_gpoup = State()
+    name_group = State()
 
 
 # ===========================Переглянути розклад============================
@@ -66,10 +66,10 @@ async def delete_user_student(message: types.Message) -> None:
 @router.callback_query(F.data == "Ч/З тиждень ✏️")
 async def fraction_student(query: types.CallbackQuery) -> None:
     delta = datetime.timedelta(hours=2, minutes=0)
-    todays = datetime.datetime.now(datetime.timezone.utc) + delta
-    days = int(todays.strftime("%d"))
-    years = int(todays.strftime("%y"))
-    mouth = int(todays.strftime("%m"))
+    today = datetime.datetime.now(datetime.timezone.utc) + delta
+    days = int(today.strftime("%d"))
+    years = int(today.strftime("%y"))
+    mouth = int(today.strftime("%m"))
     today = datetime.date(year=years, month=mouth, day=days)
     week_number = today.isocalendar()[1]
     if week_number % 2 == 0:
@@ -80,12 +80,12 @@ async def fraction_student(query: types.CallbackQuery) -> None:
 
 @router.callback_query(F.data == "Розклад студ. 🧑‍🎓")
 async def schedule_student(query: types.CallbackQuery, state: FSMContext) -> None:
-    await state.set_state(FSMStudent.name_gpoup)
+    await state.set_state(FSMStudent.name_group)
     await query.message.delete()
     await query.message.answer(text="Виберіть групу", reply_markup=await student_group_list_kb())
 
 
-@router.callback_query(FSMStudent.name_gpoup)
+@router.callback_query(FSMStudent.name_group)
 async def schedule_student1(query: types.CallbackQuery, state: FSMContext) -> None:
     db = await Database.setup()
 
@@ -108,7 +108,6 @@ async def schedule_student1(query: types.CallbackQuery, state: FSMContext) -> No
     )
 
 
-# ===========================Пустий хендлер============================
 @router.message()
 async def all_text(message: types.Message) -> None:
     if message.text == "Меню 👥":

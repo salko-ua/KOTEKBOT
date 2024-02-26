@@ -17,7 +17,7 @@ async def password(message: types.Message) -> None:
     if not await is_super_admin(message):
         return
 
-    await message.answer(f"PASSWORD : {await password_for_admin()}")
+    await message.answer(f"PASSWORD : {password_for_admin()}")
 
 
 @router.message(F.text == "db")
@@ -92,7 +92,7 @@ async def add_or_change_calls1(query: types.CallbackQuery, state: FSMContext):
 @router.message(F.photo, FSMSuperAdminPanel.add_or_change_calls)
 async def add_or_change_calls2(message: types.Message, state: FSMContext):
     db = await Database.setup()
-    date = f"Змінено: {await get_current_date()}"
+    date = f"Змінено: {get_current_date()}"
     old_message: types.Message = (await state.get_data())["message"]
 
     await message.answer("Фото дзвінків змінено ✅", reply_markup=super_admin_schedule())

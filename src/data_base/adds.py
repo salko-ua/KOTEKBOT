@@ -4,7 +4,7 @@ from src.data_base.create_db import BaseDBPart
 
 
 class AddDB(BaseDBPart):
-    async def add_voitng(
+    async def add_voting(
         self, title: str, options: str, status: Literal["Waiting", "In progress", "Finished"]
     ):
         await self.cur.execute(

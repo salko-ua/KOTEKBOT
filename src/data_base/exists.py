@@ -45,13 +45,13 @@ class ExistDB(BaseDBPart):
         )
         return await get_number(exists)
 
-    async def student_agreed_news_exsists(self, user_id):
+    async def student_agreed_news_exists(self, user_id):
         exists = await self.cur.execute(
             "SELECT `send_news` FROM `student` WHERE user_id = ?", (user_id,)
         )
         return await get_number(exists)
 
-    async def student_agreed_alert_exsists(self, user_id):
+    async def student_agreed_alert_exists(self, user_id):
         exists = await self.cur.execute(
             "SELECT `send_alert` FROM `student` WHERE user_id = ?", (user_id,)
         )
