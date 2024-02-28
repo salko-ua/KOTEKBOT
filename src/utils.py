@@ -7,6 +7,7 @@ from random import choice
 from aiogram import types
 from datetime import datetime
 from translate import Translator
+from aiogram.fsm.context import FSMContext
 
 from src.keyboards import *
 from src.data_base import Database
@@ -89,6 +90,13 @@ async def get_about_me(user_id, url) -> str:
         f"(ця не враховується)\n"
     )
     return message_text
+
+
+async def clear_all(message: types.Message, state: FSMContext) -> None:
+    old_message: types.Message = (await state.get_data())["message"]
+    await message.delete()
+    await old_message.delete()
+    await state.clear()
 
 
 # TODO: Move all photo to database

@@ -62,14 +62,14 @@ def super_admin_other() -> InlineKeyboardMarkup:
 
 
 # список груп - студенти
-async def group_selection_student_kb() -> ReplyKeyboardMarkup:
+async def group_selection_student_kb() -> InlineKeyboardMarkup:
     db = await Database.setup()
     list_group = await db.student_group_list()
-    builder = ReplyKeyboardBuilder()
-
+    builder = InlineKeyboardBuilder()
+    print(list_group)
     for group in list_group:
-        builder.add(KeyboardButton(text=group))
+        builder.add(InlineKeyboardButton(text=group, callback_data=group))
 
-    builder.add(KeyboardButton(text="Назад"))
+    builder.add(InlineKeyboardButton(text="Назад", callback_data="back_super_admin"))
 
     return builder.adjust(4).as_markup(resize_keyboard=True)

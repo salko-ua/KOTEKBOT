@@ -8,7 +8,7 @@ class AddDB(BaseDBPart):
         self, title: str, options: str, status: Literal["Waiting", "In progress", "Finished"]
     ):
         await self.cur.execute(
-            "INSET INTO voting (title, options, status) VALUES (?,?,?)", (title, options, status)
+            "INSET INTO `voting` (title, options, status) VALUES (?,?,?)", (title, options, status)
         )
         return await self.base.commit()
 

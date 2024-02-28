@@ -20,10 +20,10 @@ class UpdateDB(BaseDBPart):
         )
         return await self.base.commit()
 
-    async def student_group_photo_update(self, photo, name_group, transl):
+    async def student_group_photo_update(self, name_group, photo, date):
         await self.cur.execute(
             "UPDATE `student_group` SET photo = ?, date = ? WHERE name_group = ?",
-            (photo, transl, name_group),
+            (photo, date, name_group),
         )
         return await self.base.commit()
 
