@@ -12,6 +12,7 @@ class FSMSuperAdminPanel(StatesGroup):
     add_or_change_calls = State()
     add_or_change_schedule_name = State()
     add_or_change_schedule_photo = State()
+    add_or_change_any_photo = State()
 
 
 @router.message(F.text == "password")
@@ -109,7 +110,7 @@ async def add_or_change_schedule2(message: types.Message, state: FSMContext):
 
     await message.answer("Фото групи змінено ✅", reply_markup=super_admin_schedule())
     await clear_all(message, state)
-    print(data)
+
     await db.student_group_photo_update(data, message.photo[0].file_id, date)
 
 
@@ -133,3 +134,35 @@ async def add_or_change_calls2(message: types.Message, state: FSMContext):
         return
 
     await db.add_photo(name_photo="calls", photo=message.photo[0].file_id, date_photo=date)
+
+
+@router.callback_query(F.data == "Додати фото 🖼")
+async def add_photo(query: types.CallbackQuery, state: FSMContext):
+    await query.message.edit_text("Надішліть фото 🖼\nЗ увімкнутим стисненням", reply_markup=None)
+    await state.set_state(FSMSuperAdminPanel.add_or_change_any_photo)
+    await state.update_data(message=query.message)
+
+
+@router.message(F.photo, FSMSuperAdminPanel.add_or_change_any_photo)
+async def add_photo2(message: types.Message, state: FSMContext):
+    await state.update_data(photo=message.photo[0].file_id)
+    await message.answer("Надайте назву фото за яким його можна буде змінювати", reply_markup=None)
+    await state.update_data(message=message)
+
+
+@router.message(F.text, FSMSuperAdminPanel.add_or_change_any_photo)
+async def add_photo3(message: types.Message, state: FSMContext):
+    db = await Database.setup()
+    date = f"Змінено: {get_current_date()}"
+    photo = (await state.get_data())["photo"]
+    name_photo = message.text
+
+    await clear_all(message, state)
+
+    await message.answer("Фото додано но бази данних✅", reply_markup=super_admin_other())
+
+    if await db.photo_exists(name_photo):
+        await db.update_photo(name_photo=name_photo, photo=photo, date_photo=date)
+        return
+
+    await db.add_photo(name_photo=name_photo, photo=photo, date_photo=date)
