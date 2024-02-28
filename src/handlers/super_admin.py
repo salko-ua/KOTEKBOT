@@ -79,7 +79,7 @@ async def choice_in_panel1(query: types.CallbackQuery):
         f"• Додати фото 🖼 - додайте фото у базу данних з її ім'ям. (calls - розклад дзвінків\n"
     )
 
-    await query.message.edit_text(text=text, reply_markup=super_admin_group())
+    await query.message.edit_text(text=text, reply_markup=super_admin_other())
 
 
 @router.callback_query(F.data == "Додати/Змінити 🔔")
