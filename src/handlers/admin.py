@@ -157,6 +157,6 @@ def send_notification(bot: Bot, what_send: int, text: str, photo: str) -> Any:
             elif what_send == 3:
                 await bot.send_photo(user_id, photo, caption=text)
         except Exception:
-            await bot.send_message(chat_id=2138964363, text=f"{user_id} blocked bot")
+            pass
 
     return wrapped
