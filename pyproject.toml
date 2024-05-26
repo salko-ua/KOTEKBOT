@@ -8,7 +8,7 @@ repository = "https://github.com/salko-ua/KOTEKBOT"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-aiogram = "^3.5.0"
+aiogram = "^3.6.0"
 aiosqlite = "^0.20.0"
 alerts-in-ua = "^0.2.7"
 apykuma = "^1.2.0"
