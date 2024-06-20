@@ -18,7 +18,7 @@ translate = "^3.6.1"
 apscheduler = "^3.10.4"
 sentry-sdk = "^2.6.0"
 loguru = "^0.7.2"
-sqlalchemy = "^2.0.30"
+sqlalchemy = "^2.0.31"
 aiohttp = "^3.9.3"
 
 [tool.poetry.group.docker]
