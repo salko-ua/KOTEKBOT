@@ -19,7 +19,7 @@ apscheduler = "^3.10.4"
 sentry-sdk = "^2.7.1"
 loguru = "^0.7.2"
 sqlalchemy = "^2.0.31"
-aiohttp = "^3.9.3"
+aiohttp = "^3.9.4"
 
 [tool.poetry.group.docker]
 optional = true
