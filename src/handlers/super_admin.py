@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 from src.keyboards import *
 from src.data_base import Database
 from src.utils import is_super_admin, password_for_admin, get_current_date, clear_all
-
+from aiogram.filters import StateFilter
 router = Router()
 
 
@@ -12,7 +12,9 @@ class FSMSuperAdminPanel(StatesGroup):
     add_or_change_calls = State()
     add_or_change_schedule_name = State()
     add_or_change_schedule_photo = State()
+    add_group_name = State()
     add_or_change_any_photo = State()
+    delete_group_name = State()
 
 
 @router.message(F.text == "password")
@@ -43,7 +45,7 @@ async def super_admin_back(query: types.CallbackQuery):
         f"• Групи - налаштування груп\n"
     )
 
-    await query.message.edit_text(text=text, reply_markup=super_admin_kb())
+    await query.message.edit_text(text=text, reply_markup=super_admin_kb()) # type: ignore
 
 
 @router.callback_query(F.data == "Розклад 📝")
@@ -166,3 +168,68 @@ async def add_photo3(message: types.Message, state: FSMContext):
         return
 
     await db.add_photo(name_photo=name_photo, photo=photo, date_photo=date)
+
+
+# Обробник для кнопки "Додати 👥"
+
+@router.callback_query(F.data == "Додати 👥")
+async def add_student(query: types.CallbackQuery, state: FSMContext):
+    await query.message.edit_text(
+        "Введіть назву групи ⬇️", reply_markup=None
+    )
+    await state.set_state(FSMSuperAdminPanel.add_group_name)
+    await state.update_data(name_group=query.data, message_text=None)  
+
+
+
+@router.message(F.text, FSMSuperAdminPanel.add_group_name)
+async def add_student2(message: types.Message, state: FSMContext):
+    db = await Database.setup()
+    state_data = await state.get_data()
+    name_group = state_data.get("name_group")  
+
+    user_message = message.text 
+
+    await db.add_student_group(user_message)
+
+    await message.answer("Група додана ✅", reply_markup=super_admin_back_kb())
+    await state.clear()
+
+
+
+
+# Обробник для кнопки "Видалити 👥"
+@router.callback_query(F.data == "Видалити 👥")
+async def delete_student(query: types.CallbackQuery, state: FSMContext):
+    super_admin_student = await student_group_list_kb()
+    await query.message.edit_text("Виберіть групу зі списку нижче ⬇️", reply_markup=super_admin_student)
+    await state.set_state(FSMSuperAdminPanel.delete_group_name)
+    await state.update_data(delete_group=query.message.message_id, message_text=None)  
+
+
+@router.callback_query(StateFilter(FSMSuperAdminPanel.delete_group_name), F.data.startswith("delete_group:"))
+async def delete_student_group_callback(query: types.CallbackQuery, state: FSMContext):
+    db = await Database.setup()
+    group_name = query.data.split(":")[1] 
+
+    await db.delete_student_group(group_name)
+
+    await query.message.edit_text(f"Група {group_name} видалена ✅", reply_markup=super_admin_back_kb())
+
+    await query.answer()
+    await state.clear()
+
+
+
+
+
+
+# Перевірка роботи callback
+@router.callback_query()
+async def handle_unhandled_callbacks(callback_query: types.CallbackQuery):
+    print(f"Помилка: {callback_query.data}")
+
+
+
+
+
