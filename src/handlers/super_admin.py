@@ -178,7 +178,6 @@ async def add_student(query: types.CallbackQuery, state: FSMContext):
         "Введіть назву групи ⬇️", reply_markup=None
     )
     await state.set_state(FSMSuperAdminPanel.add_group_name)
-    await state.update_data(name_group=query.data, message_text=None)  
 
 
 
@@ -198,15 +197,21 @@ async def add_student2(message: types.Message, state: FSMContext):
 # Обробник для кнопки "Видалити 👥"
 @router.callback_query(F.data == "Видалити 👥")
 async def delete_student(query: types.CallbackQuery, state: FSMContext):
-    await query.message.edit_text("Виберіть групу зі списку нижче ⬇️", reply_markup = await group_selection_student_kb())
+    await query.message.edit_text("Виберіть групу зі списку нижче ⬇️",reply_markup = await group_selection_student_kb())
+
     await state.set_state(FSMSuperAdminPanel.delete_group_name)
-    await state.update_data(delete_group=query.message.message_id, message_text=None)  
+ 
 
 
-@router.callback_query(F.data.startswith("delete_group:"), FSMSuperAdminPanel.delete_group_name)
+@router.callback_query(F.data, FSMSuperAdminPanel.delete_group_name)
 async def delete_student_group_callback(query: types.CallbackQuery, state: FSMContext):
     db = await Database.setup()
-    group_name = query.data.split(":")[1] 
+    group_name = query.data
+    print(query.data)
+    if query.data == "admin_back_kb":
+        await query.message.edit_text(f"Сало лох", reply_markup=super_admin_back_kb())
+        await state.clear()
+        return
 
     await db.delete_student_group(group_name)
 
