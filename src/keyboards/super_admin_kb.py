@@ -60,24 +60,6 @@ def super_admin_other() -> InlineKeyboardMarkup:
 
     return builder.adjust(1,2).as_markup(resize_keyboard=True)
 
-
-# список груп - студенти
-async def group_selection_student_kb() -> InlineKeyboardMarkup:
-    db = await Database.setup()
-    list_group = await db.student_group_list()
-    builder = InlineKeyboardBuilder()
-    print(list_group)
-    for group in list_group:
-        builder.add(InlineKeyboardButton(text=group, callback_data=f"delete_group:{group}"))
-
-    builder.add(InlineKeyboardButton(text="⬅️ Назад", callback_data="back_super_admin"))
-
-    return builder.adjust(4).as_markup(resize_keyboard=True)
-
-
-
-
-
 def super_admin_back_kb() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
@@ -87,3 +69,20 @@ def super_admin_back_kb() -> InlineKeyboardMarkup:
         builder.add(InlineKeyboardButton(text=button, callback_data=button))
 
     return builder.adjust(2).as_markup(resize_keyboard=True)
+
+# список груп - студенти
+async def group_selection_student_kb() -> InlineKeyboardMarkup:
+    db = await Database.setup()
+    list_group = await db.student_group_list()
+    builder = InlineKeyboardBuilder()
+    for group in list_group:
+        builder.add(InlineKeyboardButton(text=group, callback_data=group))
+
+    builder.add(InlineKeyboardButton(text="⬅️ Назад", callback_data="admin_back_kb"))
+
+    return builder.adjust(4).as_markup(resize_keyboard=True)
+
+
+
+
+

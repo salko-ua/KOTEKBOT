@@ -6,7 +6,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 def admin_back_kb() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
-    builder.add(InlineKeyboardButton(text="⬅️ Назад", callback_data="Назад"))
+    builder.add(InlineKeyboardButton(text="⬅️ Назад", callback_data="⬅️ Назад"))
 
     return builder.adjust(2).as_markup(resize_keyboard=True)
 
