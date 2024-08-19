@@ -53,12 +53,12 @@ def super_admin_group() -> InlineKeyboardMarkup:
 def super_admin_other() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
-    keyboard = ["Додати фото 🖼", "Сховати ❌ ", "⬅️ Назад"]
+    keyboard = ["Додати фото 🖼","⬅️ Назад","Сховати ❌ "]
 
     for button in keyboard:
         builder.add(InlineKeyboardButton(text=button, callback_data=button))
 
-    return builder.adjust(2).as_markup(resize_keyboard=True)
+    return builder.adjust(1,2).as_markup(resize_keyboard=True)
 
 
 # список груп - студенти
@@ -68,7 +68,7 @@ async def group_selection_student_kb() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     print(list_group)
     for group in list_group:
-        builder.add(InlineKeyboardButton(text=group, callback_data=group))
+        builder.add(InlineKeyboardButton(text=group, callback_data=f"delete_group:{group}"))
 
     builder.add(InlineKeyboardButton(text="⬅️ Назад", callback_data="back_super_admin"))
 

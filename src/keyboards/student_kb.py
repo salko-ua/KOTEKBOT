@@ -24,10 +24,10 @@ async def student_group_list_kb() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
     for group in group_list:
-        builder.add(InlineKeyboardButton(text=group, callback_data=f"delete_group:{group}"))
+        builder.add(InlineKeyboardButton(text=group, callback_data=group ))
 
     builder.add(InlineKeyboardButton(text="⬅️ Назад", callback_data="Назад")).adjust(4)
 
-    return builder.as_markup()
+    return builder.adjust(4).as_markup()
 
 
