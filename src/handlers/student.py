@@ -82,7 +82,7 @@ async def fraction_student(query: types.CallbackQuery) -> None:
 async def schedule_student(query: types.CallbackQuery, state: FSMContext) -> None:
     await state.set_state(FSMStudent.name_group)
     await query.message.delete()
-    await query.message.answer(text="Виберіть групу", reply_markup=await group_selection_student_kb())
+    await query.message.answer(text="Виберіть групу", reply_markup=await student_group_list_kb())
 
 
 @router.callback_query(FSMStudent.name_group)

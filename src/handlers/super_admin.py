@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 from src.keyboards import *
 from src.data_base import Database
 from src.utils import is_super_admin, password_for_admin, get_current_date, clear_all
-from aiogram.filters import StateFilter
+
 router = Router()
 
 
@@ -45,7 +45,7 @@ async def super_admin_back(query: types.CallbackQuery):
         f"• Групи - налаштування груп\n"
     )
 
-    await query.message.edit_text(text=text, reply_markup=super_admin_kb()) # type: ignore
+    await query.message.edit_text(text=text, reply_markup=super_admin_kb())
 
 
 @router.callback_query(F.data == "Розклад 📝")
@@ -185,9 +185,6 @@ async def add_student(query: types.CallbackQuery, state: FSMContext):
 @router.message(F.text, FSMSuperAdminPanel.add_group_name)
 async def add_student2(message: types.Message, state: FSMContext):
     db = await Database.setup()
-    state_data = await state.get_data()
-    name_group = state_data.get("name_group")  
-
     user_message = message.text 
 
     await db.add_student_group(user_message)
@@ -201,13 +198,12 @@ async def add_student2(message: types.Message, state: FSMContext):
 # Обробник для кнопки "Видалити 👥"
 @router.callback_query(F.data == "Видалити 👥")
 async def delete_student(query: types.CallbackQuery, state: FSMContext):
-    super_admin_student = await student_group_list_kb()
-    await query.message.edit_text("Виберіть групу зі списку нижче ⬇️", reply_markup=super_admin_student)
+    await query.message.edit_text("Виберіть групу зі списку нижче ⬇️", reply_markup = await group_selection_student_kb())
     await state.set_state(FSMSuperAdminPanel.delete_group_name)
     await state.update_data(delete_group=query.message.message_id, message_text=None)  
 
 
-@router.callback_query(StateFilter(FSMSuperAdminPanel.delete_group_name), F.data.startswith("delete_group:"))
+@router.callback_query(F.data.startswith("delete_group:"), FSMSuperAdminPanel.delete_group_name)
 async def delete_student_group_callback(query: types.CallbackQuery, state: FSMContext):
     db = await Database.setup()
     group_name = query.data.split(":")[1] 
@@ -215,8 +211,6 @@ async def delete_student_group_callback(query: types.CallbackQuery, state: FSMCo
     await db.delete_student_group(group_name)
 
     await query.message.edit_text(f"Група {group_name} видалена ✅", reply_markup=super_admin_back_kb())
-
-    await query.answer()
     await state.clear()
 
 
@@ -224,10 +218,6 @@ async def delete_student_group_callback(query: types.CallbackQuery, state: FSMCo
 
 
 
-# Перевірка роботи callback
-@router.callback_query()
-async def handle_unhandled_callbacks(callback_query: types.CallbackQuery):
-    print(f"Помилка: {callback_query.data}")
 
 
 
