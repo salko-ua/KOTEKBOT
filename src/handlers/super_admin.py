@@ -23,7 +23,7 @@ async def sql(message: types.Message) -> None:
         return
 
     db = await Database.setup()
-    await db.sql_request(message[4:])
+    await db.sql_request(message.text[4:])
 
 
 @router.message(F.text.startwith("sql "))
