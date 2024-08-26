@@ -2,9 +2,14 @@ from src.data_base.create_db import BaseDBPart
 
 
 class UpdateDB(BaseDBPart):
+    async def sql_request(self, request):
+        await self.cur.execute(request)
+        return await self.base.commit()
+
     async def update_student(self, user_id, group_student):
         await self.cur.execute(
-            "UPDATE `student` SET `group_student` = ? WHERE user_id = ?", (group_student, user_id)
+            "UPDATE `student` SET `group_student` = ? WHERE user_id = ?",
+            (group_student, user_id),
         )
         return await self.base.commit()
 
@@ -16,7 +21,8 @@ class UpdateDB(BaseDBPart):
 
     async def student_change_alert(self, boolean: bool, user_id: int):
         await self.cur.execute(
-            "UPDATE `student` SET `send_alert` = ? WHERE user_id = ?", (boolean, user_id)
+            "UPDATE `student` SET `send_alert` = ? WHERE user_id = ?",
+            (boolean, user_id),
         )
         return await self.base.commit()
 
@@ -34,7 +40,14 @@ class UpdateDB(BaseDBPart):
         )
 
     async def update_user(
-        self, user_id, first_name, last_name, username, last_interaction, admin, student_group
+        self,
+        user_id,
+        first_name,
+        last_name,
+        username,
+        last_interaction,
+        admin,
+        student_group,
     ):
         count_interaction = await self.cur.execute(
             "SELECT count_interaction FROM user WHERE user_id = ?", (user_id,)
