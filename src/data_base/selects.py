@@ -67,7 +67,6 @@ class SelectDB(BaseDBPart):
         )
 
         data = await get_all_in_list(data_photo)
-        print(data)
         if None in data or not data:
             return []
 
@@ -78,3 +77,9 @@ class SelectDB(BaseDBPart):
             "SELECT * FROM user WHERE user_id = ?", (user_id,)
         )
         return await get_all_in_list(result)
+
+    async def get_student_theme(self, user_id):
+        result = await self.cur.execute(
+            "SELECT theme_name FROM student WHERE user_id = ?", (user_id,)
+        )
+        return await get_text(result)

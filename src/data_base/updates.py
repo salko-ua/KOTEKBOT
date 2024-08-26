@@ -38,6 +38,17 @@ class UpdateDB(BaseDBPart):
             "UPDATE photo SET photo = ?, date_photo = ? WHERE name_photo = ?",
             (photo, date_photo, name_photo),
         )
+        return await self.base.commit()
+
+    async def update_student_theme(self, theme_name, user_id):
+        result = await self.cur.execute(
+            "UPDATE student SET theme_name = ? WHERE user_id = ?",
+            (
+                theme_name,
+                user_id,
+            ),
+        )
+        return await self.base.commit()
 
     async def update_user(
         self,

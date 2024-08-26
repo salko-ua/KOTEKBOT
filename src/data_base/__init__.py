@@ -52,7 +52,8 @@ class Database(AddDB, DeleteDB, ExistDB, SelectDB, UpdateDB):
                 user_id       INTEGER UNIQUE,
                 group_student TEXT,
                 send_news     BOOLEAN DEFAULT 1,
-                send_alert    BOOLEAN DEFAULT 1
+                send_alert    BOOLEAN DEFAULT 1,
+                theme_name    TEXT DEFAILT 'black'
             )
             """
         )

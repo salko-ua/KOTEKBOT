@@ -10,5 +10,5 @@ def reg_choice_kb() -> InlineKeyboardMarkup:
 
     for button in keyboard:
         builder.add(InlineKeyboardButton(text=button, callback_data=button))
-    print(builder)
+
     return builder.adjust(2).as_markup(resize_keyboard=True)

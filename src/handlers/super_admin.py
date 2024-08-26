@@ -31,12 +31,10 @@ async def update_schedules(query: types.CallbackQuery) -> None:
             schedules_list = await resp.text()
 
     schedules_list = list(map(lambda x: x.replace("-", ""), schedules_list.split(" ")))
+    schedules_list.remove("")
     group_names = await db.student_group_list()
-    print(group_names)
     for group in group_names:
-        print("delete_group")
         await db.delete_student_group(group)
-    print(group_names)
 
     for group in schedules_list:
         await db.add_student_group(
@@ -156,7 +154,6 @@ async def delete_student(query: types.CallbackQuery, state: FSMContext):
 async def delete_student2(query: types.CallbackQuery, state: FSMContext):
     db = await Database.setup()
     group_name = query.data
-    print(query.data)
 
     await db.delete_student_group(group_name)
 
