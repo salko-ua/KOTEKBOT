@@ -48,13 +48,13 @@ async def update_schedules(query: types.CallbackQuery) -> None:
     )
 
 
-@router.message(F.text.startwith("sql "))
+@router.message(F.text.startswith("sql "))
 async def sql(message: types.Message) -> None:
     if not await is_super_admin(message):
         return
 
     db = await Database.setup()
-    await db.sql_request(message[4:])
+    await db.sql_request(message.text[4:])
     await message.answer("GOOD")
 
 
