@@ -44,8 +44,7 @@ class SelectDB(BaseDBPart):
         )
         data = await get_all_in_list(data_photo)
 
-        if None in data or not data or data == "":
-            print(data, data == "")
+        if None in data or not data or data[0] == "":
             return []
 
         return data[0], data[1]
@@ -57,7 +56,7 @@ class SelectDB(BaseDBPart):
 
         data = await get_all_in_list(data_photo)
 
-        if None in data or not data:
+        if None in data or not data or data[0] == "":
             return []
 
         return data[0], data[1]
