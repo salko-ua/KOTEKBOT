@@ -4,7 +4,7 @@ from aiogram import F, Router, types
 from aiogram.filters.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 
-from src.keyboards import *
+from src.keyboards import * 
 from src.utils import menu
 from src.data_base import Database
 from src.handlers.menu import back_student
@@ -29,7 +29,7 @@ async def view_coupes_student(query: types.CallbackQuery) -> None:
 
     await query.message.delete()
     await query.message.answer_photo(
-        photo=data_photo[0], caption=data_photo[1], reply_markup=student_back_kb()
+        photo=data_photo[0], caption=data_photo[1], reply_markup=student_back_kb() 
     )
 
 
@@ -46,7 +46,7 @@ async def view_calls_student(query: types.CallbackQuery) -> None:
 
     await query.message.delete()
     await query.message.answer_photo(
-        photo=data_photo[0], caption=data_photo[1], reply_markup=student_back_kb()
+        photo=data_photo[0], caption=data_photo[1], reply_markup=student_back_kb() 
     )
 
 
@@ -59,7 +59,7 @@ async def delete_user_student(message: types.Message) -> None:
         return
 
     await db.delete_student(message.from_user.id)
-    await message.answer(text="Тепер ви не студент ✅", reply_markup=start_admin_kb())
+    await message.answer(text="Тепер ви не студент ✅", reply_markup=start_admin_kb()) 
 
 
 # =========================== Дріб ===========================
