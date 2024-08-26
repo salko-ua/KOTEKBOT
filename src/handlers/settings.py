@@ -10,6 +10,7 @@ router = Router()
 
 class FSMSettings(StatesGroup):
     change_student_group = State()
+    change_theme_color = State()
 
 
 @router.message(F.text == "Налаштування ⚙️")
@@ -25,6 +26,29 @@ async def settings(message: types.Message) -> None:
     await message.answer(
         text="Налаштуйте свій акаунт в боті:",
         reply_markup=await settings_inline_kb(user_id),
+    )
+
+
+@router.callback_query(F.data == "change_schedule_theme")
+async def change_schedule_theme(query: types.CallbackQuery) -> None:
+    await query.message.edit_text("Виберіть інший колір теми")
+    await query.message.edit_reply_markup(
+        reply_markup=await theme_colors(query.from_user.id)
+    )
+
+
+@router.callback_query(F.data.startswith("theme"))
+async def change_schedule_theme1(query: types.CallbackQuery):
+    if query.data.endswith("✅"):
+        await query.answer("У вас вже ця тема", show_alert=True)
+        return
+
+    db = await Database.setup()
+    theme_name = query.data[6:]
+    print(theme_name)
+    await db.update_student_theme(user_id=query.from_user.id, theme_name=theme_name)
+    await query.message.edit_reply_markup(
+        reply_markup=await theme_colors(query.from_user.id)
     )
 
 
@@ -71,8 +95,12 @@ async def change_news_agreed(query: types.CallbackQuery) -> None:
 
     if await db.student_exists(user_id):
         await db.student_change_news(True, user_id)
-        await query.message.edit_reply_markup(reply_markup=await settings_inline_kb(user_id))
-        await query.answer(text="Ви отримуватимите\nсповіщення про новини", show_alert=True)
+        await query.message.edit_reply_markup(
+            reply_markup=await settings_inline_kb(user_id)
+        )
+        await query.answer(
+            text="Ви отримуватимите\nсповіщення про новини", show_alert=True
+        )
         return
 
 
@@ -83,8 +111,12 @@ async def change_alert_agreed(query: types.CallbackQuery) -> None:
 
     if await db.student_exists(user_id):
         await db.student_change_alert(True, user_id)
-        await query.message.edit_reply_markup(reply_markup=await settings_inline_kb(user_id))
-        await query.answer(text="Ви отримуватимите\nсповіщення про тривоги", show_alert=True)
+        await query.message.edit_reply_markup(
+            reply_markup=await settings_inline_kb(user_id)
+        )
+        await query.answer(
+            text="Ви отримуватимите\nсповіщення про тривоги", show_alert=True
+        )
         return
 
 
@@ -95,7 +127,9 @@ async def change_news_not_agreed(query: types.CallbackQuery) -> None:
 
     if await db.student_exists(user_id):
         await db.student_change_news(False, user_id)
-        await query.message.edit_reply_markup(reply_markup=await settings_inline_kb(user_id))
+        await query.message.edit_reply_markup(
+            reply_markup=await settings_inline_kb(user_id)
+        )
         await query.answer(text="Ви не отримуватимите\nновин від бота", show_alert=True)
         return
 
@@ -107,6 +141,10 @@ async def change_alert_not_agreed(query: types.CallbackQuery) -> None:
 
     if await db.student_exists(user_id):
         await db.student_change_alert(False, user_id)
-        await query.message.edit_reply_markup(reply_markup=await settings_inline_kb(user_id))
-        await query.answer(text="Ви не отримуватимите\nсповіщення про тривоги", show_alert=True)
+        await query.message.edit_reply_markup(
+            reply_markup=await settings_inline_kb(user_id)
+        )
+        await query.answer(
+            text="Ви не отримуватимите\nсповіщення про тривоги", show_alert=True
+        )
         return

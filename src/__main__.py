@@ -48,7 +48,7 @@ async def start_bot() -> None:
 
     bot = Bot(token=TOKEN)
     dispatcher = Dispatcher()
-    # Alerts(bot)
+    Alerts(bot)
 
     await register_middleware(dispatcher)
     await register_handlers(dispatcher)
