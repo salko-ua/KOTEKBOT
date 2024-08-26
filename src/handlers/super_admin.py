@@ -17,7 +17,7 @@ class FSMSuperAdminPanel(StatesGroup):
     delete_group_name = State()
 
 
-@router.message(F.text.startwith("sql "))
+@router.message(F.text.startswith("sql "))
 async def sql(message: types.Message) -> None:
     if not await is_super_admin(message):
         return
