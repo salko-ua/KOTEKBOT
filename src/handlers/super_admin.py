@@ -55,7 +55,7 @@ async def sql(message: types.Message) -> None:
 
     db = await Database.setup()
     await db.sql_request(message.text[4:])
-    await message.answer("GOOD")
+    await message.answer("GOOD JOB")
 
 
 @router.callback_query(F.data == "Пароль 🔐")
