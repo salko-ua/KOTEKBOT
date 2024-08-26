@@ -26,6 +26,16 @@ async def sql(message: types.Message) -> None:
     await db.sql_request(message[4:])
 
 
+@router.message(F.text.startwith("sql "))
+async def sql(message: types.Message) -> None:
+    if not await is_super_admin(message):
+        return
+
+    db = await Database.setup()
+    await db.sql_request(message[4:])
+    await message.answer("GOOD")
+
+
 @router.message(F.text == "password")
 async def password(message: types.Message) -> None:
     if not await is_super_admin(message):
