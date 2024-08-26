@@ -6,7 +6,6 @@ import cachetools
 from random import choice
 from aiogram import types
 from datetime import datetime
-from translate import Translator
 from aiogram.fsm.context import FSMContext
 
 from src.keyboards import *
@@ -15,10 +14,7 @@ from src.config import SUPER_ADMIN
 
 
 def get_current_date() -> str:
-    translator = Translator(to_lang="uk")
-    now = datetime.now()
-    now = now.strftime("%d %B, %Y")
-    return translator.translate(now)
+    return datetime.now().strftime("%d.%m.%Y")
 
 
 @asyncache.cached(cachetools.TTLCache(1, 120))
@@ -29,8 +25,8 @@ def password_for_admin():
     return password
 
 
-async def is_super_admin(message: types.Message | types.CallbackQuery) -> bool:
-    user_id = message.from_user.id
+async def is_super_admin(object_: types.Message | types.CallbackQuery) -> bool:
+    user_id = object_.from_user.id
     if user_id in SUPER_ADMIN:
         return True
     else:

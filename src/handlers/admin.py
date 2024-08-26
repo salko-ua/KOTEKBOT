@@ -22,7 +22,8 @@ router = Router()
 
 # Сховати ❌ (Використовується скрізь)
 @router.callback_query(F.data == "Сховати ❌")
-async def hide_message(query: CallbackQuery):
+async def hide_message(query: CallbackQuery, state: FSMContext):
+    await state.clear()
     await query.message.delete()
 
 
@@ -107,7 +108,10 @@ async def send_photo_news1(message: Message, state: FSMContext) -> None:
     await message.delete()
     await query.message.delete()
     await asyncio.gather(
-        *map(send_notification(bot=message.bot, what_send=1, text="", photo=photo), user_ids)
+        *map(
+            send_notification(bot=message.bot, what_send=1, text="", photo=photo),
+            user_ids,
+        )
     )
     await message.answer(text="Надсилання закінчено!")
 
@@ -120,7 +124,10 @@ async def send_message_news1(message: Message, state: FSMContext) -> None:
 
     await state.clear()
     await asyncio.gather(
-        *map(send_notification(bot=message.bot, what_send=2, text=text, photo=""), user_ids)
+        *map(
+            send_notification(bot=message.bot, what_send=2, text=text, photo=""),
+            user_ids,
+        )
     )
     await message.answer(text="Надсилання закінчено!")
 
@@ -142,7 +149,10 @@ async def send_mixed_news2(message: Message, state: FSMContext) -> None:
 
     await state.clear()
     await asyncio.gather(
-        *map(send_notification(bot=message.bot, what_send=3, text=text, photo=photo), user_ids)
+        *map(
+            send_notification(bot=message.bot, what_send=3, text=text, photo=photo),
+            user_ids,
+        )
     )
     await message.answer(text="Надсилання закінчено!")
 

@@ -26,5 +26,7 @@ class DeleteDB(BaseDBPart):
         return await self.base.commit()
 
     async def delete_student_group(self, student_group):
-        await self.cur.execute("DELETE FROM student_group WHERE name_group = ?", (student_group,))
+        await self.cur.execute(
+            "DELETE FROM student_group WHERE name_group = ?", (student_group,)
+        )
         return await self.base.commit()

@@ -7,7 +7,17 @@ import sentry_sdk
 from aiogram import Bot, Dispatcher
 
 from src.config import KUMA_TOKEN, TOKEN, TOKEN_SENTRY
-from src.handlers import admin, commands, menu, reg, settings, stats, student, super_admin, user
+from src.handlers import (
+    admin,
+    commands,
+    menu,
+    reg,
+    settings,
+    stats,
+    student,
+    super_admin,
+    user,
+)
 from src.middleware.UpdateUserInfo import CallbackQueryMiddleware, MessageMiddleware
 from src.task.alarm import Alerts
 
@@ -38,7 +48,7 @@ async def start_bot() -> None:
 
     bot = Bot(token=TOKEN)
     dispatcher = Dispatcher()
-    Alerts(bot)
+    # Alerts(bot)
 
     await register_middleware(dispatcher)
     await register_handlers(dispatcher)

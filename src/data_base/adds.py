@@ -5,16 +5,21 @@ from src.data_base.create_db import BaseDBPart
 
 class AddDB(BaseDBPart):
     async def add_voting(
-        self, title: str, options: str, status: Literal["Waiting", "In progress", "Finished"]
+        self,
+        title: str,
+        options: str,
+        status: Literal["Waiting", "In progress", "Finished"],
     ):
         await self.cur.execute(
-            "INSET INTO `voting` (title, options, status) VALUES (?,?,?)", (title, options, status)
+            "INSET INTO `voting` (title, options, status) VALUES (?,?,?)",
+            (title, options, status),
         )
         return await self.base.commit()
 
     async def add_admin(self, user_id, username):
         await self.cur.execute(
-            "INSERT INTO `admin` (`user_id`, `username`) VALUES (?,?)", (user_id, username)
+            "INSERT INTO `admin` (`user_id`, `username`) VALUES (?,?)",
+            (user_id, username),
         )
         return await self.base.commit()
 
@@ -25,9 +30,10 @@ class AddDB(BaseDBPart):
         )
         return await self.base.commit()
 
-    async def add_student_group(self, student_group):
+    async def add_student_group(self, student_group, photo, date):
         await self.cur.execute(
-            "INSERT INTO `student_group` (`name_group`) VALUES (?)", (student_group,)
+            "INSERT INTO `student_group` (`name_group`, `photo`, `date`) VALUES (?,?,?)",
+            (student_group, photo, date),
         )
         return await self.base.commit()
 
@@ -55,6 +61,16 @@ class AddDB(BaseDBPart):
             VALUES 
             (?,?,?,?,?,?,?,?,?)
             """,
-            (tg_id, first_name, last_name, username, date_join, 1, last_msg, admin, group),
+            (
+                tg_id,
+                first_name,
+                last_name,
+                username,
+                date_join,
+                1,
+                last_msg,
+                admin,
+                group,
+            ),
         )
         return await self.base.commit()

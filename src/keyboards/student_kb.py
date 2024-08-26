@@ -1,4 +1,8 @@
-from aiogram.utils.keyboard import InlineKeyboardBuilder, InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.utils.keyboard import (
+    InlineKeyboardBuilder,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+)
 
 from src.data_base import Database
 
@@ -15,8 +19,6 @@ def student_kb() -> InlineKeyboardMarkup:
     return builder.adjust(2).as_markup(resize_keyboard=True)
 
 
-
-
 # Клавіатура для списку груп студентів
 async def student_group_list_kb() -> InlineKeyboardMarkup:
     db = await Database.setup()
@@ -24,10 +26,8 @@ async def student_group_list_kb() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
     for group in group_list:
-        builder.add(InlineKeyboardButton(text=group, callback_data=group ))
+        builder.add(InlineKeyboardButton(text=group, callback_data=group))
 
     builder.add(InlineKeyboardButton(text="⬅️ Назад", callback_data="Назад")).adjust(4)
 
     return builder.adjust(4).as_markup()
-
-
