@@ -49,34 +49,6 @@ async def delete_admin(message: Message) -> None:
     await menu(message)
 
 
-@router.callback_query(F.data == "Викласти 📝👥")
-async def send_message_news(query: CallbackQuery, state: FSMContext) -> None:
-    db = await Database.setup()
-    if not await db.admin_exists(query.from_user.id):
-        return
-
-    await query.message.edit_text("Надішліть текст 📝")
-    await query.message.edit_reply_markup(reply_markup=admin_back_kb())
-    await state.set_state(FSMAdmin.text_to_all_users)
-    await state.update_data(query=query)
-
-
-@router.message(FSMAdmin.text_to_all_users, F.text)
-async def send_message_news1(message: Message, state: FSMContext) -> None:
-    db = await Database.setup()
-    text = message.text
-    user_ids = await db.list_of_all_user()
-
-    await state.clear()
-    await asyncio.gather(
-        *map(
-            send_notification(bot=message.bot, what_send=2, text=text, photo=""),
-            user_ids,
-        )
-    )
-    await message.answer(text="Надсилання закінчено!")
-
-
 # NOTIFY ALL USERS
 @router.callback_query(F.data == "Викласти 🖼")
 async def send_photo_news(query: CallbackQuery, state: FSMContext) -> None:
@@ -131,7 +103,7 @@ async def send_photo_news1(message: Message, state: FSMContext) -> None:
     data = await state.get_data()
     query: CallbackQuery = data["query"]
     photo = message.photo[0].file_id
-    user_ids = await db.list_id_student_agreed_news()
+    user_ids = await db.list_of_all_user()
 
     await state.clear()
     await message.delete()
@@ -149,7 +121,7 @@ async def send_photo_news1(message: Message, state: FSMContext) -> None:
 async def send_message_news1(message: Message, state: FSMContext) -> None:
     db = await Database.setup()
     text = message.text
-    user_ids = await db.list_id_student_agreed_news()
+    user_ids = await db.list_of_all_user()
 
     await state.clear()
     await asyncio.gather(
@@ -174,7 +146,7 @@ async def send_mixed_news2(message: Message, state: FSMContext) -> None:
     data = await state.get_data()
     text = data["text"]
     photo = message.photo[0].file_id
-    user_ids = await db.list_id_student_agreed_news()
+    user_ids = await db.list_of_all_user()
 
     await state.clear()
     await asyncio.gather(
@@ -195,8 +167,6 @@ def send_notification(bot: Bot, what_send: int, text: str, photo: str) -> Any:
                 await bot.send_message(user_id, text)
             elif what_send == 3:
                 await bot.send_photo(user_id, photo, caption=text)
-            elif what_send == 4:
-                await bot.send_message(user_id, text, reply_markup=start_all_kb())
         except Exception as e:
             print(f"Не вдалося надіслати до {user_id}")
 

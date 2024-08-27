@@ -12,7 +12,7 @@ class SelectDB(BaseDBPart):
         return await get_number(counts)
 
     async def list_of_all_user(self):
-        result = await self.cur.execute("SELECT user_id FROM user")
+        result = await self.cur.execute("SELECT `user_id` FROM user")
         return await get_list(result)
 
     async def list_id_student_agreed_news(self):
