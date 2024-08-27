@@ -195,6 +195,8 @@ def send_notification(bot: Bot, what_send: int, text: str, photo: str) -> Any:
                 await bot.send_message(user_id, text)
             elif what_send == 3:
                 await bot.send_photo(user_id, photo, caption=text)
+            elif what_send == 4:
+                await bot.send_message(user_id, text, reply_markup=start_all_kb())
         except Exception as e:
             print(f"Не вдалося надіслати до {user_id}")
 
