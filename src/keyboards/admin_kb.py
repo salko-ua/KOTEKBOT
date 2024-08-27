@@ -5,7 +5,13 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 def admin_kb() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
 
-    keyboard = ["Викласти 🖼", "Викласти 📝", "Викласти 🖼📝", "Сховати ❌"]
+    keyboard = [
+        "Викласти 🖼",
+        "Викласти 📝",
+        "Викласти 🖼📝",
+        "Викласти 📝👥",
+        "Сховати ❌",
+    ]
 
     for button in keyboard:
         builder.add(InlineKeyboardButton(text=button, callback_data=button))

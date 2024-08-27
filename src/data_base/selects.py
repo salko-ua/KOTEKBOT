@@ -11,6 +11,10 @@ class SelectDB(BaseDBPart):
         counts = await self.cur.execute("SELECT COUNT(user_id) FROM student")
         return await get_number(counts)
 
+    async def list_of_all_user(self):
+        result = await self.cur.execute("SELECT user_id FROM user")
+        return await get_list(result)
+
     async def list_id_student_agreed_news(self):
         result = await self.cur.execute(
             "SELECT `user_id` FROM `student` WHERE send_news = ?", (1,)
