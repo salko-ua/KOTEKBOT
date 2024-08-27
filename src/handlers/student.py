@@ -43,6 +43,7 @@ async def view_coupes_student(query: types.CallbackQuery) -> None:
 
 # ===========================Переглянути розклад дзвінків============================
 @router.callback_query(F.data == "Розклад дзвінків ⌚️")
+@router.callback_query(F.data == "Розклад дзвінків ⌛️")
 async def view_calls_student(query: types.CallbackQuery) -> None:
     db = await Database.setup()
 
@@ -71,6 +72,7 @@ async def delete_user_student(message: types.Message) -> None:
 
 
 # =========================== Дріб ===========================
+@router.callback_query(F.data == "Ч/З тиждень ✒️")
 @router.callback_query(F.data == "Ч/З тиждень ✏️")
 async def fraction_student(query: types.CallbackQuery) -> None:
     delta = datetime.timedelta(hours=2, minutes=0)

@@ -11,11 +11,13 @@ async def schedule(message: types.Message) -> None:
     await message.delete()
     telegram_id = message.from_user.id
 
-    if not await check_who(message):
-        await message.answer(text="Ви повинні бути зареєстровані❗️", reply_markup=hide_kb())
-        return
+    # if not await check_who(message):
+    #     await message.answer(text="Ви повинні бути зареєстровані❗️", reply_markup=hide_kb())
+    #     return
 
-    await message.answer(text="Перегляд розкладу ⬇️", reply_markup=await schedule_kb(telegram_id))
+    await message.answer(
+        text="Перегляд розкладу ⬇️", reply_markup=await schedule_kb(telegram_id)
+    )
 
 
 @router.callback_query(F.data == "student_back_kb")
@@ -50,7 +52,9 @@ async def for_applicant(event: types.Message | types.CallbackQuery) -> None:
         return
 
     await event.delete()
-    await event.answer(text="Інформація для абітурієнта 😵‍💫", reply_markup=applicant_kb())
+    await event.answer(
+        text="Інформація для абітурієнта 😵‍💫", reply_markup=applicant_kb()
+    )
 
 
 @router.callback_query(F.data == "Про бота 🖇")
@@ -70,7 +74,9 @@ async def about_bot(query: types.CallbackQuery) -> None:
         f"його для зекономлення часу!\n"
         f"🌐 <a href='https://vvpc.com.ua/'>Офіційний сайт ВПФК</a>\n"
     )
-    await query.message.edit_text(about_bot_text, parse_mode="HTML", disable_web_page_preview=True)
+    await query.message.edit_text(
+        about_bot_text, parse_mode="HTML", disable_web_page_preview=True
+    )
     await query.message.edit_reply_markup(reply_markup=other_back_kb())
 
 
@@ -80,7 +86,9 @@ async def about_me(query: types.CallbackQuery) -> None:
     url = query.from_user.url
     text = await get_about_me(user_id, url)
 
-    await query.message.edit_text(text, parse_mode="HTML", disable_web_page_preview=True)
+    await query.message.edit_text(
+        text, parse_mode="HTML", disable_web_page_preview=True
+    )
     await query.message.edit_reply_markup(reply_markup=other_back_kb())
 
 
@@ -94,7 +102,9 @@ async def get_help(query: types.CallbackQuery) -> None:
 @router.callback_query(F.data == "Час роботи 📅")
 async def time_work(query: types.CallbackQuery) -> None:
     time_work_text = (
-        "Час роботи ⌚️\n" "Понеділок - П'ятниця: 8:00–17:00.\n" "Субота - Неділя: Зачинено."
+        "Час роботи ⌚️\n"
+        "Понеділок - П'ятниця: 8:00–17:00.\n"
+        "Субота - Неділя: Зачинено."
     )
     await query.message.edit_text(text=time_work_text)
     await query.message.edit_reply_markup(reply_markup=other_back_kb())
@@ -109,7 +119,9 @@ async def send_random_cat_photo(query: types.CallbackQuery) -> None:
         file_path = types.FSInputFile(photo_path)
         await query.message.answer_photo(file_path, reply_markup=other_back_kb())
     except Exception:
-        await query.message.answer(text="Фото кота ще не додано 😿", reply_markup=other_back_kb())
+        await query.message.answer(
+            text="Фото кота ще не додано 😿", reply_markup=other_back_kb()
+        )
 
 
 @router.callback_query(F.data == "Донат 🫡")
@@ -122,7 +134,9 @@ async def donate(query: types.CallbackQuery) -> None:
         f"Кошти підуть на оплату хостингу та покращення бота 🌚"
     )
 
-    await query.message.edit_text(text, parse_mode="HTML", disable_web_page_preview=True)
+    await query.message.edit_text(
+        text, parse_mode="HTML", disable_web_page_preview=True
+    )
     await query.message.edit_reply_markup(reply_markup=url_card_kb())
 
 

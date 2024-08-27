@@ -104,7 +104,7 @@ async def schedule_kb(user_id: int) -> InlineKeyboardMarkup:
 
         return builder.adjust(2).as_markup(resize_keyboard=True)
 
-    if await db.admin_exists(user_id):
+    else:
         keyboard.insert(0, "Ч/З тиждень ✒️")
         keyboard.insert(0, "Розклад дзвінків ⌛️")
 
