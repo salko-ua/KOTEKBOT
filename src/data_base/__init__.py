@@ -26,7 +26,7 @@ class Database(AddDB, DeleteDB, ExistDB, SelectDB, UpdateDB):
         await base.execute(
             """
             CREATE TABLE IF NOT EXISTS user(
-                user_id           INTEGER NOT NULL, -- ід користувача (int)
+                user_id           INTEGER NOT NULL UNIQUE, -- ід користувача (int)
                 first_name        TEXT,             -- Ім'я користувача (str)
                 last_name         TEXT,             -- Приз віще користувача (str)
                 username          TEXT,             -- нікнейм користувача @ (str)
