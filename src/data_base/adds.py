@@ -39,7 +39,7 @@ class AddDB(BaseDBPart):
 
     async def add_student(self, user_id, group_student, theme="black"):
         await self.cur.execute(
-            "INSERT INTO `student` (`user_id`, `group_student`, `theme`) VALUES (?,?,?)",
+            "INSERT INTO `student` (`user_id`, `group_student`, `theme_name`) VALUES (?,?,?)",
             (user_id, group_student, theme),
         )
         return await self.base.commit()
