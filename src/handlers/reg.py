@@ -95,10 +95,10 @@ async def reg_student(query: types.CallbackQuery, state: FSMContext) -> None:
         return
 
     if not await db.student_group_exists(group_student):
+        await query.message.delete()
         await query.answer(
             text=f"Групу {group_student} не знайдено", reply_markup=start_student_kb()
         )
-        await query.message.delete()
         return
 
     await db.add_student(user_id=query.from_user.id, group_student=group_student)
