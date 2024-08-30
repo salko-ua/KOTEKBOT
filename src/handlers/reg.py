@@ -94,7 +94,7 @@ async def reg_student(query: types.CallbackQuery, state: FSMContext) -> None:
         await state.set_state(FSMReg.reply_reg)
         return
 
-    if not db.student_group_exists(group_student):
+    if not await db.student_group_exists(group_student):
         await query.answer(
             text=f"Групу {group_student} не знайдено", reply_markup=start_student_kb()
         )
