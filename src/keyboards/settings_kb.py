@@ -67,7 +67,7 @@ async def theme_colors(user_id) -> InlineKeyboardMarkup:
         "green": "Зелений 🟢",
         "brown": "Коричневий 🟤",
         "blue": "Синій 🔵",
-        "yellow": "Жовтий 🟡",
+        "catppuccino": "Catppuccin 😺",
     }
     db = await Database.setup()
     current_theme = await db.get_student_theme(user_id)
