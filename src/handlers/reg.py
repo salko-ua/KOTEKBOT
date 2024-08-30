@@ -70,7 +70,9 @@ async def reg_admin(message: types.Message, state: FSMContext) -> None:
 
     if not await db.admin_exists(message.from_user.id):
         await db.add_admin(user_id, username)
-        await message.answer(text="Реєстрація завершена ✅", reply_markup=start_admin_kb())
+        await message.answer(
+            text="Реєстрація завершена ✅", reply_markup=start_admin_kb()
+        )
         await state.clear()
         return
 
@@ -92,6 +94,15 @@ async def reg_student(query: types.CallbackQuery, state: FSMContext) -> None:
         await state.set_state(FSMReg.reply_reg)
         return
 
+    if not db.student_group_exists(group_student):
+        await query.answer(
+            text=f"Групу {group_student} не знайдено", reply_markup=start_student_kb()
+        )
+        await query.message.delete()
+        return
+
     await db.add_student(user_id=query.from_user.id, group_student=group_student)
-    await query.message.answer(text="✅ Реєстрація завершена ✅", reply_markup=start_student_kb())
+    await query.message.answer(
+        text="✅ Реєстрація завершена ✅", reply_markup=start_student_kb()
+    )
     await query.message.delete()

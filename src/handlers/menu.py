@@ -61,8 +61,9 @@ async def for_applicant(event: types.Message | types.CallbackQuery) -> None:
 async def about_bot(query: types.CallbackQuery) -> None:
     about_bot_text = (
         f"🤖 БОТ ВПФК ПЕДКІТ\n"
-        f"🆙 Версія : 2.1\n"
-        f"👨‍💻 Розробник: <a href='https://t.me/salkooua'>Salo</a>\n"
+        f"🆙 Версія : 3.0\n"
+        f"👨‍💻 Code contributors: <a href='https://t.me/salkooua'>Salo</a> <a href='https://t.me/maximyuk07'>Bodya</a>\n"
+        f"🎨 Дизайн розкладів: <a href='https://t.me/MiradMary'>Alex? Stefan? Chris?</a>\n"
         f"🎨 Дизайн ави: <a href='https://t.me/pupqwert'>Reloadddddd</a>\n\n"
         f"📅 Початок розробки : Січень 2023-го року\n\n"
         f"Бот створено для спрощення\n"
@@ -71,7 +72,7 @@ async def about_bot(query: types.CallbackQuery) -> None:
         f"є купа потрібних і не дуже\n"
         f"функцій, які розставлені в\n"
         f"зручних місцях. Використовуйте\n"
-        f"його для зекономлення часу!\n"
+        f"його щоб зекономити час!\n"
         f"🌐 <a href='https://vvpc.com.ua/'>Офіційний сайт ВПФК</a>\n"
     )
     await query.message.edit_text(
