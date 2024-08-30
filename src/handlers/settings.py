@@ -13,6 +13,15 @@ class FSMSettings(StatesGroup):
     change_theme_color = State()
 
 
+@router.callback_query(F.data == "back_settings_kb")
+async def back_from_settings(query: types.CallbackQuery, state: FSMContext) -> None:
+    await state.clear()
+    await query.message.edit_text(
+        text="Налаштуйте свій акаунт в боті:",
+        reply_markup=await settings_inline_kb(query.from_user.id),
+    )
+
+
 @router.message(F.text == "Налаштування ⚙️")
 async def settings(message: types.Message) -> None:
     db = await Database.setup()
