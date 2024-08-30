@@ -102,7 +102,9 @@ async def reg_student(query: types.CallbackQuery, state: FSMContext) -> None:
             chat_id=query.message.chat.id, message_id=message_id.message_id
         )
         await query.answer(
-            text=f"Групу {group_student} не знайдено", reply_markup=start_student_kb()
+            text=f"Групу {group_student} не знайдено",
+            show_alert=True,
+            reply_markup=start_student_kb(),
         )
         return
 
