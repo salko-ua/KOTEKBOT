@@ -29,16 +29,21 @@ async def view_coupes_student(query: types.CallbackQuery) -> None:
         return
 
     theme = await db.get_student_theme(query.from_user.id)
-    print(f"{data_photo[0]}".replace("{theme}", theme))
     image = URLInputFile(
         f"{data_photo[0]}".replace("{theme}", theme),
         filename="name.png",
     )
-    print(image)
     await query.message.delete()
-    await query.message.answer_photo(
-        photo=image, caption=data_photo[1], reply_markup=student_back_kb()
-    )
+    try:
+        await query.message.answer_photo(
+            photo=image, caption=data_photo[1], reply_markup=student_back_kb()
+        )
+    except:
+        await query.message.answer(
+            text="Розкладу ще немає ☹️",
+            show_alert=True,
+            reply_markup=await schedule_kb(query.from_user.id),
+        )
 
 
 # ===========================Переглянути розклад дзвінків============================
@@ -120,11 +125,17 @@ async def schedule_student1(query: types.CallbackQuery, state: FSMContext) -> No
         f"{data_photo[0]}".replace("{theme}", theme),
         filename=f"{query.data}.png",
     )
-
     await query.message.delete()
-    await query.message.answer_photo(
-        photo=image, caption=data_photo[1], reply_markup=student_back_kb()
-    )
+    try:
+        await query.message.answer_photo(
+            photo=image, caption=data_photo[1], reply_markup=student_back_kb()
+        )
+    except:
+        await query.message.answer(
+            text="Розкладу ще немає ☹️",
+            show_alert=True,
+            reply_markup=await schedule_kb(query.from_user.id),
+        )
 
 
 @router.message()
